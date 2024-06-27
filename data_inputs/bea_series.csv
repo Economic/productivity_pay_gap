@@ -1,0 +1,7 @@
+name,table_id,table_number,line_numbers,frequency
+nipa_ndp,T10705,1.7.5,30,quarterly
+nipa_ndp,T10705,1.7.5,30,annual
+nipa_comp,T20100,2.1,2,annual
+nipa_comp,T20100,2.1,2,quarterly
+nipa_wage,T20100,2.1,3,annual
+nipa_wage,T20100,2.1,3,quarterly

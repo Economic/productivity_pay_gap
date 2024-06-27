@@ -17,4 +17,7 @@ options(usethis.quiet = TRUE)
 suppressPackageStartupMessages({
   library(tidyverse)
   library(bea.R)
+  library(readxl)
+  library(janitor)
+  library(blsR)
 })
