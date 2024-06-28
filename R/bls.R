@@ -1,15 +1,33 @@
 clean_hours_data = function(data_xlsx) {
-  read_excel(data_xlsx, sheet = "MachineReadable") |> 
+  quarterly_data = read_excel(data_xlsx, sheet = "MachineReadable") |> 
     clean_names() |> 
     filter(
       sector == "Total economy", 
       basis == "All workers",
       component == "Total U.S. economy",
-      measure == "Hours worked"
+      measure == "Hours worked", 
+      year >= 1948
     ) |> 
+    mutate(value = as.numeric(value)) |> 
     # convert to millions of hours to match NIPA table units (in millions $)
-    mutate(value = value * 1000)
-    select(year, quarter = qtr, value)
+    mutate(value = value * 1000) |> 
+    select(year, quarter = qtr, hours_millions = value) |> 
+    mutate(frequency = "quarterly")
+  
+  year_max = quarterly_data |> 
+    summarize(num_quarters = n(), .by = year) |> 
+    filter(num_quarters == 4) |> 
+    filter(year == max(year)) |> 
+    pull(year)
+  
+  annual_data = quarterly_data |> 
+    filter(year <= year_max) |> 
+    summarize(hours_millions = mean(hours_millions), .by = c(year)) |> 
+    mutate(frequency = "annual")
+  
+  annual_data |> 
+    bind_rows(quarterly_data)
+  
 }
 
 bls_grab_all <- function(data_csv, date) {

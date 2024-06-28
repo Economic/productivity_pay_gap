@@ -20,4 +20,5 @@ suppressPackageStartupMessages({
   library(readxl)
   library(janitor)
   library(blsR)
+  library(realtalk)
 })
