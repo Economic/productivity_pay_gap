@@ -1,45 +1,80 @@
 ## Load your packages, e.g. library(targets).
 source("./packages.R")
 
+api_download_date = ymd("2024 Sep 17")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
-download_date = ymd("2024 June 28")
-
-realtalk_version = packageVersion("realtalk")
+realtalk_version = "0.14.0"
+bls_end_year = 2024
 
 ## Load your R files
 lapply(list.files("./R", full.names = TRUE), source)
 
-tar_plan(
-  
-  # INPUT FILES
-  # BLS total economy hours
-  tar_file(bls_hours_xlsx, "data_inputs/total-economy-hours-employment.xlsx"),
-  # BLS series inputs
-  tar_file(bls_series_csv, "data_inputs/bls_series.csv"),
-  # BEA series inputs
-  tar_file(bea_series_csv, "data_inputs/bea_series.csv"),
-  # old CPI-U-RS extended series
-  tar_file(cpi_u_rs_monthly, "data_inputs/cpi_u_rs_extended_monthly_sa.csv"),
-  tar_file(cpi_u_rs_annual, "data_inputs/cpi_u_rs_extended_annual.csv"),
-  
-  # INTERMEDIATE OUTPUS
-  prices = make_prices(realtalk_version, cpi_u_rs_monthly, cpi_u_rs_annual),
-  bls_api_output = bls_grab_all(bls_series_csv, download_date),
-  bls_hours = clean_hours_data(bls_hours_xlsx),
-  bea_api_output = bea_grab_all(bea_series_csv, download_date),
-  bls_pay = clean_bls_pay(bls_api_output),
-  
-  # FINAL OUTPUTS
-  output = combine_data(bls_pay, bls_hours, bea_api_output, prices),
-  tar_file(
-    output_csv, 
-    create_final_csvs(output, "data_outputs", "epi_productivity_pay")
-  )
-  
-)
+## PRELIMINARY TESTS
+stopifnot(packageVersion("realtalk") == realtalk_version)
 
-# Sources
-# BLS total economy hours:
-# https://www.bls.gov/productivity/tables/home.htm
-# https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx
+tar_assign({
+  
+  ###############
+  # INPUT FILES #
+  ###############
+  # BLS total economy hours
+  # https://www.bls.gov/productivity/tables/home.htm
+  # https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx
+  bls_hours_xlsx = tar_file("data_inputs/total-economy-hours-employment.xlsx")
+  
+  # BLS early production workers wages: series EEU00500006
+  # downloaded via https://data.bls.gov/series-report
+  bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
+  
+  # BLS series inputs for API call
+  bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
+  
+  # BEA series inputs for API call
+  bea_series_csv = tar_file("data_inputs/bea_series_codes.csv")
+
+  #######################
+  # INTERMEDIATE OUTPUS #
+  #######################
+  prices = make_prices(realtalk_version) |> 
+    tar_target()
+  
+  bls_api_output = bls_series_csv |> 
+    bls_grab_all(bls_end_year, api_download_date) |> 
+    tar_target()
+  
+  bls_hours = clean_hours_data(bls_hours_xlsx) |> 
+    tar_target()
+  
+  bea_api_output = bea_series_csv |> 
+    bea_grab_all(api_download_date) |> 
+    tar_target()
+  
+  bls_pay = clean_bls_pay(bls_early_wages_csv, bls_api_output) |> 
+    tar_target()
+  
+  #################
+  # FINAL OUTPUTS #
+  #################
+  
+  output = combine_data(bls_pay, bls_hours, bea_api_output, prices) |> 
+    tar_target()
+  
+  output_data_csv = create_csv(
+    output, 
+    "data_outputs/epi_productivity_pay_gap.csv"
+  ) |> 
+    tar_file()
+  
+  output_web_data_csv = create_web_data_csv(
+    output, 
+    "data_outputs/epi_productivity_pay_gap_web.csv"
+  ) |> 
+    tar_file()
+  
+  output_web_stats_csv = create_web_stats_csv(
+    output,
+    "data_outputs/epi_productivity_pay_gap_web_stats.csv"
+  ) |>
+    tar_file()
+})

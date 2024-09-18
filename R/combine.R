@@ -5,137 +5,70 @@ combine_data <- function(bls_pay_data, bls_hours_data, bea_data, prices) {
   
   bea_ratios = clean_bea |> 
     mutate(nipa_comp_wage_ratio = nipa_comp / nipa_wage) |> 
-    select(year, quarter, frequency, nipa_comp, nipa_wage, nipa_comp_wage_ratio)
+    select(year, quarter, frequency, nipa_comp_wage_ratio)
   
   productivity = clean_bea |> 
     select(year, quarter, frequency, nipa_ndp) |> 
     full_join(bls_hours_data, by = c("year", "quarter", "frequency")) |> 
-    rename(bls_hours_millions = hours_millions) |> 
-    mutate(productivity = nipa_ndp / bls_hours_millions)
+    mutate(productivity_nominal = nipa_ndp / hours_millions) |> 
+    select(year, quarter, frequency, productivity_nominal)
   
   bls_pay = bls_pay_data |> 
-    pivot_wider(id_cols = c(frequency, year, quarter)) |> 
-    select(
-      frequency, 
-      year, 
-      quarter,
-      bls_wage_goods = wage_goods_prod, 
-      bls_wage_private = wage_private_prod
-    )
+    rename(bls_prod_wage_nominal = value) |> 
+    select(year, quarter, frequency, bls_prod_wage_nominal)
   
-  bls_wage_base = bls_pay |>
-    filter(year == 1964) |>
-    select(
-      frequency, 
-      quarter, 
-      bls_goods_base = bls_wage_goods, 
-      bls_private_base = bls_wage_private
-    )
-  
-  cpi_u_rs_base = prices |> 
-    filter(year == 2023, frequency == "annual") |> 
-    pull(cpi_u_rs) 
-  
-  c_cpi_u_base = prices |> 
-    filter(year == 2023, frequency == "annual") |> 
-    pull(c_cpi_u) 
+  prices = prices |> 
+    select(year, quarter, frequency, cpi = c_cpi_u)
 
-  output = bls_pay |>
-    inner_join(bls_wage_base, by = c("frequency", "quarter")) |> 
-    mutate(bls_goods_base_ratio = if_else(
-      year <= 1964, 
-      bls_wage_goods / bls_goods_base,
-      NA
-    )) |> 
-    mutate(bls_wage_private_extended = if_else(
-      year <= 1964,
-      bls_goods_base_ratio * bls_private_base,
-      bls_wage_private
-    )) |> 
+  combined_data = bls_pay |>
     inner_join(bea_ratios, by = c("year", "quarter", "frequency")) |> 
     mutate(
-      bls_comp_private = bls_wage_private_extended * nipa_comp_wage_ratio
+      comp_private_nominal = bls_prod_wage_nominal * nipa_comp_wage_ratio
     ) |> 
     inner_join(productivity, by = c("year", "quarter", "frequency")) |> 
     inner_join(prices, by = c("year", "quarter", "frequency")) |> 
+    # only look at dates when key series are available
+    filter(
+      !is.na(comp_private_nominal),
+      !is.na(productivity_nominal),
+      !is.na(cpi)
+    ) 
+  
+  cpi_bases = combined_data |> 
+    arrange(frequency, year, quarter) |> 
+    filter(row_number() == n(), .by = frequency) |> 
+    select(frequency, cpi_base = cpi)
+  
+  output = combined_data |> 
+    inner_join(cpi_bases, by = "frequency") |> 
     mutate(
-      bls_comp_private_cpi_u_rs = bls_comp_private * cpi_u_rs_base / cpi_u_rs,
-      bls_comp_private_c_cpi_u = bls_comp_private * c_cpi_u_base / c_cpi_u,
-      productivity_cpi_u_rs = productivity * cpi_u_rs_base / cpi_u_rs,
-      productivity_c_cpi_u = productivity * c_cpi_u_base / c_cpi_u
-    ) |> 
+      comp_private_real = comp_private_nominal * cpi_base / cpi,
+      productivity_real = productivity_nominal * cpi_base / cpi
+    ) |>
     select(
-      frequency, 
-      year, 
-      quarter, 
-      bls_wage_goods, 
-      bls_wage_private, 
-      bls_wage_private_extended,
-      nipa_comp,
-      nipa_wage,
-      nipa_comp_wage_ratio,
-      bls_comp_private,
-      bls_hours_millions,
-      nipa_ndp,
-      productivity,
-      bls_comp_private_cpi_u_rs,
-      productivity_cpi_u_rs,
-      bls_comp_private_c_cpi_u,
-      productivity_c_cpi_u
-    )
+      frequency,
+      year,
+      quarter,
+      bls_prod_wage_nominal,
+      comp_private_nominal,
+      productivity_nominal,
+      comp_private_real,
+      productivity_real
+    ) |> 
+    pivot_longer(-c(frequency,year,quarter)) 
   
-  comp_cpi_u_rs_base = output |> 
-    filter(year == 1979, frequency == "annual") |> 
-    pull(bls_comp_private_cpi_u_rs)
+  bases_1948 = output |> 
+    filter(name %in% c("comp_private_real", "productivity_real")) |> 
+    filter(year == 1948 & (quarter == 1 | is.na(quarter))) |> 
+    select(frequency, name, value_base = value)
   
-  comp_c_cpi_u_base = output |> 
-    filter(year == 1979, frequency == "annual") |> 
-    pull(bls_comp_private_c_cpi_u)
-  
-  pdy_cpi_u_rs_base = output |> 
-    filter(year == 1979, frequency == "annual") |> 
-    pull(productivity_cpi_u_rs)
-  
-  pdy_c_cpi_u_base = output |> 
-    filter(year == 1979, frequency == "annual") |> 
-    pull(productivity_c_cpi_u)
+  index_1948 = output |> 
+    inner_join(bases_1948, by = c("frequency", "name")) |> 
+    mutate(value = value / value_base * 100) |> 
+    mutate(name = paste0(name, "_index_1948")) |> 
+    select(-value_base)
   
   output |> 
-    mutate(
-      bls_comp_private_cpi_u_rs_index = 
-        bls_comp_private_cpi_u_rs / comp_cpi_u_rs_base,
-      bls_comp_private_c_cpi_u_index = 
-        bls_comp_private_c_cpi_u / comp_c_cpi_u_base,
-      productivity_cpi_u_rs_index = 
-        productivity_cpi_u_rs / pdy_cpi_u_rs_base,
-      productivity_c_cpi_u_index = 
-        productivity_c_cpi_u / pdy_c_cpi_u_base
-    )
-  
+    bind_rows(index_1948) |> 
+    arrange(frequency, year, quarter, name)
 }
-
-create_final_csvs <- function(data, directory, file_prefix) {
-  quarterly = data |> 
-    filter(frequency == "quarterly") |> 
-    select(-frequency)
-  
-  annual = data |> 
-    filter(frequency == "annual") |> 
-    select(-c(frequency, quarter))
-  
-  file_name_quarterly = file.path(
-    directory, 
-    paste0(file_prefix, "_quarterly", ".csv")
-  )
-  
-  file_name_annual = file.path(
-    directory, 
-    paste0(file_prefix, "_annual", ".csv")
-  )
-  
-  write_csv(quarterly, file_name_quarterly)
-  write_csv(annual, file_name_annual)
-  
-  c(file_name_quarterly, file_name_annual)
-}
-

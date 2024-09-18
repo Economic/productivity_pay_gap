@@ -30,7 +30,7 @@ clean_hours_data = function(data_xlsx) {
   
 }
 
-bls_grab_all <- function(data_csv, date) {
+bls_grab_all <- function(data_csv, end_year, download_date) {
   data = read_csv(data_csv, show_col_types = FALSE)
   
   series_list = data |> 
@@ -51,62 +51,69 @@ bls_grab_all <- function(data_csv, date) {
     mutate(
       seasonal = str_extract(name, "_sa$|_nsa$"), 
       seasonal = str_remove(seasonal, "_"), 
-      name = str_remove(name, "_sa$|_nsa$")
+      name = str_remove(name, "_sa$|_nsa$"),
+      download_date = api_download_date
     )
 }
 
-clean_bls_pay = function(data) {
-  # check that there is no M13 value
-  m13_length = data |> 
-    filter(seasonal == "nsa", period == "M13") |> 
-    select(period) |> 
-    pull(period) |> 
-    length()
+clean_bls_pay = function(early_wages_csv, api_data) {
   
-  stopifnot(m13_length == 0)
+  # make annual wages 
+  wage_late_annual = api_data |> 
+    filter(name == "wage_private_prod", seasonal == "nsa") |> 
+    # this should be only monthly data
+    verify(period != "M13") |> 
+    summarize(late_value = mean(value), .by = year) 
+
+  wage_early_annual = read_csv(early_wages_csv, show_col_types = FALSE) |> 
+    filter(year <= 1964, period == "M13") |> 
+    select(year, early_value = value)
   
-  data_monthly = data |> 
-    mutate(
-      month = as.numeric(str_sub(period, 2, 3)),
-      quarter = quarter(ym(paste(year, month))) 
+  wages_combined_annual = wage_early_annual |> 
+    full_join(wage_late_annual, by = "year") 
+  
+  adj_factor = wages_combined_annual |> 
+    filter(year == 1964) |> 
+    mutate(adj_factor = late_value / early_value) |> 
+    pull(adj_factor)
+  
+  wages_annual = wages_combined_annual |> 
+    mutate(value = if_else(
+      year >= 1964, 
+      late_value, 
+      early_value * adj_factor)
     ) |> 
-    select(name, year, month, quarter, value, seasonal) 
+    select(year, value) |> 
+    mutate(frequency = "annual")
   
-  valid_dates_annual = data_monthly |> 
-    filter(seasonal == "nsa") |> 
+  # make quarterly wages
+  wages_late_quarterly = api_data |> 
+    filter(name == "wage_private_prod", seasonal == "sa") |> 
+    # this should be only monthly data
+    verify(period != "M13") |> 
     mutate(
-      month_count = n(), 
-      row_number = row_number(), 
-      .by = c(name, year)
+      month = str_sub(period, 2, 3),
+      month_date = ym(paste(year, month)),
+      quarter = quarter(month_date)
     ) |> 
-    filter(month_count == 12, row_number == 12) |> 
-    select(name, year)
+    summarize(value = mean(value), .by = c(year, quarter)) 
   
-  valid_dates_quarterly = data_monthly |> 
-    filter(seasonal == "sa") |> 
-    mutate(
-      month_count = n(), 
-      row_number = row_number(),
-      .by = c(name, year, quarter)
-    ) |> 
-    filter(month_count == 3, row_number == 3) |> 
-    select(name, year, quarter) 
-    
-  data_quarterly = data_monthly |> 
-    filter(seasonal == "sa") |> 
-    summarize(value = mean(value), .by = c(name, year, quarter)) |> 
-    inner_join(valid_dates_quarterly, by = c("name", "year", "quarter")) |> 
-    mutate(frequency = "quarterly") |> 
-    arrange(name, year, quarter)
+  wages_early_quarterly = wages_annual |> 
+    filter(year <= 1963) |> 
+    # assume annual data, which is all we have in early period, is quarter 3
+    mutate(quarter = 3) |> 
+    select(year, quarter, value)
   
-  data_annual = data_monthly |> 
-    filter(seasonal == "nsa") |> 
-    summarize(value = mean(value), .by = c(name, year)) |> 
-    inner_join(valid_dates_annual, by = c("name", "year")) |> 
-    mutate(frequency = "annual") |> 
-    arrange(name, year)
+  wages_quarterly = wages_early_quarterly |> 
+    bind_rows(wages_late_quarterly) |> 
+    complete(year, quarter) |> 
+    arrange(year, quarter) |> 
+    mutate(value = na.approx(value, na.rm = FALSE)) |> 
+    filter(!is.na(value)) |> 
+    mutate(frequency = "quarterly")
   
-  data_quarterly |> 
-    bind_rows(data_annual) |> 
-    select(name, frequency, year, quarter, value) 
+  wages_annual |> 
+    bind_rows(wages_quarterly) |> 
+    select(year, quarter, frequency, value)
+  
 }

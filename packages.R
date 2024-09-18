@@ -21,4 +21,7 @@ suppressPackageStartupMessages({
   library(janitor)
   library(blsR)
   library(realtalk)
+  library(assertr)
+  library(zoo)
+  library(scales)
 })
