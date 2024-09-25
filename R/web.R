@@ -7,11 +7,16 @@ create_web_data_csv <- function(data, file) {
       "comp_private_real_index_1948",
       "productivity_real_index_1948"
     )) |> 
-    # here is a good place to do web friendly formatting
     pivot_wider(id_cols = c(year, quarter)) |> 
     mutate(date = paste0(year, "q", quarter)) |> 
     arrange(year, quarter) |> 
-    select(date, comp_private_real_index_1948, productivity_real_index_1948)
+    select(date, comp_private_real_index_1948, productivity_real_index_1948) |>
+    #rename columns and round to nearest 2 decimal places
+    rename(Year = date,
+           Pay = comp_private_real_index_1948,
+           Productivity = productivity_real_index_1948) |>
+    mutate(Pay = round(Pay, 2),
+           Productivity = round(Productivity, 2))
   
   write_csv(output, file)
   
