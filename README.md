@@ -1,18 +1,23 @@
 # README
-This repository produces the data for the EPI Productivity-Pay Gap page, currently served at <https://www.epi.org/productivity-pay-gap/>. For details on methodology or to download the data, go there!
 
-The productivity-pay gap data is also available on our Data Library, currently served at <https://www.epi.org/data/>.
+This repository produces the data for the [EPI Productivity-Pay Gap](<https://www.epi.org/productivity-pay-gap/>) page, which also explains the methodology and provides a link to download the data.
+
+The productivity-pay gap data is also available on the [State of Working America Data Library](<https://data.epi.org>).
 
 You can use this repository to reproduce the data from scratch.
 
 ## Development environment
 
--   R and all of the packages in `packages.R`
-    -   Some package versions must match the versions specified in `_targets.R`
--   You will need the latest [EPI price indices](https://economic.github.io/realtalk/) downloaded using [`realtalk`](install.packages('realtalk', repos = c('https://economic.r-universe.dev', 'https://cloud.r-project.org')))
--   Environment variables:
-    - `BLS_DOWNLOAD_EMAIL` email valid for BLS downloads
-    - BLS and BEA API keys set, respectively, in `BLS_API_KEY`and `BEA_API_KEY`.
+### Packages
+
+You will need R and all of the packages in `packages.R`
+- Some package versions must match the versions specified in `_targets.R`
+- In particular you should use the latest price indices in the [`realtalk`](https://economic.github.io/realtalk/) package.
+
+### Environment variables
+
+- `BLS_DOWNLOAD_EMAIL` email valid for BLS downloads
+- BLS and BEA API keys set, respectively, in `BLS_API_KEY`and `BEA_API_KEY`.
 
 ## Reproducing and deploying the data
 
@@ -23,12 +28,15 @@ You can use this repository to reproduce the data from scratch.
 
 ## Sources
 
-- Productivity
-    - Total hours (unpublished BLS series)
-    - Net domestic product (Bureau of Economic Analysis, NIPA table 1.7.5)
+### Productivity
 
-- Pay
-    - Average hourly wages for production/nonsupervisory workers (Bureau of Labor Statistics, Current Employment Statistics, series CES0500000008)
-    - Total compensation (Bureau of Economic Analysis, NIPA table 2.1, line 2)
-    - Wages (Bureau of Economic Analysis, NIPA table 2.1, line 3)
+- Total hours ([BLS](https://www.bls.gov/productivity/tables/home.htm))
+- Net domestic product (Bureau of Economic Analysis, NIPA table 1.7.5, via BEA API)
+
+### Pay
+
+- Average hourly wages for production/nonsupervisory workers (Bureau of Labor Statistics, Current Employment Statistics, series CES0500000008, CES0500000008, via BLS API)
+- Average hourly wages for production workers (Bureau of Labor Statistics Current Employment Statistics, series EEU00500006, via BLS API)
+- Total compensation (Bureau of Economic Analysis, NIPA table 2.1, line 2, via BEA API)
+- Wages (Bureau of Economic Analysis, NIPA table 2.1, line 3, via BEA API)
      

@@ -1,7 +1,7 @@
 ## Load your packages, e.g. library(targets).
 source("./packages.R")
 
-api_download_date = ymd("2024 Sep 22")
+api_download_date = ymd("2024 Oct 18")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
 realtalk_version = "0.15.0"
@@ -73,7 +73,7 @@ tar_assign({
     tar_file()
   
   output_web_stats_csv = create_web_stats_csv(
-    output,
+    output_web_data_csv,
     "data_outputs/epi_productivity_pay_gap_web_stats.csv"
   ) |>
     tar_file()

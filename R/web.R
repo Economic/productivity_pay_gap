@@ -11,27 +11,25 @@ create_web_data_csv <- function(data, file) {
     mutate(date = paste0(year, "q", quarter)) |> 
     arrange(year, quarter) |> 
     select(date, comp_private_real_index_1948, productivity_real_index_1948) |>
-    #rename columns and round to nearest 2 decimal places
-    rename(Year = date,
-           Pay = comp_private_real_index_1948,
-           Productivity = productivity_real_index_1948) |>
-    mutate(Pay = round(Pay, 2),
-           Productivity = round(Productivity, 2))
+    rename(
+      Year = date,
+      Pay = comp_private_real_index_1948,
+      Productivity = productivity_real_index_1948
+    ) |> 
+    mutate(across(Pay|Productivity, ~ round(.x, 1)))
   
   write_csv(output, file)
   
   file
 }
 
-create_web_stats_csv <- function(data, file) {
+create_web_stats_csv <- function(web_csv, file) {
   
-  data = data |> 
-    filter(frequency == "quarterly") |> 
-    filter(name %in% c(
-      "comp_private_real_index_1948",
-      "productivity_real_index_1948"
-    )) |> 
-    mutate(quarter_date = yq(paste(year, quarter)))
+  data = read_csv(web_csv, show_col_types = FALSE) |> 
+    clean_names() |> 
+    mutate(quarter_date = yq(year)) |> 
+    select(quarter_date, pay, productivity) |> 
+    pivot_longer(-quarter_date)
   
   max_quarter_date = data |> 
     distinct(quarter_date) |> 
@@ -48,8 +46,8 @@ create_web_stats_csv <- function(data, file) {
     filter(!is.na(value)) |> 
     mutate(name = case_match(
       name,
-      "comp_private_real_index_1948" ~ "Productivity, 1979q4–",
-      "productivity_real_index_1948" ~ "Hourly pay, 1979q4–"
+      "productivity" ~ "Productivity, 1979q4–",
+      "pay" ~ "Hourly pay, 1979q4–"
     )) |> 
     mutate(name = paste0(name, max_quarter_date, ", total percent growth"))
   
@@ -82,8 +80,8 @@ create_web_stats_csv <- function(data, file) {
     ) |> 
     mutate(name = case_match(
       name,
-      "comp_private_real_index_1948" ~ "Productivity, 1948–1979, average annual growth",
-      "productivity_real_index_1948" ~ "Compensation, 1948–1979, average annual growth"
+      "productivity" ~ "Productivity, 1948–1979, average annual growth",
+      "pay" ~ "Compensation, 1948–1979, average annual growth"
     )) |> 
     select(name, value)
   
@@ -103,8 +101,8 @@ create_web_stats_csv <- function(data, file) {
     ) |> 
     mutate(name = case_match(
       name,
-      "comp_private_real_index_1948" ~ "Productivity, 1979–",
-      "productivity_real_index_1948" ~ "Compensation, 1979–"
+      "productivity" ~ "Productivity, 1979–",
+      "pay" ~ "Compensation, 1979–"
     )) |> 
     mutate(name = paste0(name, max_year, ", average annual growth")) |> 
     select(name, value)
