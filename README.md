@@ -21,10 +21,12 @@ You will need R and all of the packages in `packages.R`
 
 ## Reproducing and deploying the data
 
+- Set the `api_download_date` variable to the current date.
+
 - `tar_make()`: will produce all of the data in 3 .csv files
-    - epi_productivity_pay_gap.csv : all series, long format
-    - epi_productivity_pay_gap_web.csv : web ready, pay and productivity series indexed to 1948q1
-    - epi_productivity_pay_gap_web_stats.csv : relevant statistics for website
+    - `epi_productivity_pay_gap.csv` : all series, long format
+    - `epi_productivity_pay_gap_web.csv` : web ready, pay and productivity series indexed to 1948q1
+    - `epi_productivity_pay_gap_web_stats.csv` : relevant statistics for website
 
 ## Sources
 
