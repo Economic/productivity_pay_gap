@@ -1,11 +1,14 @@
-combine_data <- function(bls_pay_data, bls_hours_data, bea_data, prices) {
-  clean_bea = bea_data |> 
+combine_data <- function(bls_pay_csv, bls_hours_csv, bea_csv, prices_csv) {
+  clean_bea = bea_csv |> 
+    read_csv(show_col_types = FALSE) |> 
     select(name, year, quarter, frequency, value) |> 
     pivot_wider(id_cols = c(year, quarter, frequency)) 
   
   bea_ratios = clean_bea |> 
     mutate(nipa_comp_wage_ratio = nipa_comp / nipa_wage) |> 
     select(year, quarter, frequency, nipa_comp_wage_ratio)
+
+  bls_hours_data = read_csv(bls_hours_csv, show_col_types = FALSE)
   
   productivity = clean_bea |> 
     select(year, quarter, frequency, nipa_ndp) |> 
@@ -13,11 +16,13 @@ combine_data <- function(bls_pay_data, bls_hours_data, bea_data, prices) {
     mutate(productivity_nominal = nipa_ndp / hours_millions) |> 
     select(year, quarter, frequency, productivity_nominal)
   
-  bls_pay = bls_pay_data |> 
+  bls_pay = bls_pay_csv |> 
+    read_csv(show_col_types = FALSE) |> 
     rename(bls_prod_wage_nominal = value) |> 
     select(year, quarter, frequency, bls_prod_wage_nominal)
   
-  prices = prices |> 
+  prices = prices_csv |> 
+    read_csv(show_col_types = FALSE) |> 
     select(year, quarter, frequency, cpi = c_cpi_u)
 
   combined_data = bls_pay |>

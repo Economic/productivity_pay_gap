@@ -2,8 +2,7 @@ bea_grab_all <- function(data_csv, date) {
   data = read_csv(data_csv, show_col_types = FALSE)
   
   pmap(data, bea_grab_series) |> 
-    list_rbind() |> 
-    mutate(download_date = date)
+    list_rbind() 
 }
 
 bea_grab_series = function(

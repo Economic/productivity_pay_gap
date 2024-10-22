@@ -51,13 +51,15 @@ bls_grab_all <- function(data_csv, end_year, download_date) {
     mutate(
       seasonal = str_extract(name, "_sa$|_nsa$"), 
       seasonal = str_remove(seasonal, "_"), 
-      name = str_remove(name, "_sa$|_nsa$"),
-      download_date = api_download_date
+      name = str_remove(name, "_sa$|_nsa$")
     )
 }
 
-clean_bls_pay = function(early_wages_csv, api_data) {
+clean_bls_pay = function(early_wages_csv, api_csv) {
   
+  api_data = api_csv |> 
+    read_csv(show_col_types = FALSE) 
+
   # make annual wages 
   wage_late_annual = api_data |> 
     filter(name == "wage_private_prod", seasonal == "nsa") |> 
