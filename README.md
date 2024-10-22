@@ -28,6 +28,22 @@ You will need R and all of the packages in `packages.R`
     - `epi_productivity_pay_gap_web.csv` : web ready, pay and productivity series indexed to 1948q1
     - `epi_productivity_pay_gap_web_stats.csv` : relevant statistics for website
 
+## Output
+
+### Intermediate
+
+- `bea_api_output.csv`: API results from BEA
+- `bls_api_output.csv`: API results from BLS
+- `bls_hours.csv`: CSV version of BLS total economy hours
+- `bls_pay.csv`: combined BLS early and later wage series
+- `prices.csv`: price indices
+
+### Release
+
+- `epi_productivity_pay_gap.csv`: all annual and quarterly data in long format
+- `epi_productivity_pay_gap_web.csv`: EPI Productivity-Pay Gap web page ready data in wide format, rounded to one decimal place
+- `epi_productivity_pay_gap_web_stats.csv`: miscellanous stats based on web-ready data
+
 ## Sources
 
 ### Productivity

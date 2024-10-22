@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|0c7fedd11dcd7552|||||||||||||||
+.Random.seed|object|0cb25d48aa3f12eb|||||||||||||||
 api_download_date|object|707dcbc19f7121bf|||||||||||||||
 bea_api_output|stem|51ebf4f39e9a201c|9bc8ad4a3a2be21c|a9a67a795f69f15d|-859578245|data_outputs/bea_api_output.csv|t20018.8497864401s|6c4e97e020546afc|101985|file|local|vector|||4.012||
 bea_grab_all|function|afc31d7bcd3f34b2|||||||||||||||
@@ -12,7 +12,7 @@ bls_early_wages_csv|stem|1f1f964434f06bf5|91c4ff32be79cefd|2c530c1562a7fbd1|1965
 bls_end_year|object|1f9b22175ab58c3c|||||||||||||||
 bls_grab_all|function|c56d575157e2c121|||||||||||||||
 bls_hours|stem|a7e65c807692feec|20a9e2b31c36c1ac|1ae59db4f1162975|1447348938|data_outputs/bls_hours.csv|t20017.6265198546s|03fc6dbf9f654c57|9360|file|local|vector|||0.11||
-bls_hours_xlsx|stem|02079f9d49d4c60b|91890e363cbb6847|2c530c1562a7fbd1|-708524675|data_inputs/total-economy-hours-employment.xlsx|t19983.8440608271s|f46feeec13b24890|439892|file|local|vector|||0||
+bls_hours_xlsx|stem|02079f9d49d4c60b|91890e363cbb6847|2c530c1562a7fbd1|-708524675|data_inputs/total-economy-hours-employment.xlsx|t20018.858803638s|f46feeec13b24890|439892|file|local|vector|||0||
 bls_key|object|c68252fd666e9076|||||||||||||||
 bls_pay|stem|50c7065007867b27|d0c32ce0a1af1d67|f379bb8673df493c|2013781490|data_outputs/bls_pay.csv|t20017.6279362912s|aa3f28e3045febcd|12626|file|local|vector|||0.152||
 bls_series_csv|stem|47b4438262a30326|92183d65556263f8|2c530c1562a7fbd1|-1927092832|data_inputs/bls_series_codes.csv|t19983.7753205791s|e5403c57657c131e|84|file|local|vector|||0.001||
