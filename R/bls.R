@@ -65,6 +65,8 @@ clean_bls_pay = function(early_wages_csv, api_csv) {
     filter(name == "wage_private_prod", seasonal == "nsa") |> 
     # this should be only monthly data
     verify(period != "M13") |> 
+    mutate(count_per_year = n(), .by = year) |> 
+    filter(count_per_year == 12) |> 
     summarize(late_value = mean(value), .by = year) 
 
   wage_early_annual = read_csv(early_wages_csv, show_col_types = FALSE) |> 
@@ -98,6 +100,8 @@ clean_bls_pay = function(early_wages_csv, api_csv) {
       month_date = ym(paste(year, month)),
       quarter = quarter(month_date)
     ) |> 
+    mutate(count_per_quarter = n(), .by = c(year, quarter)) |> 
+    filter(count_per_quarter == 3) |> 
     summarize(value = mean(value), .by = c(year, quarter)) 
   
   wages_early_quarterly = wages_annual |> 

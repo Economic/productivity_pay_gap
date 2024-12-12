@@ -17,7 +17,6 @@ year,quarter,frequency,value
 1962,NA,annual,2.3838347457627123
 1963,NA,annual,2.4482627118644067
 1964,NA,annual,2.5341666666666667
-2024,NA,annual,29.96
 2023,NA,annual,28.938333333333333
 2022,NA,annual,27.558333333333334
 2021,NA,annual,25.89
@@ -385,4 +384,4 @@ year,quarter,frequency,value
 2023,4,quarterly,29.406666666666666
 2024,1,quarterly,29.71
 2024,2,quarterly,29.95
-2024,3,quarterly,30.246666666666666
+2024,3,quarterly,30.26
