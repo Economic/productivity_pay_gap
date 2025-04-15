@@ -2,7 +2,7 @@
 
 This repository produces the data for the [EPI Productivity-Pay Gap](<https://www.epi.org/productivity-pay-gap/>) page, which also explains the methodology and provides a link to download the data.
 
-The productivity-pay gap data is also available on the [State of Working America Data Library](<https://data.epi.org>).
+The productivity-pay gap data is also available on the [State of Working America Data Library](<https://data.epi.org/productivity/productivity_growth/line/quarter/national/real_index_1948Q1/productivity_pay?timeStart=1948-01-01&timeEnd=2024-04-01&dateString=2024-04-01&highlightedLines=productivity_productivity_pay&highlightedLines=compensation_productivity_pay>).
 
 You can use this repository to reproduce the data from scratch.
 

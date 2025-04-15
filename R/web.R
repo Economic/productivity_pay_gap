@@ -78,7 +78,7 @@ create_web_stats_csv <- function(web_csv, file) {
     filter(quarter_date %in% yq(c("1948q1", "1979q4"))) |>
     mutate(
       total_growth = value / lag(value) - 1,
-      total_years = (time - lag(time) + 1) / 4,
+      total_years = (time - lag(time)) / 4,
       .by = name
     ) |>
     filter(!is.na(total_growth)) |>
@@ -101,7 +101,7 @@ create_web_stats_csv <- function(web_csv, file) {
     filter(quarter_date %in% yq(c("1979q4", max_quarter_date))) |>
     mutate(
       total_growth = value / lag(value) - 1,
-      total_years = (time - lag(time) + 1) / 4,
+      total_years = (time - lag(time)) / 4,
       .by = name
     ) |>
     filter(!is.na(total_growth)) |>

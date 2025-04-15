@@ -10,12 +10,13 @@ prices|stem|d6469ff3d3debd0b|f346dc5a10c9a92a|84cb01fe5b3fe7df|917323121|data_ou
 bea_api_output|stem|858dc61bd6b2dd49|9bc8ad4a3a2be21c|898e3e680873ea3f|-859578245|data_outputs/bea_api_output.csv|t20193.6548374331s|s102750b|102750|file|local|vector|||4.954||
 bls_api_output|stem|47790012d93e9cbf|836e0cf5f239b0e7|9a5c7010bf39cd1b|774564642|data_outputs/bls_api_output.csv|t20193.6548500603s|s63149b|63149|file|local|vector|||1.086||
 output|stem|75cbae79870f2592|e2097951168d41d4|1d1b995961276676|3939470||t20193.6548513566s|s21647b|21647|rds|local|vector|||0.099||
+output_web_data_csv|stem|1e206d29c455dcc8|2a4eb08e8bb320d6|ca75e45eba719015|-1577945301|release/epi_productivity_pay_gap_web.csv|t20193.6590127442s|s5748b|5748|file|local|vector|||0.105||
 create_web_data_csv|function|814cd312d4e7fe70
 combine_data|function|d6401da0b755d45d
 realtalk_version|object|b2e5cdd506de3baf
 bea_key|object|3db92aa9d0401ad2
-create_web_stats_csv|function|554e7717ba58a5df
-.Random.seed|object|ef98e7519985cf40
+create_web_stats_csv|function|003cfb83fd170d1c
+.Random.seed|object|c6da322c2daf98fd
 bls_key|object|c68252fd666e9076
 bls_grab_all|function|c56d575157e2c121
 api_download_date|object|fc9bd946bcf9e0a5
@@ -27,5 +28,4 @@ clean_hours_data|function|073b2e90956b74fc
 bea_query|function|e8f49f851efa890e
 bea_grab_series|function|b10a689c39518247
 bea_grab_all|function|afc31d7bcd3f34b2
-output_web_data_csv|stem|1e206d29c455dcc8|2a4eb08e8bb320d6|ca75e45eba719015|-1577945301|release/epi_productivity_pay_gap_web.csv|t20193.6590127442s|s5748b|5748|file|local|vector|||0.105||
-output_web_stats_csv|stem|c7a8c07f0a15ebe3|b447cffb6a358108|03c7deeb0dfd45fd|1045520828|release/epi_productivity_pay_gap_web_stats.csv|t20193.6590142604s|s402b|402|file|local|vector|||0.126||
+output_web_stats_csv|stem|f40fd6ae546b01a1|b447cffb6a358108|e63c0b9f2a63a08a|1045520828|release/epi_productivity_pay_gap_web_stats.csv|t20193.7219652505s|s402b|402|file|local|vector|||0.198||
