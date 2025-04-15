@@ -1,10 +1,10 @@
 ## Load your packages, e.g. library(targets).
 source("./packages.R")
 
-api_download_date = ymd("2025 Apr 5")
+api_download_date = ymd("2025 Apr 15")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
-realtalk_version = "0.21.0"
+realtalk_version = "2025.4.10"
 bls_end_year = 2025
 
 ## Load your R files
