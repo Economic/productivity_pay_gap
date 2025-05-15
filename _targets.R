@@ -1,10 +1,10 @@
 ## Load your packages, e.g. library(targets).
 source("./packages.R")
 
-api_download_date = ymd("2025 Apr 15")
+api_download_date = ymd("2025 May 15")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
-realtalk_version = "2025.4.10"
+realtalk_version = "2025.5.13"
 bls_end_year = 2025
 
 ## Load your R files
@@ -17,20 +17,19 @@ tar_assign({
   ###############
   # INPUT FILES #
   ###############
-  # BLS total economy hours
-  # https://www.bls.gov/productivity/tables/home.htm
-  # https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx
   bls_hours_xlsx = tar_file("data_inputs/total-economy-hours-employment.xlsx")
-
-  # BLS early production workers wages: series EEU00500006
-  # downloaded via https://data.bls.gov/series-report
   bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
-
-  # BLS series inputs for API call
   bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
-
-  # BEA series inputs for API call
   bea_series_csv = tar_file("data_inputs/bea_series_codes.csv")
+
+  data_documentation = document_data(
+    bls_hours = bls_hours_xlsx,
+    bls_early_wages = bls_early_wages_csv,
+    bls_current_wages = bls_series_csv,
+    bea_data = bea_series_csv,
+    output_file = "release/data_documentation.csv"
+  ) |>
+    tar_file()
 
   #######################
   # INTERMEDIATE OUTPUS #

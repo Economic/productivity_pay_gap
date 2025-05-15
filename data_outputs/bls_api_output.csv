@@ -1,4 +1,8 @@
 name,year,period,periodName,value,seasonal
+wage_private_prod,2025,M04,April,31.06,sa
+wage_private_prod,2025,M03,March,30.96,sa
+wage_private_prod,2025,M02,February,30.91,sa
+wage_private_prod,2025,M01,January,30.8,sa
 wage_private_prod,2024,M12,December,30.67,sa
 wage_private_prod,2024,M11,November,30.58,sa
 wage_private_prod,2024,M10,October,30.49,sa
@@ -731,6 +735,10 @@ wage_private_prod,1964,M04,April,2.52,sa
 wage_private_prod,1964,M03,March,2.51,sa
 wage_private_prod,1964,M02,February,2.5,sa
 wage_private_prod,1964,M01,January,2.5,sa
+wage_private_prod,2025,M04,April,31.15,nsa
+wage_private_prod,2025,M03,March,31.12,nsa
+wage_private_prod,2025,M02,February,31.06,nsa
+wage_private_prod,2025,M01,January,30.88,nsa
 wage_private_prod,2024,M12,December,30.76,nsa
 wage_private_prod,2024,M11,November,30.5,nsa
 wage_private_prod,2024,M10,October,30.49,nsa
