@@ -11,16 +11,14 @@ bea_api_output|stem|f385027d01a41efe|9bc8ad4a3a2be21c|d9e49995c2eb311e|-85957824
 bls_hours|stem|2a77a5e681ff8293|20a9e2b31c36c1ac|9edd9c62cc0ffa07|1447348938|data_outputs/bls_hours.csv|t20223.7054615666s|s9530b|9530|file|local|vector|||0.099||
 bls_api_output|stem|3a840236d9b43367|836e0cf5f239b0e7|522eba055fe7beab|774564642|data_outputs/bls_api_output.csv|t20223.7103864316s|s63498b|63498|file|local|vector|||1.241||
 bls_pay|stem|fe0b32b089f6fa18|d0c32ce0a1af1d67|235ccff42873fcba|2013781490|data_outputs/bls_pay.csv|t20223.7103877626s|s12492b|12492|file|local|vector|||0.088||
-output|stem|10985d7cc989e9db|e2097951168d41d4|9acc1f96096a80f9|3939470||t20223.7103894177s|s21709b|21709|rds|local|vector|||0.108||
-output_web_data_csv|stem|020ff1c23442be10|2a4eb08e8bb320d6|88dbc2e0bd7f5d31|-1577945301|release/epi_productivity_pay_gap_web.csv|t20223.7103899385s|s5769b|5769|file|local|vector|||0.035||
-output_data_csv|stem|dfd1b15cd3f80e26|c0982789487d17c3|f3a506edcd1ecc58|653660444|release/epi_productivity_pay_gap.csv|t20223.7103910149s|s154493b|154493|file|local|vector|||0.083||
 output_web_stats_csv|stem|f245e56c5f4358ee|b447cffb6a358108|f399b85cc67c74c5|1045520828|release/epi_productivity_pay_gap_web_stats.csv|t20223.7103924269s|s402b|402|file|local|vector|||0.113||
+data_documentation|stem|0a216515e11e1394|0cae2906bc91675b|5c80f0415f712d47|-1374813434|release/data_documentation.csv|t20224.1183812621s|s1118b|1118|file|local|vector|||0.072||
 create_web_data_csv|function|814cd312d4e7fe70
-combine_data|function|d6401da0b755d45d
+combine_data|function|332bdda86d1b1610
 realtalk_version|object|fc1423119504827c
 bea_key|object|3db92aa9d0401ad2
 create_web_stats_csv|function|003cfb83fd170d1c
-.Random.seed|object|724912006b0da654
+.Random.seed|object|46ab8f9608064f86
 bls_key|object|c68252fd666e9076
 bls_grab_all|function|2ade198ec249140b
 api_download_date|object|33be585893bd6d47
@@ -33,4 +31,6 @@ bea_query|function|e8f49f851efa890e
 document_data|function|1c3cdbc810b38567
 bea_grab_series|function|b10a689c39518247
 bea_grab_all|function|afc31d7bcd3f34b2
-data_documentation|stem|0a216515e11e1394|0cae2906bc91675b|5c80f0415f712d47|-1374813434|release/data_documentation.csv|t20224.1183812621s|s1118b|1118|file|local|vector|||0.072||
+output|stem|3ea20d104e5a3b8c|e2097951168d41d4|eea6c9486facdc4c|3939470||t20244.9980307981s|s24859b|24859|rds|local|vector|||0.177||
+output_web_data_csv|stem|020ff1c23442be10|2a4eb08e8bb320d6|2cd9f155028bbd6a|-1577945301|release/epi_productivity_pay_gap_web.csv|t20244.9980314231s|s5769b|5769|file|local|vector|||0.034||
+output_data_csv|stem|d37f227882905eab|c0982789487d17c3|8884bada3271fb8a|653660444|release/epi_productivity_pay_gap.csv|t20244.9980329046s|s174313b|174313|file|local|vector|||0.091||
