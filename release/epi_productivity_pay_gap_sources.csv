@@ -1,0 +1,8 @@
+name,date_accessed,date_published,source,source_url,source_url_2,access_method,data_location
+BEA Compensation of employees,2025-08-20,NA,"BEA National Income and Product Accounts,Table 2.1, Line Number 2",https://apps.bea.gov/API/,NA,BEA API,data_inputs/bea_series_codes.csv
+BEA Net domestic product,2025-08-20,NA,"BEA National Income and Product Accounts,Table 1.7.5, Line Number 30",https://apps.bea.gov/API/,NA,BEA API,data_inputs/bea_series_codes.csv
+BEA Wages and salaries,2025-08-20,NA,"BEA National Income and Product Accounts,Table 2.1, Line Number 3",https://apps.bea.gov/API/,NA,BEA API,data_inputs/bea_series_codes.csv
+BLS total economy hours,2025-08-20,2025-08-07,BLS Office of Productivity and Technology,https://www.bls.gov/productivity/tables/home.htm,https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx,manual download,data_inputs/total-economy-hours-employment.xlsx
+"CES production and nonsupervisory average hourly earnings, private-sector, not seasonally adjusted",2025-08-20,NA,"BLS Current Employment Statistics, series CEU0500000008",https://www.bls.gov/developers/home.htm,NA,BLS API,data_inputs/bls_series_codes.csv
+"CES production and nonsupervisory average hourly earnings, private-sector, seasonally adjusted",2025-08-20,NA,"BLS Current Employment Statistics, series CES0500000008",https://www.bls.gov/developers/home.htm,NA,BLS API,data_inputs/bls_series_codes.csv
+"CES production average hourly earnings, private-sector, not seasonally adjusted",2025-05-15,NA,"BLS Current Employment Statistics, series EEU00500006",https://data.bls.gov/series-report,NA,manual_download,data_inputs/bls_EEU00500006.csv
