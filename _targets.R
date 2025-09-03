@@ -1,13 +1,13 @@
-## Load your packages, e.g. library(targets).
+## Load packages
 source("./packages.R")
 
-api_download_date = ymd("2025 May 15")
+api_download_date = ymd("2025 September 3")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
-realtalk_version = "2025.5.13"
+realtalk_version = "2025.8.12"
 bls_end_year = 2025
 
-## Load your R files
+## Load R sources
 lapply(list.files("./R", full.names = TRUE), source)
 
 ## PRELIMINARY TESTS
@@ -27,7 +27,7 @@ tar_assign({
     bls_early_wages = bls_early_wages_csv,
     bls_current_wages = bls_series_csv,
     bea_data = bea_series_csv,
-    output_file = "release/data_documentation.csv"
+    output_file = "release/epi_productivity_pay_gap_sources.csv"
   ) |>
     tar_file()
 
