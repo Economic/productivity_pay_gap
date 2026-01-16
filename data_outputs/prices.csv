@@ -87,6 +87,7 @@ year,c_cpi_u,frequency,quarter
 2022,163.6,annual,NA
 2023,170,annual,NA
 2024,174.4,annual,NA
+2025,178.6,annual,NA
 1947,14.8,quarterly,1
 1947,15,quarterly,2
 1947,15.3,quarterly,3
@@ -400,4 +401,6 @@ year,c_cpi_u,frequency,quarter
 2024,174.5,quarterly,3
 2024,175.7,quarterly,4
 2025,177.3,quarterly,1
-2025,177.9,quarterly,2
+2025,178,quarterly,2
+2025,179.4,quarterly,3
+2025,NA,quarterly,4

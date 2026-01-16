@@ -7,8 +7,8 @@ document_data = function(
 ) {
   bls_hours_doc = tibble(
     name = "BLS total economy hours",
-    date_accessed = ymd("2025 August 20"),
-    date_published = ymd("2025 August 7"),
+    date_accessed = ymd("2026 January 16"),
+    date_published = ymd("2026 January 8"),
     source = "BLS Office of Productivity and Technology",
     source_url = "https://www.bls.gov/productivity/tables/home.htm",
     source_url_2 = "https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx",

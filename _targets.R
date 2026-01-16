@@ -1,10 +1,10 @@
 ## Load packages
 source("./packages.R")
 
-api_download_date = ymd("2025 September 3")
+api_download_date = ymd("2026 January 16")
 bea_key = Sys.getenv("BEA_API_KEY")
 bls_key = Sys.getenv("BLS_API_KEY")
-realtalk_version = "2025.8.12"
+realtalk_version = "2026.01.13"
 bls_end_year = 2025
 
 ## Load R sources
