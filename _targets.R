@@ -1,17 +1,10 @@
 ## Load packages
 source("./packages.R")
 
-api_download_date = ymd("2026 January 16")
-bea_key = Sys.getenv("BEA_API_KEY")
-bls_key = Sys.getenv("BLS_API_KEY")
-realtalk_version = "2026.01.13"
-bls_end_year = 2025
-
 ## Load R sources
 lapply(list.files("./R", full.names = TRUE), source)
 
-## PRELIMINARY TESTS
-stopifnot(packageVersion("realtalk") == realtalk_version)
+tar_option_set(imports = "realtalk")
 
 tar_assign({
   ###############
@@ -27,6 +20,7 @@ tar_assign({
     bls_early_wages = bls_early_wages_csv,
     bls_current_wages = bls_series_csv,
     bea_data = bea_series_csv,
+    source_dates = source_dates,
     output_file = "release/epi_productivity_pay_gap_sources.csv"
   ) |>
     tar_file()
@@ -35,9 +29,9 @@ tar_assign({
   # INTERMEDIATE OUTPUS #
   #######################
   bls_api_output = bls_series_csv |>
-    bls_grab_all(bls_end_year, api_download_date) |>
+    bls_grab_all() |>
     create_csv("data_outputs/bls_api_output.csv") |>
-    tar_file()
+    tar_api(format = "file")
 
   bls_pay = clean_bls_pay(bls_early_wages_csv, bls_api_output) |>
     create_csv("data_outputs/bls_pay.csv") |>
@@ -48,13 +42,20 @@ tar_assign({
     tar_file()
 
   bea_api_output = bea_series_csv |>
-    bea_grab_all(api_download_date) |>
+    bea_grab_all() |>
     create_csv("data_outputs/bea_api_output.csv") |>
-    tar_file()
+    tar_api(format = "file")
 
-  prices = make_prices(realtalk_version) |>
+  prices = make_prices() |>
     create_csv("data_outputs/prices.csv") |>
-    tar_file()
+    tar_target_date(format = "file")
+
+  source_dates = collect_source_dates(
+    bls_api_output_date,
+    bea_api_output_date,
+    prices_date
+  ) |>
+    tar_target()
 
   #################
   # FINAL RELEASE #

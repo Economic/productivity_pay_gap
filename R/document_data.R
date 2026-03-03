@@ -3,8 +3,28 @@ document_data = function(
   bls_early_wages,
   bls_current_wages,
   bea_data,
+  source_dates,
   output_file
 ) {
+  get_date = function(target_name) {
+    source_dates |>
+      filter(name == target_name) |>
+      pull(time) |>
+      as_date()
+  }
+
+  realtalk_version = as.character(packageVersion("realtalk"))
+
+  realtalk_doc = tibble(
+    name = "Extended Chained CPI-U",
+    date_accessed = get_date("prices"),
+    date_published = ymd(str_replace_all(realtalk_version, "\\.", "-")),
+    source = paste("realtalk, version", realtalk_version),
+    source_url = "https://economic.github.io/realtalk/",
+    access_method = "R package",
+    data_location = "realtalk"
+  )
+
   bls_hours_doc = tibble(
     name = "BLS total economy hours",
     date_accessed = ymd("2026 January 16"),
@@ -28,7 +48,7 @@ document_data = function(
   bls_current_wages_doc = bls_current_wages |>
     read_csv(show_col_types = F) |>
     mutate(
-      name = case_match(
+      name = recode_values(
         name,
         "wage_private_prod_sa" ~ "seasonally adjusted",
         "wage_private_prod_nsa" ~ "not seasonally adjusted"
@@ -48,14 +68,14 @@ document_data = function(
       source_url = "https://www.bls.gov/developers/home.htm",
       access_method = "BLS API",
       data_location = bls_current_wages,
-      date_accessed = api_download_date
+      date_accessed = get_date("bls_api_output")
     )
 
   bea_data_doc = bea_data |>
     read_csv(show_col_types = F) |>
     filter(frequency == "annual") |>
     mutate(
-      name = case_match(
+      name = recode_values(
         name,
         "nipa_ndp" ~ "BEA Net domestic product",
         "nipa_comp" ~ "BEA Compensation of employees",
@@ -76,14 +96,15 @@ document_data = function(
       source_url = "https://apps.bea.gov/API/",
       access_method = "BEA API",
       data_location = bea_data,
-      date_accessed = api_download_date
+      date_accessed = get_date("bea_api_output")
     )
 
   bind_rows(
     bls_hours_doc,
     bls_current_wages_doc,
     bls_early_wages_doc,
-    bea_data_doc
+    bea_data_doc,
+    realtalk_doc
   ) |>
     arrange(name) |>
     create_csv(output_file)

@@ -51,7 +51,7 @@ create_web_stats_csv <- function(web_csv, file) {
     mutate(value = value / lag(value) - 1, .by = name) |>
     filter(!is.na(value)) |>
     mutate(
-      name = case_match(
+      name = recode_values(
         name,
         "productivity" ~ "Productivity, 1979q4–",
         "pay" ~ "Hourly pay, 1979q4–"
@@ -87,7 +87,7 @@ create_web_stats_csv <- function(web_csv, file) {
       value = label_percent(accuracy = 0.1)(value)
     ) |>
     mutate(
-      name = case_match(
+      name = recode_values(
         name,
         "productivity" ~ "Productivity, 1948–1979, average annual growth",
         "pay" ~ "Compensation, 1948–1979, average annual growth"
@@ -110,7 +110,7 @@ create_web_stats_csv <- function(web_csv, file) {
       value = label_percent(accuracy = 0.1)(value)
     ) |>
     mutate(
-      name = case_match(
+      name = recode_values(
         name,
         "productivity" ~ "Productivity, 1979–",
         "pay" ~ "Compensation, 1979–"

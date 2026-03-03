@@ -1,4 +1,4 @@
-make_prices <- function(realtalk_version) {
+make_prices <- function() {
   c_cpi_u_quarterly = c_cpi_u_extended_quarterly_sa |> 
     select(year, quarter, c_cpi_u = c_cpi_u_extended) |> 
     mutate(frequency = "quarterly") 
