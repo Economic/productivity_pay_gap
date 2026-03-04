@@ -31,7 +31,7 @@ tar_assign({
   bls_api_output = bls_series_csv |>
     bls_grab_all() |>
     create_csv("data_outputs/bls_api_output.csv") |>
-    tar_api(format = "file")
+    tar_age_date(format = "file")
 
   bls_pay = clean_bls_pay(bls_early_wages_csv, bls_api_output) |>
     create_csv("data_outputs/bls_pay.csv") |>
@@ -44,13 +44,13 @@ tar_assign({
   bea_api_output = bea_series_csv |>
     bea_grab_all() |>
     create_csv("data_outputs/bea_api_output.csv") |>
-    tar_api(format = "file")
+    tar_age_date(format = "file")
 
   prices = make_prices() |>
     create_csv("data_outputs/prices.csv") |>
     tar_target_date(format = "file")
 
-  source_dates = collect_source_dates(
+  source_dates = collect_target_date(
     bls_api_output_date,
     bea_api_output_date,
     prices_date
