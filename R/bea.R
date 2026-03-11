@@ -20,6 +20,8 @@ bea_grab_series = function(
     stop("invalid frequency: must be 'annual' or 'quarterly'")
   }
 
+  message("Retrieving BEA Table ", table_number, ", ", frequency)
+
   get_bea_nipa(table_id, years = "ALL", frequency = frequency_abb) %>%
     filter(line_number %in% c(line_numbers)) |>
     mutate(

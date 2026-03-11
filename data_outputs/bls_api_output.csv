@@ -743,7 +743,8 @@ wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsu
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2025-10-01,2025,10,31.7,sa
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2025-11-01,2025,11,31.79,sa
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2025-12-01,2025,12,31.83,sa
-wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-01-01,2026,1,31.95,sa
+wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-01-01,2026,1,31.94,sa
+wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-02-01,2026,2,32.03,sa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-01-01,1964,1,2.5,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-02-01,1964,2,2.5,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-03-01,1964,3,2.5,nsa
@@ -1487,5 +1488,6 @@ wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsu
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2025-09-01,2025,9,31.54,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2025-10-01,2025,10,31.67,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2025-11-01,2025,11,31.85,nsa
-wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2025-12-01,2025,12,31.77,nsa
+wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2025-12-01,2025,12,31.76,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-01-01,2026,1,32.03,nsa
+wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-02-01,2026,2,32.19,nsa
