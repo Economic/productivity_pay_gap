@@ -1,27 +1,21 @@
+options(usethis.quiet = TRUE)
+options(tidyverse.quiet = TRUE)
+
 library(targets)
 library(tarchetypes)
-
-# conflicts and other options
 library(conflicted)
+library(tidyverse)
+library(epidatatools)
+library(epitargets)
+library(readxl)
+library(janitor)
+library(realtalk)
+library(assertr)
+library(zoo)
+library(scales)
+
 conflict_prefer("filter", "dplyr", quiet = TRUE)
 conflict_prefer("lag", "dplyr", quiet = TRUE)
-conflict_prefer("zip", "zip", quiet = TRUE)
 conflict_prefer("year", "lubridate", quiet = TRUE)
 conflict_prefer("quarter", "lubridate", quiet = TRUE)
 conflict_prefer("month", "lubridate", quiet = TRUE)
-
-
-options(usethis.quiet = TRUE)
-
-# packages for this analysis
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(bea.R)
-  library(readxl)
-  library(janitor)
-  library(blsR)
-  library(realtalk)
-  library(assertr)
-  library(zoo)
-  library(scales)
-})

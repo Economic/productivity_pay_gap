@@ -20,8 +20,7 @@ Below are instructions to reproduce the data
 
 You will need R and all of the packages in `packages.R`
 
-- Some package versions must match the versions specified in `_targets.R`
-- In particular you should use the latest price indices in the [`realtalk`](https://economic.github.io/realtalk/) package.
+- You should use the latest price indices in the [`realtalk`](https://economic.github.io/realtalk/) package.
 
 ### Environment variables
 
@@ -30,7 +29,6 @@ You will need R and all of the packages in `packages.R`
 
 ### Generating the data
 
-- Set the `api_download_date` variable to the current date.
 - `tar_make()`: will produce all of the data in 4 .csv files
 
   - `epi_productivity_pay_gap.csv` : all series, long format

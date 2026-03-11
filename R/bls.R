@@ -29,28 +29,13 @@ clean_hours_data = function(data_xlsx) {
     bind_rows(quarterly_data)
 }
 
-bls_grab_all <- function(data_csv, end_year, download_date) {
-  data = read_csv(data_csv, show_col_types = FALSE)
-
-  series_list = data |>
-    pull(table_id) |>
-    as.list()
-
-  series_names = data |>
-    pull(name) |>
-    as.list()
-
-  names(series_list) = series_names
-
-  bls_data = get_series_tables(
-    series_list,
-    start_year = 1947,
-    end_year = end_year
-  ) |>
+bls_grab_all <- function(bls_series_csv) {
+  data = read_csv(bls_series_csv, show_col_types = FALSE) |>
+    deframe() |>
+    get_bls(start = 1947, end = year(today())) |>
     suppressMessages()
 
-  bls_data |>
-    list_rbind(names_to = "name") |>
+  data |>
     mutate(
       seasonal = str_extract(name, "_sa$|_nsa$"),
       seasonal = str_remove(seasonal, "_"),
@@ -66,7 +51,7 @@ clean_bls_pay = function(early_wages_csv, api_csv) {
   wage_late_annual = api_data |>
     filter(name == "wage_private_prod", seasonal == "nsa") |>
     # this should be only monthly data
-    verify(period != "M13") |>
+    verify(date_frequency == "month") |>
     mutate(count_per_year = n(), .by = year) |>
     filter(count_per_year == 12) |>
     summarize(late_value = mean(value), .by = year)
@@ -98,12 +83,8 @@ clean_bls_pay = function(early_wages_csv, api_csv) {
   wages_late_quarterly = api_data |>
     filter(name == "wage_private_prod", seasonal == "sa") |>
     # this should be only monthly data
-    verify(period != "M13") |>
-    mutate(
-      month = str_sub(period, 2, 3),
-      month_date = ym(paste(year, month)),
-      quarter = quarter(month_date)
-    ) |>
+    verify(date_frequency == "month") |>
+    mutate(quarter = quarter(date)) |>
     mutate(count_per_quarter = n(), .by = c(year, quarter)) |>
     filter(count_per_quarter == 3) |>
     summarize(value = mean(value), .by = c(year, quarter))

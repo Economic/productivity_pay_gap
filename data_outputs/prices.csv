@@ -385,12 +385,12 @@ year,c_cpi_u,frequency,quarter
 2020,145.8,quarterly,3
 2020,146.8,quarterly,4
 2021,148.2,quarterly,1
-2021,150.7,quarterly,2
+2021,150.6,quarterly,2
 2021,152.9,quarterly,3
 2021,156,quarterly,4
 2022,159.3,quarterly,1
 2022,163.1,quarterly,2
-2022,165.1,quarterly,3
+2022,165,quarterly,3
 2022,166.9,quarterly,4
 2023,168.3,quarterly,1
 2023,169.4,quarterly,2
@@ -399,8 +399,8 @@ year,c_cpi_u,frequency,quarter
 2024,173.1,quarterly,1
 2024,174.1,quarterly,2
 2024,174.5,quarterly,3
-2024,175.7,quarterly,4
+2024,175.8,quarterly,4
 2025,177.3,quarterly,1
 2025,178,quarterly,2
 2025,179.4,quarterly,3
-2025,NA,quarterly,4
+2025,180.3,quarterly,4
