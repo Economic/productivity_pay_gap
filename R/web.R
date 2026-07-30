@@ -26,8 +26,8 @@ create_web_data_csv <- function(data, file) {
   file
 }
 
-create_web_stats_csv <- function(web_csv, file) {
-  data = read_csv(web_csv, show_col_types = FALSE) |>
+create_web_stats_csv <- function(web_data, file) {
+  data = web_data |>
     clean_names() |>
     mutate(quarter_date = yq(year)) |>
     select(quarter_date, pay, productivity) |>

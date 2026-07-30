@@ -72,17 +72,17 @@ tar_assign({
     output,
     "release/epi_productivity_pay_gap.csv"
   ) |>
-    tar_file()
+    tar_csv_read()
 
   output_web_data_csv = create_web_data_csv(
     output,
     "release/epi_productivity_pay_gap_web.csv"
   ) |>
-    tar_file()
+    tar_csv_read()
 
   output_web_stats_csv = create_web_stats_csv(
     output_web_data_csv,
     "release/epi_productivity_pay_gap_web_stats.csv"
   ) |>
-    tar_file()
+    tar_csv_read()
 })
