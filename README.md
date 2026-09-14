@@ -10,11 +10,7 @@ You can download the data at
 * [State of Working America Data Library](https://data.epi.org/productivity/productivity_growth/line/year/national/real_index_1948/productivity_pay)
 * The [latest release files](https://github.com/Economic/productivity_pay_gap/releases/latest) from this repository
 
-The productivity-pay gap data is also available on the [State of Working America Data Library](https://data.epi.org/productivity/productivity_growth/line/year/national/real_index_1948/productivity_pay).
-
 ## Reproduce the data
-
-Below are instructions to reproduce the data
 
 ### Packages
 
