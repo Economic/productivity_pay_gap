@@ -11,12 +11,14 @@ tar_assign({
   # INPUT FILES #
   ###############
   bls_hours_xlsx = tar_file("data_inputs/total-economy-hours-employment.xlsx")
+  bls_hours_dates_csv = tar_file("data_inputs/bls_hours_dates.csv")
   bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
   bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
   bea_series_csv = tar_file("data_inputs/bea_series_codes.csv")
 
   data_documentation = document_data(
     bls_hours = bls_hours_xlsx,
+    bls_hours_dates = bls_hours_dates_csv,
     bls_early_wages = bls_early_wages_csv,
     bls_current_wages = bls_series_csv,
     bea_data = bea_series_csv,

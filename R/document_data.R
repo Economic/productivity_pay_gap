@@ -1,5 +1,6 @@
 document_data = function(
   bls_hours,
+  bls_hours_dates,
   bls_early_wages,
   bls_current_wages,
   bea_data,
@@ -25,10 +26,13 @@ document_data = function(
     data_location = "realtalk"
   )
 
+  hours_dates = read_csv(bls_hours_dates, col_types = "DD") |>
+    verify(length(date_accessed) == 1)
+
   bls_hours_doc = tibble(
     name = "BLS total economy hours",
-    date_accessed = ymd("2026 March 11"),
-    date_published = ymd("2026 March 5"),
+    date_accessed = hours_dates$date_accessed,
+    date_published = hours_dates$date_published,
     source = "BLS Office of Productivity and Technology",
     source_url = "https://www.bls.gov/productivity/tables/home.htm",
     source_url_2 = "https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx",

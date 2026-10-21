@@ -16,7 +16,6 @@ output|stem|8a59f69311494647|e2097951168d41d4|8ab97587034129ef|3939470||t20709.8
 source_dates|stem|41439aabe56f7a04|860cc20a7af59ee9|210d4c78daa777f6|918734473||t20709.8344126324s|s193b|193|rds|local|vector|||0.001||
 output_web_data_csv_file|stem|42d6dd60d6e468a4|2a4eb08e8bb320d6|73e6ad98285e3e4d|-2134217982|release/epi_productivity_pay_gap_web.csv|t20709.8344132186s|s5854b|5854|file|local|vector|||0.036||
 output_data_csv_file|stem|0deda2801963335a|c0982789487d17c3|27d7c11e5d73ee42|1493477768|release/epi_productivity_pay_gap.csv|t20709.8344144525s|s176942b|176942|file|local|vector|||0.095||
-data_documentation|stem|78fe3ab7fbf64a74|786591e542560357|7ff7b3b9292560a8|-1374813434|release/epi_productivity_pay_gap_sources.csv|t20709.8344151265s|s1789b|1789|file|local|vector|||0.042||
 output_web_data_csv|stem|f666790c5fcb986d|9c8e05ac68f79c57|aad77102ca2b2863|-1577945301||t20709.8344152669s|s2707b|2707|rds|local|vector|||0.002||
 output_data_csv|stem|5c0582a4d127052d|7cf2a350391e048a|983c38ace0a5bdb8|653660444||t20709.8344154414s|s25434b|25434|rds|local|vector|||0.004||
 output_web_stats_csv_file|stem|673a825e5547430e|b447cffb6a358108|72d8928f15129e6d|81274011|release/epi_productivity_pay_gap_web_stats.csv|t20709.8344166329s|s402b|402|file|local|vector|||0.094||
@@ -49,7 +48,7 @@ price_inflate_annual|function|154f40658228dc9b
 available_price_indexes|object|048474253fbf9d1e
 cpi_u_monthly_nsa|object|59276587f1aeb3ca
 pce_monthly_sa|object|2e59587f119a9570
-document_data|function|b3acd7724ec10968
+document_data|function|17b3d1b5c6a97b35
 cpi_u_rs_annual|object|2f254cfa83403bb4
 c_cpi_u_quarterly_nsa|object|b1b06af622ca7469
 c_cpi_u_extended_monthly_sa|object|6362663982db6b8d
@@ -57,3 +56,5 @@ combine_data|function|332bdda86d1b1610
 c_cpi_u_extended_monthly_nsa|object|b94d7d9e7b502919
 make_prices|function|f962824d02a0b8db
 bea_grab_all|function|95dd7e7962c7bbc8
+bls_hours_dates_csv|stem|2025e00f7cc254e4|1f68f92bcc934afe|2c530c1562a7fbd1|1524167751|data_inputs/bls_hours_dates.csv|t20747.724028175s|s51b|51|file|local|vector|||0.001||
+data_documentation|stem|a3cb159689b42a04|ed4f2eeeae516480|fc6fc62d9b9b7384|-1374813434|release/epi_productivity_pay_gap_sources.csv|t20747.7242462438s|s1789b|1789|file|local|vector|||0.187||

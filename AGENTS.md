@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for coding agents working in this repository.
 
 ## Project Overview
 
@@ -16,7 +16,7 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 - **`R/combine.R`**: Merges all sources, calculates productivity and real compensation, creates 1948q1=100 indices
 - **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_stats_csv`)
 - **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance
-- **`R/helpers.R`**: `create_csv()` utility (writes a data frame, returns the file path for targets tracking)
+- **`R/helpers.R`**: Entirely commented out. Its helpers now come from `epitargets` (see Packages)
 
 ### Core Calculations (in `R/combine.R`)
 
@@ -29,10 +29,10 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 ### Wage Series Construction (`R/bls.R`)
 
 The BLS hourly wage series splices two sources:
-- **Pre-1964**: Series EEU00500006 (historical production workers, from `data_inputs/bls_EEU00500006.csv`)
-- **1964–present**: Series CES0500000008 / CEU0500000008 (via BLS API)
+- **Pre-1964**: Series EEU00500006 (historical production workers, annual, from `data_inputs/bls_EEU00500006.csv`)
+- **1964–present**: Series CES0500000008 (seasonally adjusted, for quarterly data) and CEU0500000008 (not seasonally adjusted, for annual data), via BLS API
 
-The early series is ratio-adjusted at the 1964 crossover. Missing quarterly values are interpolated with `zoo::na.approx()`.
+The early series is ratio-adjusted at the 1964 crossover. Pre-1964 annual values are assigned to Q3, and the missing quarters are interpolated with `zoo::na.approx()`.
 
 ## Output Files
 
@@ -43,18 +43,28 @@ The early series is ratio-adjusted at the 1964 crossover. Missing quarterly valu
 | `release/epi_productivity_pay_gap_web_stats.csv` | Key statistics for website display |
 | `release/epi_productivity_pay_gap_sources.csv` | Data provenance documentation |
 
+Intermediate files (API results, cleaned hours, spliced wages, prices) are written to `data_outputs/`. Both `release/` and `data_outputs/` are committed to git, as is `_targets/meta/meta`.
+
 ## Data Inputs
 
-Static files in `data_inputs/` that must be manually updated when new data is released:
-- `total-economy-hours-employment.xlsx`: BLS total economy hours (from BLS productivity tables)
-- `bls_EEU00500006.csv`: Historical production worker wages (pre-1964)
+Files in `data_inputs/`:
+- `total-economy-hours-employment.xlsx`: BLS total economy hours. Download manually from BLS for each release
+- `bls_hours_dates.csv`: access and publication dates for the hours file, used in the sources CSV. Update whenever the hours file changes
+- `bls_EEU00500006.csv`: historical production worker wages (pre-1964). Static; no updates needed
 - `bls_series_codes.csv` / `bea_series_codes.csv`: API series configurations
+
+## Running the Pipeline
+
+- `BLS_API_KEY` and `BEA_API_KEY` must be set; `epidatatools` reads them.
+- `bls_api_output` and `bea_api_output` use `tar_age_date()` with a 1-day age, so `tar_make()` downloads new API data whenever the cached pulls are more than a day old. That changes the release numbers.
+- To rebuild a single target without refreshing the API data, use `tar_make(names = c(...), shortcut = TRUE)`.
 
 ## Packages
 
 Key non-standard packages:
-- `epidatatools`: EPI's internal wrapper for BLS and BEA APIs
-- `realtalk`: EPI's package providing Extended Chained CPI-U; install from https://economic.github.io/realtalk/
-- `tarchetypes`: Provides `tar_age()`, `tar_file()`, `tar_assign()`
+- `epidatatools`: EPI's wrapper for BLS and BEA APIs (`get_bls()`, `get_bea_nipa()`)
+- `epitargets`: EPI's targets helpers: `create_csv()` (writes a data frame, returns the file path), `tar_age_date()`, `tar_target_date()`, `collect_target_date()`, `tar_csv_read()`
+- `realtalk`: EPI's package providing Extended Chained CPI-U; see https://economic.github.io/realtalk/
+- `tarchetypes`: Provides `tar_file()` and `tar_assign()`
 
-Package versions are locked via `renv`. Run `renv::restore()` to install from `renv.lock`.
+Package versions are locked via `renv`. Run `renv::restore()` to install from `renv.lock`. `.Rprofile` sets repos to economic.r-universe.dev and Posit Package Manager.
