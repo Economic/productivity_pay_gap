@@ -16,7 +16,6 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 - **`R/combine.R`**: Merges all sources, calculates productivity and real compensation, creates 1948q1=100 indices
 - **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_stats_csv`)
 - **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance
-- **`R/helpers.R`**: Entirely commented out. Its helpers now come from `epitargets` (see Packages)
 
 ### Core Calculations (in `R/combine.R`)
 
