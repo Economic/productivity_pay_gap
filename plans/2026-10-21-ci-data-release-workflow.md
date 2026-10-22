@@ -139,7 +139,7 @@ Markdown only for now. Charts could be added later as an HTML report attached to
    With Δ meaning new minus old, the revision `Δlog(index_t)` equals the sum over inputs of `±(Δlog(input_t) − Δlog(input_0))`. This is an identity, so the result doesn't depend on any ordering of inputs and always comes out the same for the same files.
 2. **Index points.** Each log contribution is multiplied by the logarithmic mean of the old and new index values, L(a, b) = (a − b) / (log a − log b), or a when a = b. The contributions then add up exactly to the change in points, even when inputs offset each other.
 3. **Remainder check.** Compare the sum of contributions with the actual revision from the pipeline. If the code is unchanged, the remainder is rounding error. Anything above 1e-8 in logs is reported as "code or method change". This check applies to the unrounded index series in the full data file. The web stats are built from rounded indexes, so they get their own treatment in step 6.
-4. **Upstream code changes.** A change in `R/bls.R` (for example, the wage splice) shows up inside an input's contribution, not in the remainder. For each input, check whether its raw data, its code, or both changed. If both changed, rerun the new code on the baseline raw data in offline mode and split that input's contribution into data and code parts.
+4. **Upstream code changes.** A change in `R/bls.R` (for example, the wage splice) shows up inside an input's contribution, not in the remainder. The report names such changes but doesn't measure them separately. When `R/bls.R`, `R/bea.R`, `R/prices.R`, `R/web.R`, or the BLS or BEA series code files changed, a warning names the files and says the contributions of the inputs they shape (and, for `R/web.R`, the web data and the rounding lines) may include a change in method. (Simplified 2026-10-22. The first version reran the current cleaning code on the baseline's raw files, to split wage, hours and CPI contributions into data and code parts. That needed the working tree, an unchanged `realtalk`, and raw files in the current format, and took most of the review rounds. Methodology changes are rare, and a person reviews them anyway.)
 5. **New periods.** No old value exists to split. Report each source's latest available period, before and after, and which source limits the latest common quarter.
 6. **Headline stats.** `R/web.R` publishes four kinds of stat, each for productivity and pay. Each gets its own treatment:
 
@@ -150,8 +150,9 @@ Markdown only for now. Charts could be added later as an HTML report attached to
    | Average annual growth, 1979q4 to latest | as above, with 1979q4 to latest | As above, with 1979q4 as the base. |
    | Productivity growth as a multiple of pay growth | R = (G_prod − 1) / (G_pay − 1); the code divides the larger total growth by the smaller | Not split. Shown as old and new values only; it follows from the two total growth stats, which are split. |
 
-   - All splits use stats recomputed from the unrounded indexes, where the identity is exact. The published stats come from indexes already rounded to one decimal. For example, for the 2026q1 pay growth factor in the v2026.7.30 to v2026.9.14 comparison, rounding alone leaves a log remainder of −7.8e-5, checked 2026-10-21. So the gap between each published stat and its unrounded version gets a separate "rounding" line, never "code or method change".
-   - When the latest quarter moves, the end point and the number of years change. Report the effect of the added quarters separately from revisions to existing quarters.
+   - All splits use stats recomputed from the unrounded indexes, where the identity is exact. The published stats come from indexes already rounded to one decimal. For example, for the 2026q1 pay growth factor in the v2026.7.30 to v2026.9.14 comparison, rounding alone leaves a log remainder of −7.8e-5, checked 2026-10-21. So the gap between each published stat and its unrounded version gets a separate "rounding" line, never "code or method change". If `R/web.R` changed, the rounding lines also hold that change's effect, and the warning in step 4 names `R/web.R`. (Simplified 2026-10-22. After checkpoint review job 77, the report briefly recomputed each published stat from the rounded web data, to separate rounding from changes in `R/web.R`. That copy of `R/web.R`'s arithmetic went stale whenever `R/web.R` changed on purpose, and produced edge cases in four more review rounds.)
+   - A web revision whose index didn't change is attributed to "a change in R/web.R" in the change label, not to an input.
+   - When the latest quarter moves, the end point and the number of years change. Report the effect of the added quarters separately from revisions to existing quarters. (As built: revisions are measured at the earlier of the two end quarters, with "Added quarters" and "Removed quarters" lines, so the split also works when a quarter disappears.)
 7. **Base-period revisions.** Revisions to 1948q1 values move every quarter, so they get their own line.
 8. **Limits.** This identifies which input moved and by how much, not why an agency revised its data. The report gives publication dates and the range of revised periods. The plain-language summaries are templates filled in largest contributor first, not generated text.
 
@@ -221,7 +222,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 - The live runs changed only the expected files: the two API results, the fetch log, `data_outputs/bls_pay.csv`, and the final files. New BLS and BEA data since 2026-09-13 moved productivity growth since 1979q4 from 93.7% to 94.4%, and pay growth from 32.7% to 32.5%. These data changes were not committed, so the Phase 1 PR is a restructure only; the first weekly run or a local data PR brings the new data in.
 - Each sanity check was tested against data broken on purpose, and stopped the pipeline.
 
-### Phase 2: Change report
+### Phase 2: Change report (built 2026-10-21, results below)
 
 1. Write a baseline loader that reads final, raw, and intermediate files and `renv.lock` at a git ref. It must handle older refs, where files sit at their pre-Phase 1 paths: `release/` instead of `data_final/`, and the API outputs and hours spreadsheet outside `data_raw/`. Every release through v2026.9.14 uses the old paths.
 2. Write each report section as its own function returning a small table, plus one function that assembles the Markdown.
@@ -229,6 +230,29 @@ Fix real findings. Record findings that need several unusual conditions at once 
 4. Add the `change_report` target.
 
 **Verification**: run the report comparing v2026.9.14 with v2026.7.30. Between those releases only data and `renv.lock` changed, so the remainder should be close to zero and the contributions should be plausible. Nothing may be attributed to "code or method change", including in the headline stats. Also run it against an unchanged working tree; it should report no changes. Finally, test a revision to the base period: copy the baseline inputs, change the 1948 CPI values, and check that the 1948–1979 stats reconcile exactly to a CPI contribution (apart from the separate rounding line), while the stats based at 1979q4 show no change.
+
+**Results (2026-10-21)**:
+
+- **v2026.7.30 to v2026.9.14:**
+  - The report labels it "New quarter: 2026q2", and nothing is attributed to a code or method change.
+  - The largest remainder is 8.9e-16 in logs for the indexes, and about 1e-13 percentage points for the stats.
+  - The 2026q1 split matches the earlier prototype: productivity −0.507 points (CPI −0.460, hours −0.047), and pay −0.280 (CPI).
+  - Every stat's contributions and rounding add up exactly to its published change. For example, productivity growth since 1979q4 went from 93.2% to 93.7%: +0.706 from the added quarter, −0.213 from CPI, −0.022 from hours, and +0.028 from rounding.
+- **Unchanged working tree against `origin/main`:** "No changes". The only unreleased change since v2026.9.14 is the sources CSV, which is correct: `main` has the corrected hours dates.
+- **1% higher 1948 CPI:**
+  - Every quarter from 1949q1 is revised, all of it from CPI.
+  - The base period section shows the 1948q1 CPI revision.
+  - The 1948–1979 stats reconcile to a CPI contribution of +0.032 percentage points each, with a rounding line.
+  - The stats based at 1979q4 don't change.
+- **Simulated code change in `R/bls.R`** (pre-1964 wages 2% higher, no data change): the pay revision is attributed to CES wages, only quarters from 1964q1 are revised, and the warning names `R/bls.R`. (Before the 2026-10-22 simplification, the report split this into data and code parts.)
+- **Cases added after the reviews:**
+  - **Removed values:** a quarter removed from the final files is labeled "Quarters removed: 2026q2", and a removed annual value is counted.
+  - **Stats only:** a change in the web stats alone gets its own label.
+  - **R/web.R changes:** with `R/web.R` changed, a changed stat formula shows as a +0.3 rounding line and the warning names `R/web.R`. Web data rounded differently while the indexes didn't change is labeled "from a change in R/web.R".
+  - **Shell characters in refs:** a branch named `test(pay)` loads, and a ref containing `$(...)` is rejected without running a command.
+  - **Other rounding on both sides:** two-decimal web rounding on both sides, with revisions and an added quarter, gives no method-change warning.
+  - **Baselines:** releases from v2026.3.11 on load. v2025.9.3 and v2026.1.16 store the BLS API results in an older format, and predate `renv.lock`, so they stop with a clear message.
+- **Floating-point noise:** values computed in floating point differ by about 1e-14 between runs even when nothing changed. The real series are rescaled to the latest quarter's CPI, and that cancels out of the indexes only up to rounding. So the report counts a value as revised only if it changed by more than 1e-9 in relative terms.
 
 ### Phase 3: PR check workflow
 
@@ -296,6 +320,18 @@ Make the first real release with the next data update. Afterward, confirm that t
 - **Org settings block the bot.** The Economic org may forbid Actions from creating PRs, or creating a GitHub App may need an org admin.
 - **Scheduled workflows get switched off.** GitHub disables them on public repos after 60 days without repository activity. Data changes nearly every month, so the bot's pushes should keep it active. If GitHub disables the workflow anyway, it shows a banner and I re-enable it.
 - **Weekly package updates break the pipeline.** That is the point of updating everything weekly: I get a failure email, and `main` is unaffected.
+
+### Accepted risks in the change report (decided 2026-10-21)
+
+The change report is informational. None of these can put a wrong number into a release: releases are manual, the PR check guarantees that the committed numbers are reproducible, and a change to published numbers still shows in the web data diff and in the list of changed code. Reviewers should not report these as defects.
+
+1. **Changes in `R/web.R` aren't detected from the numbers.** The report doesn't recompute the published stats or check how the web data is rounded. When `R/web.R` changes, the warning names it, and the change's effect shows in the web data and in the rounding lines of the headline stats. (After the 2026-10-22 simplification. This replaces a narrower risk from checkpoint review job 97.)
+2. **The report's expectations go stale.** `index_terms` in `R/report_why.R` encodes how `R/combine.R` builds the indexes. After an intentional change to `R/combine.R` that doesn't update `index_terms`, reports flag false method changes until it is updated. AGENTS.md says to update both in the same PR.
+3. **Code changes that shape the inputs are named, not measured.** For changes to `R/bls.R`, `R/bea.R`, `R/prices.R`, or the BLS and BEA series code files, the warning names the file, and the change's effect shows in the contributions of the inputs that file shapes.
+4. **Releases before v2026.3.11 can't be baselines.** v2025.9.3 and v2026.1.16 store the BLS API results in an older format, and the report stops with a clear message.
+5. **Revisions smaller than 1e-9 in relative terms aren't counted.** That threshold hides floating-point noise and is far below published precision.
+6. **A stale `origin/main` baseline.** A local run without `git fetch` compares with an old `main`. CI always fetches first.
+7. **A wrong access date for a hand-committed hours spreadsheet.** If the spreadsheet is committed by hand without updating its date in `data_raw/fetch_log.csv`, the sources CSV shows the wrong access date. If the old date is earlier than the spreadsheet's release date, a sanity check stops the pipeline. The README says to update the date.
 
 ## Resolved questions
 

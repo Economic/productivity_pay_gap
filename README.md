@@ -38,6 +38,8 @@ Run `targets::tar_make()`. It fetches the BLS and BEA data from their APIs, down
 
 Fetched data is cached for one day. If you run `tar_make()` again within a day, it reuses the cached data; after that, it fetches the data again. If the hours download fails, the pipeline keeps the committed spreadsheet, and `data_raw/fetch_log.csv` records why.
 
+Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why. It covers each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag.
+
 To rebuild everything from the committed files without fetching anything, use offline mode:
 
 ```r
