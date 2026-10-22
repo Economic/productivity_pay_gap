@@ -29,7 +29,11 @@ Date: 2026-10-21
 - `epidatatools`, `epitargets`, and `realtalk` are public repos, so CI can install them without a token.
 - I have admin rights on the repo. There is no `.github/` folder.
 - Since 2026-10-21, the "protect main" ruleset requires pull requests and merge commits on `main` (see Phase 4).
-- Repo secrets `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL` are set, and Actions may create pull requests (both done in GitHub settings 2026-10-21; confirmed by a real run in Phase 0).
+- Phase 0 confirmed these from GitHub's servers on 2026-10-21 (Actions runs 39713125588 and 39713207415):
+  - all three repo secrets are set
+  - the BLS API key works ("REQUEST_SUCCEEDED") and the BEA API key works (68 rows from NIPA table 1.7.5)
+  - BLS accepts the hours download with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header. The file URL now redirects (301 to `/web/prod2/total-economy-hours-employment.xlsx`), so the download must follow redirects. The file matched the committed one byte for byte.
+  - the built-in Actions token can open and close a draft PR (test PRs #7 and #8)
 
 ## How it fits together
 
@@ -171,7 +175,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 
 **Verification**: the first hook review appears in `roborev list`. The exclusions get checked on the first Phase 1 commit that moves or rebuilds data files: its review should leave out the large data files. The docs don't say whether file-name patterns match at any depth, so check this rather than assume it.
 
-### Phase 0: Feasibility checks (on a branch, before anything else)
+### Phase 0: Feasibility checks (done 2026-10-21; results under "Already verified")
 
 1. ~~Add repo secrets `BLS_API_KEY`, `BEA_API_KEY`, `BLS_DOWNLOAD_EMAIL`.~~ Done 2026-10-21 in GitHub settings.
 2. ~~Allow Actions to create pull requests (Settings → Actions → General).~~ Done 2026-10-21.
@@ -187,7 +191,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 ### Phase 1: Restructure the pipeline (local only)
 
 1. Create `data_raw/` and move the two API outputs and the hours spreadsheet there with `git mv`. Rename `release/` to `data_final/` with `git mv`. Update paths in `_targets.R` and `R/document_data.R`.
-2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`). On failure, keep the committed file and record the failure in the fetch log.
+2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`, following redirects). On failure, keep the committed file and record the failure in the fetch log. Treat a response that isn't a valid spreadsheet as a failure: the first Phase 0 run got HTTP success with a 23-byte body.
 3. Add `fetch_log.csv`, written in live mode and read in offline mode. Seed it with the dates currently in `release/epi_productivity_pay_gap_sources.csv`.
 4. Parse the hours release date from the ReadMe sheet. Delete `data_inputs/bls_hours_dates.csv`.
 5. Add offline mode (`PPG_OFFLINE`) with its own store.
@@ -272,7 +276,7 @@ Make the first real release with the next data update. Afterward, confirm that t
 
 ## Risks
 
-- **BLS blocks GitHub's servers.** Then the hours file stays manual. The weekly report flags it, and I commit the file through a PR when BLS publishes.
+- **BLS starts blocking GitHub's servers, or moves the file.** Neither is happening as of 2026-10-21 (see Phase 0). If it happens, the download fails, the committed file is used, and the weekly report flags it. I then commit the file through a PR when BLS publishes.
 - **Exact match is brittle across machines.** Floating-point output could differ between my machine and the runner. Both are x86-64 Linux, so this is unlikely. If it happens, compare numbers with a tiny tolerance instead of comparing bytes.
 - **Org settings block the bot.** The Economic org may forbid Actions from creating PRs, or creating a GitHub App may need an org admin.
 - **Scheduled workflows get switched off.** GitHub disables them on public repos after 60 days without repository activity. Data changes nearly every month, so the bot's pushes should keep it active. If GitHub disables the workflow anyway, it shows a banner and I re-enable it.
