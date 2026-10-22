@@ -29,6 +29,77 @@ clean_hours_data = function(data_xlsx) {
     bind_rows(quarterly_data)
 }
 
+# Release date from the ReadMe sheet, which has a line like
+# "Data released September 3, 2026; Bureau of Labor Statistics, ..."
+read_bls_hours_release_date = function(data_xlsx) {
+  readme_text = read_excel(
+    data_xlsx,
+    sheet = "ReadMe",
+    col_names = FALSE,
+    .name_repair = "minimal"
+  ) |>
+    unlist() |>
+    str_subset("^Data released")
+
+  if (length(readme_text) == 0) {
+    return(as_date(NA))
+  }
+
+  readme_text[1] |>
+    str_extract("(?<=^Data released )\\w+ \\d{1,2}, \\d{4}") |>
+    mdy()
+}
+
+# Downloads the hours spreadsheet to `file`. If the download fails, `file`
+# keeps the committed spreadsheet and the status says why.
+download_bls_hours = function(
+  file,
+  url = "https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx"
+) {
+  email = Sys.getenv("BLS_DOWNLOAD_EMAIL")
+  temp_file = tempfile(fileext = ".xlsx")
+
+  problem = if (email == "") {
+    "BLS_DOWNLOAD_EMAIL is not set"
+  } else {
+    tryCatch(
+      {
+        # BLS refuses downloads without a contact email in the User-Agent.
+        # download.file() follows the redirect BLS now sends for this URL.
+        download.file(
+          url,
+          temp_file,
+          mode = "wb",
+          quiet = TRUE,
+          headers = c("User-Agent" = email)
+        )
+        # a refused download can still look successful, so check the contents
+        if (is.na(read_bls_hours_release_date(temp_file))) {
+          "the response is not the hours spreadsheet"
+        }
+      },
+      error = function(e) conditionMessage(e),
+      warning = function(w) conditionMessage(w)
+    )
+  }
+
+  if (is.null(problem)) {
+    file.copy(temp_file, file, overwrite = TRUE)
+    return(tibble(source = "bls_hours", date_accessed = today(), status = "ok"))
+  }
+
+  tibble(
+    source = "bls_hours",
+    date_accessed = as_date(NA),
+    status = paste0(
+      "download failed (",
+      problem,
+      "); kept file released ",
+      read_bls_hours_release_date(file)
+    )
+  )
+}
+
 bls_grab_all <- function(bls_series_csv) {
   data = read_csv(bls_series_csv, show_col_types = FALSE) |>
     deframe() |>

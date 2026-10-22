@@ -1,0 +1,6 @@
+# TAR_PROJECT=offline rebuilds from the committed files in data_raw/ without
+# network access, in its own store, so it never disturbs the live cache.
+main:
+  store: _targets
+offline:
+  store: _targets_offline

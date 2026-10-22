@@ -6,35 +6,76 @@ lapply(list.files("./R", full.names = TRUE), source)
 
 tar_option_set(imports = "realtalk")
 
-tar_assign({
+# TAR_PROJECT=offline (see _targets.yaml) rebuilds everything from the
+# committed files in data_raw/ without network access. The default live mode
+# fetches them again once they are more than a day old.
+offline = Sys.getenv("TAR_PROJECT") == "offline"
+
+##################
+# FETCHED FILES  #
+##################
+fetched_files = if (offline) {
+  tar_assign({
+    bls_api_output = tar_file("data_raw/bls_api_output.csv")
+    bea_api_output = tar_file("data_raw/bea_api_output.csv")
+    bls_hours_xlsx = tar_file("data_raw/total-economy-hours-employment.xlsx")
+    fetch_log = tar_file("data_raw/fetch_log.csv")
+  })
+} else {
+  tar_assign({
+    bls_api_output = bls_series_csv |>
+      bls_grab_all() |>
+      create_csv("data_raw/bls_api_output.csv") |>
+      tar_age_date(format = "file")
+
+    bea_api_output = bea_series_csv |>
+      bea_grab_all() |>
+      create_csv("data_raw/bea_api_output.csv") |>
+      tar_age_date(format = "file")
+
+    bls_hours_download = download_bls_hours(
+      "data_raw/total-economy-hours-employment.xlsx"
+    ) |>
+      tar_age(age = as.difftime(1, units = "days"))
+
+    bls_hours_xlsx = {
+      bls_hours_download
+      "data_raw/total-economy-hours-employment.xlsx"
+    } |>
+      tar_file()
+
+    fetch_log = write_fetch_log(
+      bls_api_date = bls_api_output_date,
+      bea_api_date = bea_api_output_date,
+      prices_date = prices_date,
+      bls_hours_fetch = bls_hours_download,
+      file = "data_raw/fetch_log.csv"
+    ) |>
+      tar_file()
+  })
+}
+
+pipeline = tar_assign({
   ###############
   # INPUT FILES #
   ###############
-  bls_hours_xlsx = tar_file("data_raw/total-economy-hours-employment.xlsx")
-  bls_hours_dates_csv = tar_file("data_inputs/bls_hours_dates.csv")
   bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
   bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
   bea_series_csv = tar_file("data_inputs/bea_series_codes.csv")
 
   data_documentation = document_data(
     bls_hours = bls_hours_xlsx,
-    bls_hours_dates = bls_hours_dates_csv,
     bls_early_wages = bls_early_wages_csv,
     bls_current_wages = bls_series_csv,
     bea_data = bea_series_csv,
-    source_dates = source_dates,
+    fetch_log = fetch_log,
     output_file = "data_final/epi_productivity_pay_gap_sources.csv"
   ) |>
     tar_file()
 
-  #######################
-  # INTERMEDIATE OUTPUS #
-  #######################
-  bls_api_output = bls_series_csv |>
-    bls_grab_all() |>
-    create_csv("data_raw/bls_api_output.csv") |>
-    tar_age_date(format = "file")
-
+  ########################
+  # INTERMEDIATE OUTPUTS #
+  ########################
   bls_pay = clean_bls_pay(bls_early_wages_csv, bls_api_output) |>
     create_csv("data_outputs/bls_pay.csv") |>
     tar_file()
@@ -43,25 +84,13 @@ tar_assign({
     create_csv("data_outputs/bls_hours.csv") |>
     tar_file()
 
-  bea_api_output = bea_series_csv |>
-    bea_grab_all() |>
-    create_csv("data_raw/bea_api_output.csv") |>
-    tar_age_date(format = "file")
-
   prices = make_prices() |>
     create_csv("data_outputs/prices.csv") |>
     tar_target_date(format = "file")
 
-  source_dates = collect_target_date(
-    bls_api_output_date,
-    bea_api_output_date,
-    prices_date
-  ) |>
-    tar_target()
-
-  #################
-  # FINAL RELEASE #
-  #################
+  ###############
+  # FINAL FILES #
+  ###############
   output = combine_data(
     bls_pay_csv = bls_pay,
     bls_hours_csv = bls_hours,
@@ -88,3 +117,5 @@ tar_assign({
   ) |>
     tar_csv_read()
 })
+
+c(fetched_files, pipeline)

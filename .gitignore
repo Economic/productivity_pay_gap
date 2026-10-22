@@ -4,3 +4,4 @@
 .Ruserdata
 # roborev snapshots
 /.roborev/
+_targets_offline/
