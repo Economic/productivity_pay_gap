@@ -104,7 +104,13 @@ GitHub does run the `pull_request` check on a PR the bot opened, but holds the r
    - A release already exists today and `correction` is ticked: next suffix, `vYYYY.M.D.2` (then `.3`, and so on).
    - The chosen tag already exists without a release (for example, pushed by hand): it stops and asks me to delete the stray tag.
 5. It regenerates the report against the previous release tag (not `main`), so the notes cover everything since the last release. For a correction, the previous release is the one being corrected, so the report shows exactly what the fix changed.
-6. It creates the GitHub release, titled "Version YYYY.M.D" (or "Version YYYY.M.D.2"), with notes headed "Latest updates through YYYYqN". A correction's notes start with "Correction to vYYYY.M.D: <reason>". It attaches the four final CSVs and the report. The release is created as a draft first. After uploading, the workflow checks that the tag resolves to the pinned commit and that each attached file's digest matches the file in the checkout, then publishes the draft. If any check fails, it deletes the draft and the tag it created, so nothing becomes public.
+6. It creates the GitHub release, titled "Version YYYY.M.D" (or "Version YYYY.M.D.2"), with notes headed "Latest updates through YYYYqN". A correction's notes start with "Correction to vYYYY.M.D: <reason>". It attaches the four final CSVs and the report. The release is created as a draft first. After uploading, the workflow checks that the tag resolves to the pinned commit and that each attached file's digest matches the file in the checkout, then publishes the draft. If any step fails, it cleans up based on the release's state as GitHub reports it, not on its own record. That way, a publish that succeeded but returned an error can't trigger a delete.
+
+- **A draft:** it deletes the draft and its tag.
+- **A tag with no release:** it deletes the tag.
+- **A published release, or one whose state can't be read:** it deletes nothing and asks for a manual check.
+
+(After review jobs 169 and 176.)
 7. With `dry_run` ticked, it runs every check and prints the tag and notes without creating anything.
 
 Published releases are never deleted or overwritten.
@@ -358,7 +364,7 @@ Make the first real release with the next data update. Afterward, confirm that t
   - creates the tag through the API, and the release as a draft with the four final CSVs and the report attached
   - checks that the tag points at the commit and downloads every file again to compare it byte for byte
   - only then publishes, marking the release as latest
-  - if anything fails before publishing, deletes the draft and the tag
+  - on failure, reads the release's state from GitHub first: it deletes a draft and its tag, or a tag with no release, and never a published release or one whose state it can't read
   - if the report is missing, the notes say so rather than blocking the release
 
 The plan script was tested locally against the real releases, in eight cases:
@@ -371,6 +377,15 @@ The plan script was tested locally against the real releases, in eight cases:
 - an unchanged commit (`v2026.9.14` itself) stops with "Nothing changed since v2026.9.14, apart from access dates"
 - a real release from another branch stops
 - a stray local tag stops
+
+The publish script's cleanup was tested locally with a stand-in `gh` that logs every call, in six scenarios:
+
+- publishing reports an error but GitHub shows the release published: nothing deleted, and a message to check
+- publishing fails while still a draft: the draft and tag deleted
+- the release's state can't be read: nothing deleted
+- success: no cleanup
+- creating the release fails: only the tag deleted, and publishing never attempted
+- an uploaded file differs: the draft and tag deleted, and publishing never attempted
 
 The dry-run path of the publish script was also tested locally. The publishing path runs for the first time on the first real release, and its own checks (tag commit, byte-for-byte files) guard it.
 

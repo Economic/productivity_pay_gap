@@ -49,14 +49,34 @@ if [ -f "$REPORT" ]; then
   assets+=(change_report.md)
 fi
 
-# Until the release is published, any failure deletes the draft and the tag,
-# so nothing half-made stays behind. Published releases are never touched.
-published=false
+# On failure, removes what this run made, so nothing half-made stays behind:
+# a draft release and its tag, or a tag with no release. It reads the
+# release's state from GitHub rather than trusting this script's own record:
+# if publishing failed only in its response, the release is public, and a
+# published release, or one whose state can't be read, is never deleted.
 cleanup() {
-  if [ "$published" != "true" ]; then
-    gh release delete "$TAG" --yes 2>/dev/null || true
-    gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" 2>/dev/null || true
+  local status=$?
+  if [ "$status" -eq 0 ]; then
+    return
   fi
+  local state
+  if ! state=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+    --jq ".[] | select(.tag_name == \"$TAG\") | .draft"); then
+    echo "::error::Couldn't read the state of $TAG, so nothing was deleted. Check the releases page."
+    return
+  fi
+  case "$state" in
+    true)
+      gh release delete "$TAG" --yes || true
+      gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" || true
+      ;;
+    "")
+      gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG" || true
+      ;;
+    *)
+      echo "::error::$TAG is published even though a step failed, so nothing was deleted. Check it on the releases page."
+      ;;
+  esac
 }
 
 # The tag first, on the checked commit, through the API: it refuses a tag
@@ -83,5 +103,4 @@ for asset in "${assets[@]}"; do
 done
 
 gh release edit "$TAG" --draft=false --latest
-published=true
 echo "Published $TAG on ${SHA:0:7}: https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
