@@ -150,8 +150,11 @@ Markdown only for now. Charts could be added later as an HTML report attached to
    | Average annual growth, 1979q4 to latest | as above, with 1979q4 to latest | As above, with 1979q4 as the base. |
    | Productivity growth as a multiple of pay growth | R = (G_prod − 1) / (G_pay − 1); the code divides the larger total growth by the smaller | Not split. Shown as old and new values only; it follows from the two total growth stats, which are split. |
 
-   - All splits use stats recomputed from the unrounded indexes, where the identity is exact. The published stats come from indexes already rounded to one decimal. For example, for the 2026q1 pay growth factor in the v2026.7.30 to v2026.9.14 comparison, rounding alone leaves a log remainder of −7.8e-5, checked 2026-10-21. So the gap between each published stat and its unrounded version gets a separate "rounding" line, never "code or method change".
-   - When the latest quarter moves, the end point and the number of years change. Report the effect of the added quarters separately from revisions to existing quarters.
+   - All splits use stats recomputed from the unrounded indexes, where the identity is exact. The published stats come from indexes already rounded to one decimal. For example, for the 2026q1 pay growth factor in the v2026.7.30 to v2026.9.14 comparison, rounding alone leaves a log remainder of −7.8e-5, checked 2026-10-21. So the gap between each published stat and its unrounded version is split in two. (As built, after checkpoint review job 77; the plan first put the whole gap in "rounding".)
+     - **Rounding:** the change in the stat recomputed from each side's rounded web indexes, formatted as `R/web.R` formats it, minus the unrounded change.
+     - **Code or method change in R/web.R:** any gap between the published stat and that recomputed value. This catches a formula change in `R/web.R`. The growth ratio is checked the same way.
+   - The web data itself is checked against the indexes rounded to one decimal. A web revision whose index didn't change is attributed to "a change in R/web.R", not to an input.
+   - When the latest quarter moves, the end point and the number of years change. Report the effect of the added quarters separately from revisions to existing quarters. (As built: revisions are measured at the earlier of the two end quarters, with "Added quarters" and "Removed quarters" lines, so the split also works when a quarter disappears.)
 7. **Base-period revisions.** Revisions to 1948q1 values move every quarter, so they get their own line.
 8. **Limits.** This identifies which input moved and by how much, not why an agency revised its data. The report gives publication dates and the range of revised periods. The plain-language summaries are templates filled in largest contributor first, not generated text.
 
@@ -244,6 +247,11 @@ Fix real findings. Record findings that need several unusual conditions at once 
   - The 1948–1979 stats reconcile to a CPI contribution of +0.032 percentage points each, with a rounding line.
   - The stats based at 1979q4 don't change.
 - **Simulated code change in `R/bls.R`** (pre-1964 wages 2% higher, no data change): the whole pay revision is attributed to "CES wages (BLS), code change in R/bls.R", the data part is zero, and only quarters from 1964q1 are revised.
+- **Cases added after the reviews:**
+  - **Removed values:** a quarter removed from the final files is labeled "Quarters removed: 2026q2", and a removed annual value is counted.
+  - **Stats only:** a change in the web stats alone gets its own label.
+  - **R/web.R changes:** a changed stat formula (flagged +0.3 percentage points), web data rounded differently (311 quarters flagged, labeled "from a change in R/web.R"), and a changed growth ratio (flagged +0.2) are each reported as a code or method change in `R/web.R`.
+  - **Shell characters in refs:** a branch named `test(pay)` loads, and a ref containing `$(...)` is rejected without running a command.
 - **Floating-point noise:** values computed in floating point differ by about 1e-14 between runs even when nothing changed. The real series are rescaled to the latest quarter's CPI, and that cancels out of the indexes only up to rounding. So the report counts a value as revised only if it changed by more than 1e-9 in relative terms.
 
 ### Phase 3: PR check workflow
