@@ -6,6 +6,7 @@ Guidance for coding agents working in this repository.
 
 - **Plans:** the newest dated file in `plans/` is the current plan, with next steps. Its "Decisions made" and "Resolved questions" sections are settled: don't reopen them without a new argument. New plans go in `plans/YEAR-MM-DD-short-description.md`.
 - **Changes:** make each change on a branch and open a pull request. `main` is protected, so direct pushes are rejected. The maintainer merges, with merge commits only (`gh pr merge N --merge`). Ask them when a PR is ready.
+- **CI check:** `.github/workflows/check.yml` runs on every PR and every push to `main`. It rebuilds offline and fails if anything in `data_final/` or `data_outputs/` differs from the committed files. So when code changes the outputs, rebuild offline (`TAR_PROJECT=offline`) and commit the result in the same PR. It also posts the change report as a PR comment.
 - **Commits:** commit early and often. Give each self-contained change its own commit; small commits get faster, more focused reviews.
 - **Live data:** a live `tar_make()` calls the BLS and BEA APIs and changes the committed data (see "Running the Pipeline"). Don't run one without a reason.
 

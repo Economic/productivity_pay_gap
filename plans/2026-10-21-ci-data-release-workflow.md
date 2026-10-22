@@ -265,6 +265,15 @@ Fix real findings. Record findings that need several unusual conditions at once 
 
 5. After the check job has run once, add it to the required status checks of the "protect main" ruleset (Phase 4). A check only appears in the ruleset's list after it has run.
 
+**Results (2026-10-22)** (PR #13):
+
+- **First run failed** installing packages. The prebuilt `igraph` binary needs `libglpk`, which the runner image lacks. The workflow now installs the system libraries that `renv::restore()` lists, except `cmake` and `pandoc`, which are needed only to compile packages or render documents. All R packages install as binaries: CRAN packages from Posit Package Manager, `realtalk` from economic.r-universe, and the two GitHub packages from source, all pure R.
+- **Second run passed** in about 2 minutes 20 seconds. The offline rebuild on the runner matched the committed files byte for byte, so the "exact match is brittle across machines" risk didn't occur. The change report read "No changes", and it was posted as a PR comment by `github-actions`.
+- **The plan's README-only test PR** was covered by PR #13 itself, which changes only `.github/` and docs.
+- **Stale outputs** (PR #14, rounding in `R/web.R` changed without rebuilding): the check failed at the comparison step and named `data_final/epi_productivity_pay_gap_web.csv`.
+- **Failing report** (PR #15, `PPG_BASELINE` set to a ref that doesn't exist): the report step errored, the run summary said the report could not be built, and the check passed. With `continue-on-error`, GitHub shows a failed step's conclusion as "success"; the workflow reads the step's outcome instead.
+- The test PRs were closed and their branches deleted.
+
 ### Phase 4: Protect `main` (done 2026-10-21, except the required check)
 
 The "protect main" ruleset on the default branch is active, with:
