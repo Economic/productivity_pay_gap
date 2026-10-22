@@ -178,15 +178,17 @@ full_data_changes = function(old, new) {
     summarize(
       revised = sum(is_revised),
       added = sum(is.na(value_old)),
+      removed = sum(is.na(value_new)),
       largest = max(c(0, abs(value_new - value_old)[is_revised])),
       .by = c(name, frequency)
     ) |>
-    filter(revised > 0 | added > 0) |>
+    filter(revised > 0 | added > 0 | removed > 0) |>
     transmute(
       Series = name,
       Frequency = frequency,
       `Revised values` = revised,
       `New values` = added,
+      `Removed values` = removed,
       `Largest revision` = as.character(signif(largest, 3))
     )
 }
@@ -213,7 +215,18 @@ main_source = function(revisions, index_name, period) {
     pull(label)
 }
 
-change_label = function(old, new, web_revisions, revisions, final_files_differ) {
+change_label = function(
+  old,
+  new,
+  web_revisions,
+  revisions,
+  web_visible,
+  final_files_differ
+) {
+  removed = setdiff(old$web$Year, new$web$Year)
+  if (length(removed) > 0) {
+    return(paste("Quarters removed:", paste(removed, collapse = ", ")))
+  }
   added = setdiff(new$web$Year, old$web$Year)
   if (length(added) == 1) {
     return(paste("New quarter:", added))
@@ -236,6 +249,9 @@ change_label = function(old, new, web_revisions, revisions, final_files_differ) 
       str_remove(main_source(revisions, index_name, largest$Year), " \\([^)]*\\)"),
       ")"
     ))
+  }
+  if (web_visible) {
+    return("Web stats changed, web data unchanged")
   }
   if (final_files_differ) "No web-visible changes" else "No changes"
 }
@@ -267,7 +283,14 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   web_visible = !same_contents(old$web, new$web) ||
     !same_contents(old$web_stats, new$web_stats)
   final_files_differ = web_visible || nrow(data_changes) > 0 || sources_differ
-  label = change_label(old, new, web_revisions, revisions, final_files_differ)
+  label = change_label(
+    old,
+    new,
+    web_revisions,
+    revisions,
+    web_visible,
+    final_files_differ
+  )
 
   latest_old = last(old$web$Year)
   latest_new = last(new$web$Year)

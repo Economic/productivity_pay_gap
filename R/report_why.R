@@ -227,8 +227,9 @@ published_stats = function(web_stats) {
 
 # One growth stat for one index, from the unrounded indexes:
 #   G = index_end / index_start, and the stat is G - 1, or G^(1 / years) - 1
-#   when annualized. If the end quarter moved, the revision at the old end
-#   quarter is split by input, and the move itself is "Added quarters".
+#   when annualized. The revision at the earlier of the two end quarters is
+#   split by input. If the end quarter moved, the move is "Added quarters" or
+#   "Removed quarters".
 split_growth_stat = function(
   revisions,
   old_inputs,
@@ -250,19 +251,21 @@ split_growth_stat = function(
     if (annualized) 4 / (quarter_count(end) - quarter_count(start)) else 1
   }
 
-  growth_old = growth(old_inputs, end_old)
-  growth_new = growth(new_inputs, end_new)
-  growth_new_at_old_end = growth(new_inputs, end_old)
-  stat_old = growth_old^power(end_old) - 1
-  stat_new = growth_new^power(end_new) - 1
+  # log(1 + stat) = power(end) * log(G(end)), from `inputs` up to `end`
+  log_stat = function(inputs, end) power(end) * log(growth(inputs, end))
+  end_common = if (quarter_count(end_new) < quarter_count(end_old)) end_new else end_old
+  stat_old = exp(log_stat(old_inputs, end_old)) - 1
+  stat_new = exp(log_stat(new_inputs, end_new)) - 1
 
   contributions = split_log_revision(revisions, start, code_revisions) |>
-    filter(index == index_name, year == end_old[1], quarter == end_old[2]) |>
-    transmute(label, log_contribution = log_contribution * power(end_old)) |>
+    filter(index == index_name, year == end_common[1], quarter == end_common[2]) |>
+    transmute(label, log_contribution = log_contribution * power(end_common)) |>
     bind_rows(tibble(
-      label = "Added quarters",
-      log_contribution = power(end_new) * log(growth_new) -
-        power(end_old) * log(growth_new_at_old_end)
+      label = c("Added quarters", "Removed quarters"),
+      log_contribution = c(
+        log_stat(new_inputs, end_new) - log_stat(new_inputs, end_common),
+        log_stat(old_inputs, end_common) - log_stat(old_inputs, end_old)
+      )
     ))
 
   # percentage points of the stat

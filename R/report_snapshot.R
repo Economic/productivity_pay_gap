@@ -35,13 +35,19 @@ raw_input_files = list(
   )
 )
 
+# system2() runs git through the shell, so every argument is quoted: a ref
+# can come from PPG_BASELINE and contain shell characters
+git_args = function(...) {
+  shQuote(c(...))
+}
+
 # Output lines of a git command; empty if it fails (for example, no tag found)
 git_lines = function(...) {
-  suppressWarnings(system2("git", c(...), stdout = TRUE, stderr = FALSE))
+  suppressWarnings(system2("git", git_args(...), stdout = TRUE, stderr = FALSE))
 }
 
 git_succeeds = function(...) {
-  system2("git", c(...), stdout = FALSE, stderr = FALSE) == 0
+  system2("git", git_args(...), stdout = FALSE, stderr = FALSE) == 0
 }
 
 git_commit = function(ref) {
@@ -85,7 +91,7 @@ snapshot_file_path = function(ref, paths) {
     return(path)
   }
   temp_file = tempfile(fileext = paste0(".", tools::file_ext(path)))
-  system2("git", c("show", paste0(ref, ":", path)), stdout = temp_file)
+  system2("git", git_args("show", paste0(ref, ":", path)), stdout = temp_file)
   temp_file
 }
 
