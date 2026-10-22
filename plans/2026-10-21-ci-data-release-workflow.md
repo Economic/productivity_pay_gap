@@ -19,9 +19,9 @@ Date: 2026-10-21
 | Releases | Manual. A `workflow_dispatch` workflow creates tag `vYYYY.M.D` and attaches the four final CSVs plus the report. It refuses if nothing but access dates changed since the last release. A second release on the same day is allowed only as an explicit correction with a reason, tagged `vYYYY.M.D.2`. |
 | Merge vs. release | Separate decisions. Merging a PR updates the numbers on `main` but publishes nothing. `main` can run ahead of the latest release. A release is a snapshot of `main` that I publish when I decide, typically when a new quarter arrives rather than for small revisions. |
 | Weekly run | Scheduled weekly, plus a manual button. Updates all packages (`renv::update()`), pulls fresh data, runs the pipeline, writes the report. |
-| Notification | One rolling draft PR from a `data-refresh` branch, assigned to `benzipperer`. The run comments (and so emails) only when a web-visible output changes compared with what I last saw: the open refresh PR, or `main` if none is open. The PR title, which becomes the email subject, labels the change: "New quarter: 2026q3" or "Revisions only (largest: 0.1 points, 2026q2 pay, from CPI)". |
+| Notification | One rolling draft PR from a `data-refresh` branch, assigned to `benzipperer`. The run comments (and so emails) only when a web-visible output changes compared with what I last saw: the open refresh PR, or `main` if none is open. The PR title, which becomes the email subject, labels the change: "New quarter: 2026q3" or "Revisions only (largest: 0.1 points, 2026q2 pay, from CPI)". Separately, a failed run sends GitHub's failure email, and so does a run whose hours download fell back to the committed file (see "Hours spreadsheet"). |
 | "Web-visible" change | Any change to `data_final/epi_productivity_pay_gap_web.csv` or `data_final/epi_productivity_pay_gap_web_stats.csv`. These files are already rounded, so smaller revisions are reported but don't trigger email. |
-| Hours spreadsheet | Downloaded automatically with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header. The release date is read from the ReadMe sheet. If the download fails, the committed file is used and the report says so. |
+| Hours spreadsheet | Downloaded automatically with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header. The release date is read from the ReadMe sheet. If the download fails, the committed file is used and the report says so. The weekly run then finishes as usual and ends as failed, so GitHub's failure email tells me, every week until the download works again. The sources CSV keeps the dates of the last successful download. |
 
 ### Already verified
 
@@ -61,7 +61,7 @@ The rule is simple: live mode writes `data_raw/`, and offline mode only reads it
 
 The sources CSV currently takes access dates from when each target was built. An offline rebuild in CI would stamp the wrong date. Instead:
 
-- Live fetch targets record their dates in `data_raw/fetch_log.csv`, one row per source: date accessed, date published (where known), version (for `realtalk`), and status (for example, "download failed, kept file released 2026-09-03").
+- Live fetch targets record their dates in `data_raw/fetch_log.csv`, one row per source: date accessed, date published (where known), version (for `realtalk`), and status (for example, "download failed, kept file released 2026-09-03"). After a failed download, the source's row keeps the date accessed and date published of its last successful download, because that download is where the data came from. Only the status records the failure.
 - `document_data()` reads the fetch log instead of the `source_dates` target.
 - The hours publication date is parsed from the spreadsheet's ReadMe sheet, so `data_inputs/bls_hours_dates.csv` is deleted.
 
@@ -80,7 +80,8 @@ The sources CSV currently takes access dates from when each target was built. An
 4. Compare the two web files with the "last seen" version: the open refresh PR's branch, or `main` if no refresh PR is open.
 5. If they differ: commit all changed files onto a fresh branch from `main`, force-push it to `data-refresh`, open the draft PR (or update its title and description, with the title carrying the change label), post the report as a comment, and trigger the check workflow on the branch.
 6. If they don't differ: do nothing to the branch or PR, with one exception. If a refresh PR is open and the fresh web files also match `main` (for example, because a local data PR with the same numbers was merged), close the refresh PR with the comment "`main` already has these numbers".
-7. If the run fails, GitHub sends its own failure email.
+7. If the hours download fell back to the committed file, steps 3 to 6 still happen as usual. Then the run ends as failed with the message "hours download failed; used the committed file released <date>", so GitHub's failure email tells me. Otherwise a blocked download could go unnoticed, especially in a week when nothing else changes or when BLS has just published a new quarter.
+8. If the run fails for any other reason, GitHub sends its own failure email. The BLS and BEA API fetches have no fallback, so an API failure stops the pipeline, and next week's run tries again. GitHub sends failure emails for scheduled runs to whoever created or last changed the workflow's schedule.
 
 A PR opened with GitHub's built-in Actions token doesn't trigger `pull_request` workflows. Step 5 works around this by starting the check with `gh workflow run check.yml --ref data-refresh`; manual triggers are exempt from that limitation. Phase 5 verifies that this satisfies the required check.
 
@@ -191,7 +192,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 ### Phase 1: Restructure the pipeline (local only)
 
 1. Create `data_raw/` and move the two API outputs and the hours spreadsheet there with `git mv`. Rename `release/` to `data_final/` with `git mv`. Update paths in `_targets.R` and `R/document_data.R`.
-2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`, following redirects). On failure, keep the committed file and record the failure in the fetch log. Treat a response that isn't a valid spreadsheet as a failure: the first Phase 0 run got HTTP success with a 23-byte body.
+2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`, following redirects). On failure, keep the committed file and record the failure in the fetch log, keeping the dates of the last successful download (see "Access dates move into committed data"). Treat a response that isn't a valid spreadsheet as a failure: the first Phase 0 run got HTTP success with a 23-byte body.
 3. Add `fetch_log.csv`, written in live mode and read in offline mode. Seed it with the dates currently in `release/epi_productivity_pay_gap_sources.csv`.
 4. Parse the hours release date from the ReadMe sheet. Delete `data_inputs/bls_hours_dates.csv`.
 5. Add offline mode (`PPG_OFFLINE`) with its own store.
@@ -205,7 +206,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
    - installed package versions match `renv.lock` (error offline, warning in live mode)
 7. Stop committing `_targets/meta/meta`: add `_targets/` to the root `.gitignore` and `git rm --cached` it.
 
-**Verification**: run offline mode on the committed data. Every file in `data_final/` and `data_outputs/` must match the version committed before Phase 1 (then in `release/` and `data_outputs/`) byte for byte, with one expected exception: the `data_location` column of the sources CSV, which now points to `data_raw/` for the moved files. Then do one live run and confirm only expected files change.
+**Verification**: run offline mode on the committed data. Every file in `data_final/` and `data_outputs/` must match the version committed before Phase 1 (then in `release/` and `data_outputs/`) byte for byte, with one expected exception: the `data_location` column of the sources CSV, which now points to `data_raw/` for the moved files. Then do one live run and confirm only expected files change. Finally, do a live run with `BLS_DOWNLOAD_EMAIL` unset, so BLS refuses the download. The pipeline must finish using the committed hours file, the fetch log must record the failure, and the hours dates in the sources CSV must not change.
 
 ### Phase 2: Change report
 
@@ -250,6 +251,7 @@ The "protect main" ruleset on the default branch is active, with:
 
 - Run it manually: it opens a draft PR assigned to me, I get an email, and the check runs on the PR and shows as the required check.
 - Run it again right away: it changes nothing and sends no email.
+- On a throwaway branch, point the hours download at a file that doesn't exist and run the workflow there. The report and the run summary must still be written, the run must end as failed with the fallback message, and I must get GitHub's failure email.
 - Mark the PR ready and merge it.
 
 If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App token for creating the PR (needs an Economic org admin).
@@ -276,7 +278,7 @@ Make the first real release with the next data update. Afterward, confirm that t
 
 ## Risks
 
-- **BLS starts blocking GitHub's servers, or moves the file.** Neither is happening as of 2026-10-21 (see Phase 0). If it happens, the download fails, the committed file is used, and the weekly report flags it. I then commit the file through a PR when BLS publishes.
+- **BLS starts blocking GitHub's servers, or moves the file.** Neither is happening as of 2026-10-21 (see Phase 0). If it happens, the download fails, the committed file is used, the weekly report flags it, and the run ends as failed, so I get GitHub's failure email every week until it's fixed. I then commit the file through a PR when BLS publishes.
 - **Exact match is brittle across machines.** Floating-point output could differ between my machine and the runner. Both are x86-64 Linux, so this is unlikely. If it happens, compare numbers with a tiny tolerance instead of comparing bytes.
 - **Org settings block the bot.** The Economic org may forbid Actions from creating PRs, or creating a GitHub App may need an org admin.
 - **Scheduled workflows get switched off.** GitHub disables them on public repos after 60 days without repository activity. Data changes nearly every month, so the bot's pushes should keep it active. If GitHub disables the workflow anyway, it shows a banner and I re-enable it.
