@@ -57,13 +57,16 @@ git_commit = function(ref) {
   git_lines("rev-parse", paste0(ref, "^{commit}"))
 }
 
+snapshot_has_file = function(ref, path) {
+  if (is.null(ref)) {
+    return(file.exists(path))
+  }
+  git_succeeds("cat-file", "-e", paste0(ref, ":", path))
+}
+
 # The first of `paths` that exists at `ref` (NULL means the working tree)
 locate_file = function(ref, paths) {
-  exists = if (is.null(ref)) {
-    file.exists(paths)
-  } else {
-    map_lgl(paths, \(path) git_succeeds("cat-file", "-e", paste0(ref, ":", path)))
-  }
+  exists = map_lgl(paths, \(path) snapshot_has_file(ref, path))
   if (!any(exists)) {
     stop("None of ", paste(paths, collapse = ", "), " exists at ", ref %||% "the working tree")
   }
@@ -104,14 +107,19 @@ read_snapshot_packages = function(ref) {
 }
 
 read_snapshot = function(ref = NULL) {
-  has_fetch_log = if (is.null(ref)) {
-    file.exists("data_raw/fetch_log.csv")
-  } else {
-    git_succeeds("cat-file", "-e", paste0(ref, ":data_raw/fetch_log.csv"))
+  has_fetch_log = snapshot_has_file(ref, "data_raw/fetch_log.csv")
+  files = map(snapshot_files, \(paths) read_snapshot_csv(ref, paths))
+  # the BLS API results took their current form in v2026.3.11, the first
+  # release with renv.lock too
+  if (!"date" %in% names(files$bls_api)) {
+    stop(
+      "The change report reads releases from v2026.3.11 on; ", ref,
+      " stores the BLS API results in an older format."
+    )
   }
 
   c(
-    map(snapshot_files, \(paths) read_snapshot_csv(ref, paths)),
+    files,
     list(
       ref = ref,
       commit = if (!is.null(ref)) git_commit(ref),

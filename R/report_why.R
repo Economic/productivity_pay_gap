@@ -86,10 +86,13 @@ log_revisions = function(old_inputs, new_inputs) {
     mutate(log_revision = log(value_new) - log(value_old))
 }
 
+# The file whose code turns each input's raw data into the series used
+code_file_by_series = c(ces_wage = "R/bls.R", hours = "R/bls.R", cpi = "R/prices.R")
+
 # Wages and hours from the baseline's raw files, cleaned with the current code
 # in R/bls.R. Comparing them with the baseline's own wages and hours isolates
 # the effect of a change in that code.
-recleaned_inputs = function(old_ref) {
+recleaned_bls_inputs = function(old_ref) {
   wages = clean_bls_pay(
     snapshot_file_path(old_ref, raw_input_files$bls_early_wages),
     snapshot_file_path(old_ref, raw_input_files$bls_api)
@@ -105,10 +108,20 @@ recleaned_inputs = function(old_ref) {
   bind_rows(wages, hours)
 }
 
+# CPI from the current code in R/prices.R. Only comparable with the
+# baseline's CPI when both used the same realtalk version, which is the
+# installed one.
+recleaned_prices = function() {
+  make_prices() |>
+    filter(frequency == "quarterly") |>
+    transmute(year, quarter, series = "cpi", value = c_cpi_u)
+}
+
 # Splits the log revision of index_t / index_base into input contributions,
 # plus a "code or method change" remainder. With `code_revisions` (log changes
-# from the baseline's wages and hours to the recleaned ones), the wage and
-# hours contributions are further split into data and code parts.
+# from the baseline's inputs to the same raw data processed with the current
+# code), those inputs' contributions are further split into data and code
+# parts.
 split_log_revision = function(revisions, base, code_revisions = NULL) {
   relative_to_base = function(revisions) {
     base_revisions = revisions |>
@@ -156,7 +169,7 @@ split_log_revision = function(revisions, base, code_revisions = NULL) {
     code_parts = code_revisions |>
       relative_to_base() |>
       to_contributions() |>
-      mutate(label = paste0(label, ", code change in R/bls.R"))
+      mutate(label = paste0(label, ", code change in ", code_file_by_series[series]))
     data_parts = contributions |>
       inner_join(
         select(code_parts, year, quarter, index, series, code = log_contribution),

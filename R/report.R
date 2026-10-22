@@ -271,18 +271,50 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   new_inputs = index_inputs(new)
   code_files = changed_code_files(old$ref, new$ref)
 
-  # only possible for the working tree, where R/bls.R is the code now loaded
-  code_revisions = if ("R/bls.R" %in% code_files && is.null(new$ref)) {
-    log_revisions(
-      filter(old_inputs, series %in% c("ces_wage", "hours")),
-      recleaned_inputs(old$ref)
-    )
+  # Code changes that alter an input are split from its data revisions by
+  # processing the baseline's raw data with the current code. Only possible
+  # for the working tree, where the loaded code is the current code; for CPI,
+  # only when realtalk didn't change, since only the installed version exists.
+  working_tree = is.null(new$ref)
+  realtalk_version = function(snapshot) {
+    snapshot$packages$version[snapshot$packages$package == "realtalk"]
   }
+  same_realtalk = identical(realtalk_version(old), realtalk_version(new))
+  # an old baseline's raw files can predate the current code's format
+  recleaned_bls = if ("R/bls.R" %in% code_files && working_tree) {
+    tryCatch(recleaned_bls_inputs(old$ref), error = \(e) NULL)
+  }
+  split_bls = !is.null(recleaned_bls)
+  split_prices = "R/prices.R" %in% code_files && working_tree && same_realtalk
+  recleaned = bind_rows(
+    recleaned_bls,
+    if (split_prices) recleaned_prices()
+  )
+  code_revisions = if (nrow(recleaned) > 0) {
+    log_revisions(filter(old_inputs, series %in% recleaned$series), recleaned)
+  }
+  # changed files that shape what an input contains, whose effect can't be
+  # separated from the data: they decide what is fetched, or couldn't be split
+  unsplit_code = c(
+    intersect(
+      code_files,
+      c("R/bea.R", "data_inputs/bea_series_codes.csv", "data_inputs/bls_series_codes.csv")
+    ),
+    if ("R/bls.R" %in% code_files && !split_bls) "R/bls.R",
+    if ("R/prices.R" %in% code_files && !split_prices) "R/prices.R"
+  )
 
   revisions = index_revisions(old_inputs, new_inputs, code_revisions)
   stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs, code_revisions)
   web_revisions = web_changes(old, new)
-  web_mismatches = web_data_mismatches(new)
+  # web data that is, or stopped being, other than the indexes rounded to one
+  # decimal. Compared with the baseline, so a rounding change is flagged once.
+  old_mismatches = web_data_mismatches(old)
+  new_mismatches = web_data_mismatches(new)
+  web_mismatches = bind_rows(
+    anti_join(new_mismatches, old_mismatches, by = c("Year", "Series")),
+    anti_join(old_mismatches, new_mismatches, by = c("Year", "Series"))
+  )
   data_changes = full_data_changes(old, new)
   sources_differ = !same_contents(
     select(old$sources, -date_accessed),
@@ -414,8 +446,8 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     if (nrow(web_mismatches) > 0) {
       c(
         paste0(
-          "**", n_distinct(web_mismatches$Year), " quarters of the web data are not the indexes ",
-          "rounded to one decimal: ", web_method_change_label, ".**"
+          "**In ", n_distinct(web_mismatches$Year), " quarters, the web data changed from or to ",
+          "being the indexes rounded to one decimal: ", web_method_change_label, ".**"
         ),
         ""
       )
@@ -506,6 +538,16 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
         paste0(
           "**The inputs don't explain all of the changes: the calculation itself changed.** ",
           "See the \"", method_change_label, "\" lines, and the code changes under Inputs."
+        ),
+        ""
+      )
+    },
+    if (length(unsplit_code) > 0) {
+      c(
+        paste0(
+          "**These changed files shape what an input contains, and the report can't separate ",
+          "their effect from data revisions: ", paste0("`", unsplit_code, "`", collapse = ", "),
+          ". The contributions of the inputs they shape may include a change in method.**"
         ),
         ""
       )
