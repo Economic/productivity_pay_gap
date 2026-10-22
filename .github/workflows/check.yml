@@ -77,7 +77,7 @@ jobs:
         id: report
         continue-on-error: true
         env:
-          PPG_BASELINE: ${{ inputs.baseline || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
+          PPG_BASELINE: does-not-exist
         run: Rscript -e 'targets::tar_make(names = change_report)'
 
       - name: Publish the change report
