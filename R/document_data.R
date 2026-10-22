@@ -1,17 +1,50 @@
+# Live mode records when each source was last fetched in data_raw/fetch_log.csv,
+# so the offline rebuild can reproduce the sources CSV from committed files.
+read_fetch_log = function(file) {
+  read_csv(file, col_types = "cDc")
+}
+
+write_fetch_log = function(
+  bls_api_date,
+  bea_api_date,
+  prices_date,
+  bls_hours_fetch,
+  file
+) {
+  previous_dates = read_fetch_log(file) |>
+    select(source, previous_date = date_accessed)
+
+  tibble(
+    source = c("bls_api_output", "bea_api_output", "prices"),
+    date_accessed = c(bls_api_date, bea_api_date, prices_date),
+    status = "ok"
+  ) |>
+    bind_rows(bls_hours_fetch) |>
+    left_join(previous_dates, by = "source") |>
+    # a failed fetch keeps the date of the last successful one, because
+    # that fetch is where the data came from
+    mutate(
+      date_accessed = if_else(status == "ok", date_accessed, previous_date)
+    ) |>
+    select(source, date_accessed, status) |>
+    arrange(source) |>
+    create_csv(file)
+}
+
 document_data = function(
   bls_hours,
-  bls_hours_dates,
   bls_early_wages,
   bls_current_wages,
   bea_data,
-  source_dates,
+  fetch_log,
   output_file
 ) {
-  get_date = function(target_name) {
-    source_dates |>
-      filter(name == target_name) |>
-      pull(time) |>
-      as_date()
+  fetch_dates = read_fetch_log(fetch_log)
+
+  get_date = function(source_name) {
+    fetch_dates |>
+      filter(source == source_name) |>
+      pull(date_accessed)
   }
 
   realtalk_version = as.character(packageVersion("realtalk"))
@@ -26,17 +59,19 @@ document_data = function(
     data_location = "realtalk"
   )
 
-  hours_dates = read_csv(bls_hours_dates, col_types = "DD") |>
-    verify(length(date_accessed) == 1)
+  hours_release_date = read_bls_hours_release_date(bls_hours)
+  if (is.na(hours_release_date)) {
+    stop("No 'Data released' line in the ReadMe sheet of ", bls_hours)
+  }
 
   bls_hours_doc = tibble(
     name = "BLS total economy hours",
-    date_accessed = hours_dates$date_accessed,
-    date_published = hours_dates$date_published,
+    date_accessed = get_date("bls_hours"),
+    date_published = hours_release_date,
     source = "BLS Office of Productivity and Technology",
     source_url = "https://www.bls.gov/productivity/tables/home.htm",
     source_url_2 = "https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx",
-    access_method = "manual download",
+    access_method = "download",
     data_location = bls_hours
   )
 
