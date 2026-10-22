@@ -2,13 +2,40 @@
 
 This repository produces the data for the [EPI Productivity-Pay Gap](https://www.epi.org/productivity-pay-gap/) page, which also explains the methodology.
 
-## Download the latest data
+## Download the data
 
 You can download the data from
 
 * the [EPI Productivity-Pay Gap](https://www.epi.org/productivity-pay-gap/) page
 * the [State of Working America Data Library](https://data.epi.org/productivity/productivity_growth/line/year/national/real_index_1948/productivity_pay)
-* the [latest release files](https://github.com/Economic/productivity_pay_gap/releases/latest) from this repository
+* the [latest release](https://github.com/Economic/productivity_pay_gap/releases/latest) of this repository
+
+Official data comes from the [GitHub releases](https://github.com/Economic/productivity_pay_gap/releases). Each release has the four final files and a change report explaining what changed since the previous release, and why. The files on `main` may include updates that haven't been released yet.
+
+## How updates work
+
+1. **Every Monday at 12:07 UTC** (8:07 a.m. Eastern in daylight saving time, 7:07 a.m. otherwise), the `refresh` workflow:
+   * updates every R package and fetches the latest BLS and BEA data
+   * rebuilds the numbers and writes a change report
+   * if the published numbers changed since the maintainer last saw them, opens or updates a pull request from the `data-refresh` branch, assigned to the maintainer, which emails them; if nothing changed, does nothing
+2. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
+3. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything.
+
+Every pull request into `main` must pass the `check` workflow, which rebuilds everything from the committed raw data and fails if the result differs from the committed files. `main` accepts changes only through pull requests, merged with merge commits.
+
+If the BLS hours download fails, the weekly run still finishes with the committed spreadsheet, then fails, so GitHub emails a failure notice.
+
+## Maintainer setup
+
+The weekly emails depend on GitHub settings that aren't stored in the repository.
+
+* **Repository secrets:** `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL` (see [Setup](#setup)).
+* **The assignee:** refresh pull requests are assigned to `benzipperer`, set in `.github/scripts/update-refresh-pr.sh`. A new maintainer changes that name.
+* **Email notifications,** in the assignee's [notification settings](https://github.com/settings/notifications):
+  * **"Participating, @mentions and custom"**: tick **Email**. Being assigned counts as participating, so this covers the refresh emails.
+  * **"Actions"**: tick **Email** for failed workflows. GitHub sends scheduled run failures to whoever last changed the workflow's schedule.
+  * **"Custom routing"**: if the account has several email addresses, route the Economic organization to the one the maintainer reads.
+* **The "protect main" ruleset,** in the repository settings: pull requests required, the `check` status check required, merge commits only, no bypass list.
 
 ## Reproduce the data
 
@@ -38,31 +65,28 @@ Run `targets::tar_make()`. It fetches the BLS and BEA data from their APIs, down
 
 Fetched data is cached for one day. If you run `tar_make()` again within a day, it reuses the cached data; after that, it fetches the data again. If the hours download fails, the pipeline keeps the committed spreadsheet, and `data_raw/fetch_log.csv` records why.
 
-Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why. It covers each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag.
+To use newer package versions, such as the latest price indices in `realtalk`, run `renv::update()` and then `renv::snapshot()` before `tar_make()`.
 
-To rebuild everything from the committed files without fetching anything, use offline mode:
+### The change report
+
+Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why: each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag from v2026.3.11 on.
+
+### Offline mode
+
+To rebuild everything from the committed files without fetching anything:
 
 ```r
 Sys.setenv(TAR_PROJECT = "offline")
 targets::tar_make()
 ```
 
-If the committed outputs are reproducible, `git diff -- data_final data_outputs` is then empty.
+This is what the `check` workflow runs. If the committed outputs are reproducible, `git diff -- data_final data_outputs` is then empty.
 
-### Update the data for a new release
+### Making changes
 
-1. Update `realtalk` to get the latest price indices, and record the new version in `renv.lock`:
-
-   ```r
-   renv::update("realtalk")
-   renv::snapshot()
-   ```
-
-2. Run `targets::tar_make()`.
+Make each change on a branch and open a pull request. If a change to the code changes the outputs, rebuild in offline mode and commit the new outputs in the same pull request, or the `check` workflow fails.
 
 If BLS refuses the hours download, download the [total economy hours file](https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx) by hand, save it as `data_raw/total-economy-hours-employment.xlsx`, and set its `date_accessed` in `data_raw/fetch_log.csv` to the day you downloaded it.
-
-Official data comes from the [GitHub releases](https://github.com/Economic/productivity_pay_gap/releases). The files on `main` may include updates that haven't been released yet.
 
 ## Output
 
