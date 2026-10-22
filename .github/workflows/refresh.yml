@@ -104,19 +104,27 @@ jobs:
       pull-requests: write
       # assigning the PR to me goes through the issues API
       issues: write
-      # starting the check on the refresh branch
-      actions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: main
-          # all branches, to compare with the open refresh PR
+          # the commit the build job used, so its files match this code even
+          # if main moved during the build
+          ref: ${{ github.sha }}
+          # all branches, to compare with main and the open refresh PR
           fetch-depth: 0
           persist-credentials: false
 
+      # Unpacked outside the checkout: the artifact comes from a job that ran
+      # package code, so only the expected files are copied in
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: refresh
+          path: ${{ runner.temp }}/refresh
+
+      - name: Copy the expected files into the checkout
+        env:
+          ARTIFACT: ${{ runner.temp }}/refresh
+        run: .github/scripts/copy-refresh-files.sh "$ARTIFACT"
 
       - name: Open or update the refresh PR
         env:
