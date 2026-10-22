@@ -36,6 +36,9 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 - **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_stats_csv`)
 - **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance, and reads and writes the fetch log
 - **`R/checks.R`**: Sanity checks on the final files and on installed packages; a failure stops the pipeline
+- **`R/report_snapshot.R`**: Reads the committed files at a git ref or in the working tree, for the change report. Releases through v2026.9.14 use the pre-Phase 1 paths
+- **`R/report_why.R`**: The exact split of each revision into input contributions, including the headline stats
+- **`R/report.R`**: Builds `reports/change_report.md`
 
 ### Core Calculations (in `R/combine.R`)
 
@@ -83,6 +86,7 @@ Files in `data_raw/`, fetched from outside by the live pipeline:
 - **Live (default):** `tar_make()` fetches the BLS and BEA API data and downloads the hours spreadsheet whenever they are more than a day old. That changes the committed data. It needs `BLS_API_KEY` and `BEA_API_KEY` (read by `epidatatools`) and `BLS_DOWNLOAD_EMAIL` (sent to BLS in the `User-Agent` header). If the hours download fails, the committed spreadsheet is kept and the fetch log records why.
 - **Offline:** `TAR_PROJECT=offline` with `tar_make()` rebuilds everything from the committed files in `data_raw/`, in its own store, with no network access or credentials. Use it to check that the committed outputs are reproducible: afterward, `git diff -- data_final data_outputs` should be empty. In R: `Sys.setenv(TAR_PROJECT = "offline"); targets::tar_make()`.
 - The sanity checks (`output_checks`, `package_check`) run in both modes. `package_check` is an error offline and a warning in live mode.
+- **Change report:** every `tar_make()` ends by writing `reports/change_report.md` (git ignores `reports/`). It compares the working tree with `origin/main`, so run `git fetch` first; set `PPG_BASELINE` to compare with another ref. It explains each revision exactly by input. If the inputs don't explain a revision, it says the calculation itself changed.
 
 ## Packages
 

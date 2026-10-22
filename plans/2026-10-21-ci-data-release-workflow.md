@@ -139,7 +139,7 @@ Markdown only for now. Charts could be added later as an HTML report attached to
    With Δ meaning new minus old, the revision `Δlog(index_t)` equals the sum over inputs of `±(Δlog(input_t) − Δlog(input_0))`. This is an identity, so the result doesn't depend on any ordering of inputs and always comes out the same for the same files.
 2. **Index points.** Each log contribution is multiplied by the logarithmic mean of the old and new index values, L(a, b) = (a − b) / (log a − log b), or a when a = b. The contributions then add up exactly to the change in points, even when inputs offset each other.
 3. **Remainder check.** Compare the sum of contributions with the actual revision from the pipeline. If the code is unchanged, the remainder is rounding error. Anything above 1e-8 in logs is reported as "code or method change". This check applies to the unrounded index series in the full data file. The web stats are built from rounded indexes, so they get their own treatment in step 6.
-4. **Upstream code changes.** A change in `R/bls.R` (for example, the wage splice) shows up inside an input's contribution, not in the remainder. For each input, check whether its raw data, its code, or both changed. If both changed, rerun the new code on the baseline raw data in offline mode and split that input's contribution into data and code parts.
+4. **Upstream code changes.** A change in `R/bls.R` (for example, the wage splice) shows up inside an input's contribution, not in the remainder. For each input, check whether its raw data, its code, or both changed. If both changed, rerun the new code on the baseline raw data in offline mode and split that input's contribution into data and code parts. (As built: when `R/bls.R` changed, the report reruns the current `clean_bls_pay()` and `clean_hours_data()` on the baseline's raw files, in the same R session, and splits the wage and hours contributions into data and code parts. It needs no full pipeline run, and it applies only when the newer side is the working tree, where the loaded code is the current code. CPI and the BEA series need no split: no repo code transforms them after they're fetched.)
 5. **New periods.** No old value exists to split. Report each source's latest available period, before and after, and which source limits the latest common quarter.
 6. **Headline stats.** `R/web.R` publishes four kinds of stat, each for productivity and pay. Each gets its own treatment:
 
@@ -221,7 +221,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 - The live runs changed only the expected files: the two API results, the fetch log, `data_outputs/bls_pay.csv`, and the final files. New BLS and BEA data since 2026-09-13 moved productivity growth since 1979q4 from 93.7% to 94.4%, and pay growth from 32.7% to 32.5%. These data changes were not committed, so the Phase 1 PR is a restructure only; the first weekly run or a local data PR brings the new data in.
 - Each sanity check was tested against data broken on purpose, and stopped the pipeline.
 
-### Phase 2: Change report
+### Phase 2: Change report (built 2026-10-21, results below)
 
 1. Write a baseline loader that reads final, raw, and intermediate files and `renv.lock` at a git ref. It must handle older refs, where files sit at their pre-Phase 1 paths: `release/` instead of `data_final/`, and the API outputs and hours spreadsheet outside `data_raw/`. Every release through v2026.9.14 uses the old paths.
 2. Write each report section as its own function returning a small table, plus one function that assembles the Markdown.
@@ -229,6 +229,22 @@ Fix real findings. Record findings that need several unusual conditions at once 
 4. Add the `change_report` target.
 
 **Verification**: run the report comparing v2026.9.14 with v2026.7.30. Between those releases only data and `renv.lock` changed, so the remainder should be close to zero and the contributions should be plausible. Nothing may be attributed to "code or method change", including in the headline stats. Also run it against an unchanged working tree; it should report no changes. Finally, test a revision to the base period: copy the baseline inputs, change the 1948 CPI values, and check that the 1948–1979 stats reconcile exactly to a CPI contribution (apart from the separate rounding line), while the stats based at 1979q4 show no change.
+
+**Results (2026-10-21)**:
+
+- **v2026.7.30 to v2026.9.14:**
+  - The report labels it "New quarter: 2026q2", and nothing is attributed to a code or method change.
+  - The largest remainder is 8.9e-16 in logs for the indexes, and about 1e-13 percentage points for the stats.
+  - The 2026q1 split matches the earlier prototype: productivity −0.507 points (CPI −0.460, hours −0.047), and pay −0.280 (CPI).
+  - Every stat's contributions and rounding add up exactly to its published change. For example, productivity growth since 1979q4 went from 93.2% to 93.7%: +0.706 from the added quarter, −0.213 from CPI, −0.022 from hours, and +0.028 from rounding.
+- **Unchanged working tree against `origin/main`:** "No changes". The only unreleased change since v2026.9.14 is the sources CSV, which is correct: `main` has the corrected hours dates.
+- **1% higher 1948 CPI:**
+  - Every quarter from 1949q1 is revised, all of it from CPI.
+  - The base period section shows the 1948q1 CPI revision.
+  - The 1948–1979 stats reconcile to a CPI contribution of +0.032 percentage points each, with a rounding line.
+  - The stats based at 1979q4 don't change.
+- **Simulated code change in `R/bls.R`** (pre-1964 wages 2% higher, no data change): the whole pay revision is attributed to "CES wages (BLS), code change in R/bls.R", the data part is zero, and only quarters from 1964q1 are revised.
+- **Floating-point noise:** values computed in floating point differ by about 1e-14 between runs even when nothing changed. The real series are rescaled to the latest quarter's CPI, and that cancels out of the indexes only up to rounding. So the report counts a value as revised only if it changed by more than 1e-9 in relative terms.
 
 ### Phase 3: PR check workflow
 
