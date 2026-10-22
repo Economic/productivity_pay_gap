@@ -102,7 +102,7 @@ High-severity rules:
 - Secrets (BLS_API_KEY, BEA_API_KEY, BLS_DOWNLOAD_EMAIL) must never be printed or
   exposed to untrusted code.
 
-The offline rebuild (PPG_OFFLINE=true, added in Phase 1 of the plan) must run without
+The offline rebuild (TAR_PROJECT=offline, added in Phase 1 of the plan) must run without
 network access or credentials.
 
 renv.lock, renv/, _targets/ and the large data files are excluded from diffs. When a

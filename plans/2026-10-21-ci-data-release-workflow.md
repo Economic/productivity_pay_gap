@@ -40,7 +40,7 @@ Date: 2026-10-21
 ### Three pipeline modes, one `_targets.R`
 
 - **Live (default, local `tar_make()`)**: fetches BLS and BEA API data and the BLS hours file, caching each for one day as now.
-- **Offline (`PPG_OFFLINE=true`)**: never touches the network. It rebuilds everything from the committed raw data. CI uses this mode for the PR check.
+- **Offline (`TAR_PROJECT=offline`)**: never touches the network. It rebuilds everything from the committed raw data. CI uses this mode for the PR check.
 - **Fresh live (CI weekly run)**: live mode with an empty `_targets/` store, so every source is fetched again.
 
 Offline mode uses its own `targets` store, so switching modes locally doesn't invalidate the live cache.
@@ -61,7 +61,8 @@ The rule is simple: live mode writes `data_raw/`, and offline mode only reads it
 
 The sources CSV currently takes access dates from when each target was built. An offline rebuild in CI would stamp the wrong date. Instead:
 
-- Live fetch targets record their dates in `data_raw/fetch_log.csv`, one row per source: date accessed, date published (where known), version (for `realtalk`), and status (for example, "download failed, kept file released 2026-09-03"). After a failed download, the source's row keeps the date accessed and date published of its last successful download, because that download is where the data came from. Only the status records the failure.
+- Live fetch targets record their dates in `data_raw/fetch_log.csv`, one row per source (`bls_api_output`, `bea_api_output`, `bls_hours`, `prices`), with the date accessed and a status (for example, "download failed (...); kept file released 2026-09-03"). After a failed download, the source's row keeps the date accessed of its last successful download, because that download is where the data came from. Only the status records the failure.
+- Publication dates are not in the fetch log, because they come from the data itself: the hours release date from the spreadsheet, and the `realtalk` date from its version. (As built; the plan first had date published and version columns in the log.) If the hours spreadsheet is ever committed by hand, its `date_accessed` in the fetch log must be updated too. A sanity check catches a publication date later than the access date.
 - `document_data()` reads the fetch log instead of the `source_dates` target.
 - The hours publication date is parsed from the spreadsheet's ReadMe sheet, so `data_inputs/bls_hours_dates.csv` is deleted.
 
@@ -69,7 +70,7 @@ The sources CSV currently takes access dates from when each target was built. An
 
 1. `tar_make()` fetches data (cached one day), rebuilds outputs, runs sanity checks, and writes `reports/change_report.md` comparing against `origin/main`.
 2. I review the report and `git diff`.
-3. Optional: `PPG_OFFLINE=true` + `tar_make()` runs the same check CI will run.
+3. Optional: `TAR_PROJECT=offline` + `tar_make()` runs the same rebuild CI will run.
 4. I create a branch, commit, push, and open the PR with `gh pr create --body-file reports/change_report.md`.
 
 ### Weekly refresh flow
@@ -189,13 +190,13 @@ Fix real findings. Record findings that need several unusual conditions at once 
 
 **Exit criteria**: both API keys work from CI, I know whether automated hours download works from CI, and the bot can open PRs.
 
-### Phase 1: Restructure the pipeline (local only)
+### Phase 1: Restructure the pipeline (local only; built 2026-10-21, results below)
 
 1. Create `data_raw/` and move the two API outputs and the hours spreadsheet there with `git mv`. Rename `release/` to `data_final/` with `git mv`. Update paths in `_targets.R` and `R/document_data.R`.
 2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`, following redirects). On failure, keep the committed file and record the failure in the fetch log, keeping the dates of the last successful download (see "Access dates move into committed data"). Treat a response that isn't a valid spreadsheet as a failure: the first Phase 0 run got HTTP success with a 23-byte body.
 3. Add `fetch_log.csv`, written in live mode and read in offline mode. Seed it with the dates currently in `release/epi_productivity_pay_gap_sources.csv`.
 4. Parse the hours release date from the ReadMe sheet. Delete `data_inputs/bls_hours_dates.csv`.
-5. Add offline mode (`PPG_OFFLINE`) with its own store.
+5. Add offline mode with its own store. As built: `TAR_PROJECT=offline` selects the `offline` project in `_targets.yaml`, whose store is `_targets_offline/`. This uses the targets mechanism for separate stores, so one setting picks both the mode and the store (the plan first named a `PPG_OFFLINE` variable).
 6. Add sanity check targets that stop the pipeline on failure:
    - no missing quarters from 1948q1 to the latest quarter in the web file
    - both indexes equal 100 in 1948q1 (and in 1948 for annual data)
@@ -207,6 +208,18 @@ Fix real findings. Record findings that need several unusual conditions at once 
 7. Stop committing `_targets/meta/meta`: add `_targets/` to the root `.gitignore` and `git rm --cached` it.
 
 **Verification**: run offline mode on the committed data. Every file in `data_final/` and `data_outputs/` must match the version committed before Phase 1 (then in `release/` and `data_outputs/`) byte for byte, with one expected exception: the `data_location` column of the sources CSV, which now points to `data_raw/` for the moved files. Then do one live run and confirm only expected files change. Finally, do a live run with `BLS_DOWNLOAD_EMAIL` unset, so BLS refuses the download. The pipeline must finish using the committed hours file, the fetch log must record the failure, and the hours dates in the sources CSV must not change.
+
+**Results (2026-10-21)**:
+
+- The offline rebuild in a fresh store reproduced every file in `data_final/` and `data_outputs/` byte for byte, except the hours row of the sources CSV. There, `data_location` now points to `data_raw/`, and `access_method` changed from "manual download" to "download", since the file is now downloaded automatically.
+- Three live runs, starting from the committed fetch log:
+  - with `BLS_DOWNLOAD_EMAIL` empty (download skipped)
+  - with a User-Agent that isn't an email ("R download test"), which BLS refused ("downloaded length 0 != reported length 1325")
+  - with the real email
+
+  In the first two, the pipeline finished with the committed spreadsheet, the fetch log recorded why, and the hours row kept its 2026-09-09 access date. The third downloaded the spreadsheet, identical to the committed one, and recorded 2026-10-21. All checks passed in every run.
+- The live runs changed only the expected files: the two API results, the fetch log, `data_outputs/bls_pay.csv`, and the final files. New BLS and BEA data since 2026-09-13 moved productivity growth since 1979q4 from 93.7% to 94.4%, and pay growth from 32.7% to 32.5%. These data changes were not committed, so the Phase 1 PR is a restructure only; the first weekly run or a local data PR brings the new data in.
+- Each sanity check was tested against data broken on purpose, and stopped the pipeline.
 
 ### Phase 2: Change report
 

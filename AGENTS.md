@@ -26,14 +26,16 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 
 ### Key Files
 
-- **`_targets.R`**: Defines the full pipeline DAG using `tar_assign()`
+- **`_targets.R`**: Defines the full pipeline DAG using `tar_assign()`, with live and offline versions of the fetch targets
+- **`_targets.yaml`**: The `main` (live) and `offline` targets projects and their stores
 - **`packages.R`**: All package loading with conflict resolution via `conflicted`
-- **`R/bls.R`**: BLS API fetching (`bls_grab_all`) and wage series construction (`clean_bls_pay`, `clean_hours_data`)
+- **`R/bls.R`**: BLS API fetching (`bls_grab_all`), the hours spreadsheet download (`download_bls_hours`, `read_bls_hours_release_date`), and wage series construction (`clean_bls_pay`, `clean_hours_data`)
 - **`R/bea.R`**: BEA NIPA API fetching (`bea_grab_all`, `bea_grab_series`)
 - **`R/prices.R`**: Extracts Extended Chained CPI-U from the `realtalk` package
 - **`R/combine.R`**: Merges all sources, calculates productivity and real compensation, creates 1948q1=100 indices
 - **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_stats_csv`)
-- **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance
+- **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance, and reads and writes the fetch log
+- **`R/checks.R`**: Sanity checks on the final files and on installed packages; a failure stops the pipeline
 
 ### Core Calculations (in `R/combine.R`)
 
@@ -56,35 +58,39 @@ The early series is ratio-adjusted at the 1964 crossover. Pre-1964 annual values
 
 | File | Description |
 |------|-------------|
-| `release/epi_productivity_pay_gap.csv` | All series, long format, annual + quarterly |
-| `release/epi_productivity_pay_gap_web.csv` | Quarterly only, wide format, rounded to 1 decimal |
-| `release/epi_productivity_pay_gap_web_stats.csv` | Key statistics for website display |
-| `release/epi_productivity_pay_gap_sources.csv` | Data provenance documentation |
+| `data_final/epi_productivity_pay_gap.csv` | All series, long format, annual + quarterly |
+| `data_final/epi_productivity_pay_gap_web.csv` | Quarterly only, wide format, rounded to 1 decimal |
+| `data_final/epi_productivity_pay_gap_web_stats.csv` | Key statistics for website display |
+| `data_final/epi_productivity_pay_gap_sources.csv` | Data provenance documentation |
 
-Intermediate files (API results, cleaned hours, spliced wages, prices) are written to `data_outputs/`. Both `release/` and `data_outputs/` are committed to git, as is `_targets/meta/meta`.
+On `main`, `data_final/` can be ahead of the latest GitHub release. Intermediate files (cleaned hours, spliced wages, prices) are written to `data_outputs/`. Everything in `data_raw/`, `data_outputs/` and `data_final/` is committed to git. The targets stores (`_targets/`, `_targets_offline/`) are not.
 
 ## Data Inputs
 
-Files in `data_inputs/`:
+Files in `data_inputs/`, which change only by hand:
 
-- `total-economy-hours-employment.xlsx`: BLS total economy hours. Download manually from BLS for each release
-- `bls_hours_dates.csv`: access and publication dates for the hours file, used in the sources CSV. Update whenever the hours file changes
 - `bls_EEU00500006.csv`: historical production worker wages (pre-1964). Static; no updates needed
 - `bls_series_codes.csv` / `bea_series_codes.csv`: API series configurations
 
+Files in `data_raw/`, fetched from outside by the live pipeline:
+
+- `bls_api_output.csv` / `bea_api_output.csv`: BLS and BEA API results
+- `total-economy-hours-employment.xlsx`: BLS total economy hours. Its release date is read from the ReadMe sheet
+- `fetch_log.csv`: when each source was last fetched, and the status of the last attempt. A failed fetch keeps the date of the last successful one. If you ever commit the hours spreadsheet by hand, update its `date_accessed` here too.
+
 ## Running the Pipeline
 
-- `BLS_API_KEY` and `BEA_API_KEY` must be set; `epidatatools` reads them.
-- `bls_api_output` and `bea_api_output` use `tar_age_date()` with a 1-day age, so `tar_make()` downloads new API data whenever the cached pulls are more than a day old. That changes the release numbers.
-- To rebuild a single target without refreshing the API data, use `tar_make(names = c(...), shortcut = TRUE)`.
+- **Live (default):** `tar_make()` fetches the BLS and BEA API data and downloads the hours spreadsheet whenever they are more than a day old. That changes the committed data. It needs `BLS_API_KEY` and `BEA_API_KEY` (read by `epidatatools`) and `BLS_DOWNLOAD_EMAIL` (sent to BLS in the `User-Agent` header). If the hours download fails, the committed spreadsheet is kept and the fetch log records why.
+- **Offline:** `TAR_PROJECT=offline` with `tar_make()` rebuilds everything from the committed files in `data_raw/`, in its own store, with no network access or credentials. Use it to check that the committed outputs are reproducible: afterward, `git diff -- data_final data_outputs` should be empty. In R: `Sys.setenv(TAR_PROJECT = "offline"); targets::tar_make()`.
+- The sanity checks (`output_checks`, `package_check`) run in both modes. `package_check` is an error offline and a warning in live mode.
 
 ## Packages
 
 Key non-standard packages:
 
 - `epidatatools`: EPI's wrapper for BLS and BEA APIs (`get_bls()`, `get_bea_nipa()`)
-- `epitargets`: EPI's targets helpers: `create_csv()` (writes a data frame, returns the file path), `tar_age_date()`, `tar_target_date()`, `collect_target_date()`, `tar_csv_read()`
+- `epitargets`: EPI's targets helpers: `create_csv()` (writes a data frame, returns the file path), `tar_age_date()` and `tar_target_date()` (add a `<name>_date` target recording the build date), and `tar_csv_read()`
 - `realtalk`: EPI's package providing Extended Chained CPI-U; see https://economic.github.io/realtalk/
-- `tarchetypes`: Provides `tar_file()` and `tar_assign()`
+- `tarchetypes`: Provides `tar_file()`, `tar_age()` and `tar_assign()`
 
 Package versions are locked via `renv`. Run `renv::restore()` to install from `renv.lock`. `.Rprofile` sets repos to economic.r-universe.dev and Posit Package Manager.
