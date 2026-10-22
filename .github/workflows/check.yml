@@ -1,0 +1,89 @@
+# The PR check (Phase 3 of plans/2026-10-21-ci-data-release-workflow.md).
+# Rebuilds everything offline from the committed raw data, with the package
+# versions in renv.lock, and fails if the result differs from the committed
+# files. The change report is built afterward and can't fail the check.
+name: check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Commit to check (default, the commit that triggered the run)
+        type: string
+        default: ""
+      baseline:
+        description: Git ref the change report compares with
+        type: string
+        default: origin/main
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      TAR_PROJECT: offline
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+          # full history and tags, for the change report
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
+        with:
+          r-version: renv
+
+      - uses: r-lib/actions/setup-renv@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
+        env:
+          # renv installs epidatatools and epitargets from GitHub
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rebuild offline from the committed raw data
+        run: Rscript -e 'targets::tar_make(names = !change_report)'
+
+      - name: Fail if the rebuild differs from the committed files
+        run: |
+          if [ -n "$(git status --porcelain -- data_final data_outputs)" ]; then
+            echo "::error::The offline rebuild differs from the committed files. Rebuild in offline mode (TAR_PROJECT=offline) and commit the result."
+            git status --short -- data_final data_outputs
+            git diff --stat -- data_final data_outputs
+            exit 1
+          fi
+
+      # Runs only if the check passed: otherwise the working tree holds the
+      # rebuilt files, not the committed ones
+      - name: Build the change report
+        id: report
+        continue-on-error: true
+        env:
+          PPG_BASELINE: ${{ inputs.baseline || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
+        run: Rscript -e 'targets::tar_make(names = change_report)'
+
+      - name: Publish the change report
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_OUTCOME: ${{ steps.report.outcome }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          if [ "$REPORT_OUTCOME" != "success" ]; then
+            echo 'The change report could not be built; see the "Build the change report" step.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
+          # PRs from forks get a read-only token, so comment only on PRs from this repo
+          if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ]; then
+            gh pr comment "$PR_NUMBER" --body-file reports/change_report.md --edit-last --create-if-none
+          fi
