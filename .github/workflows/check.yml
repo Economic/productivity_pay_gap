@@ -89,13 +89,16 @@ jobs:
           REPORT_OUTCOME: ${{ steps.report.outcome }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           if [ "$REPORT_OUTCOME" != "success" ]; then
             echo 'The change report could not be built; see the "Build the change report" step.' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
-          # PRs from forks get a read-only token, so comment only on PRs from this repo
-          if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ]; then
+          # PRs from forks get a read-only token, so comment only on PRs from
+          # this repo. Refresh PRs carry the report already, and --edit-last
+          # would overwrite the refresh workflow's latest weekly comment.
+          if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ] && [ "$HEAD_REF" != "data-refresh" ]; then
             gh pr comment "$PR_NUMBER" --body-file reports/change_report.md --edit-last --create-if-none
           fi
