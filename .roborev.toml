@@ -95,6 +95,12 @@ What not to flag:
 - Revised values in data files after a data update. Revisions are expected, and the
   change report explains them.
 - Wording, formatting, and R style, unless meaning changes.
+- Attribution edge cases in the change report (R/report.R, R/report_why.R,
+  R/report_snapshot.R), including those listed under "Accepted risks in the
+  change report" in the plan. The report is informational. Flag a report
+  problem only if it could hide a change to published numbers that the web data
+  diff, the list of changed code, and the offline rebuild check would also miss,
+  or if it stops the pipeline on valid data.
 
 High-severity rules:
 - A release must attach exactly the final data files at the tagged commit, and only

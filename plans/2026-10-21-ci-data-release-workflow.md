@@ -324,6 +324,18 @@ Make the first real release with the next data update. Afterward, confirm that t
 - **Scheduled workflows get switched off.** GitHub disables them on public repos after 60 days without repository activity. Data changes nearly every month, so the bot's pushes should keep it active. If GitHub disables the workflow anyway, it shows a banner and I re-enable it.
 - **Weekly package updates break the pipeline.** That is the point of updating everything weekly: I get a failure email, and `main` is unaffected.
 
+### Accepted risks in the change report (decided 2026-10-21)
+
+The change report is informational. None of these can put a wrong number into a release: releases are manual, the PR check guarantees that the committed numbers are reproducible, and a change to published numbers still shows in the web data diff and in the list of changed code. Reviewers should not report these as defects.
+
+1. **A switch between two non-standard web roundings goes unflagged.** The report checks whether the web data is the indexes rounded to one decimal. If `R/web.R` already rounds differently and then changes to another rounding, both sides fail that check and no method change is flagged. The web data diff and the `R/web.R` entry under code changes still show it. (Checkpoint review job 97.)
+2. **The report's expectations go stale.** `R/report_why.R` encodes how `R/combine.R`, `R/prices.R` and `R/web.R` compute the numbers. After an intentional change to those files that doesn't update `R/report_why.R`, reports flag false method changes until it is updated. AGENTS.md says to update both in the same PR.
+3. **Some code changes are named but not measured.** Changes to `R/bea.R` or the BLS and BEA series code files, `R/prices.R` changing along with `realtalk`, and `R/bls.R` when the baseline's raw files can't be recleaned: the report names the file in a warning, but can't separate its effect from data revisions.
+4. **Releases before v2026.3.11 can't be baselines.** v2025.9.3 and v2026.1.16 store the BLS API results in an older format, and the report stops with a clear message.
+5. **Revisions smaller than 1e-9 in relative terms aren't counted.** That threshold hides floating-point noise and is far below published precision.
+6. **A stale `origin/main` baseline.** A local run without `git fetch` compares with an old `main`. CI always fetches first.
+7. **A wrong access date for a hand-committed hours spreadsheet.** If the spreadsheet is committed by hand without updating its date in `data_raw/fetch_log.csv`, the sources CSV shows the wrong access date. If the old date is earlier than the spreadsheet's release date, a sanity check stops the pipeline. The README says to update the date.
+
 ## Resolved questions
 
 1. **`data_raw/` layout**: yes, move the API outputs and the hours spreadsheet into `data_raw/`.
