@@ -132,6 +132,28 @@ pipeline = tar_assign({
   # installed packages can change without any tracked file changing
   package_check = check_packages(renv_lock, strict = offline) |>
     tar_target(cue = tar_cue(mode = "always"))
+
+  #################
+  # CHANGE REPORT #
+  #################
+  # Compares the files in the working tree with a git ref: origin/main, or
+  # PPG_BASELINE. Always rerun, since the ref can move. The unnamed arguments
+  # only make it run after the final files and the checks.
+  change_report = write_change_report(
+    baseline = Sys.getenv("PPG_BASELINE", "origin/main"),
+    packages_ok = package_check,
+    file = "reports/change_report.md",
+    output_checks,
+    output_data_csv_file,
+    output_web_data_csv_file,
+    output_web_stats_csv_file,
+    data_documentation,
+    bls_pay,
+    bls_hours,
+    prices,
+    fetch_log
+  ) |>
+    tar_file(cue = tar_cue(mode = "always"))
 })
 
 c(fetched_files, pipeline)
