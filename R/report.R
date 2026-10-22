@@ -307,14 +307,14 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   revisions = index_revisions(old_inputs, new_inputs, code_revisions)
   stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs, code_revisions)
   web_revisions = web_changes(old, new)
-  # web data that is, or stopped being, other than the indexes rounded to one
-  # decimal. Compared with the baseline, so a rounding change is flagged once.
-  old_mismatches = web_data_mismatches(old)
+  # Whether each side's web data is the indexes rounded to one decimal, as
+  # R/web.R should make it. A change in that, not in which quarters happen to
+  # match, means R/web.R changed: under some other rounding rule, data
+  # revisions and added quarters change which quarters match by chance.
   new_mismatches = web_data_mismatches(new)
-  web_mismatches = bind_rows(
-    anti_join(new_mismatches, old_mismatches, by = c("Year", "Series")),
-    anti_join(old_mismatches, new_mismatches, by = c("Year", "Series"))
-  )
+  old_follows_rule = nrow(web_data_mismatches(old)) == 0
+  new_follows_rule = nrow(new_mismatches) == 0
+  web_rule_changed = old_follows_rule != new_follows_rule
   data_changes = full_data_changes(old, new)
   sources_differ = !same_contents(
     select(old$sources, -date_accessed),
@@ -443,11 +443,19 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     } else {
       c("No quarter changed after rounding.", "")
     },
-    if (nrow(web_mismatches) > 0) {
+    if (web_rule_changed) {
       c(
         paste0(
-          "**In ", n_distinct(web_mismatches$Year), " quarters, the web data changed from or to ",
-          "being the indexes rounded to one decimal: ", web_method_change_label, ".**"
+          "**The web data ",
+          if (new_follows_rule) {
+            "is now the indexes rounded to one decimal, and wasn't before"
+          } else {
+            paste0(
+              "is no longer the indexes rounded to one decimal (", n_distinct(new_mismatches$Year),
+              " quarters differ)"
+            )
+          },
+          ": ", web_method_change_label, ".**"
         ),
         ""
       )
@@ -500,7 +508,7 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   method_changes = c(
     revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
     stat_revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
-    nrow(web_mismatches),
+    web_rule_changed,
     abs(ratio_method_change) > method_change_threshold
   )
   # rows too small to show at four decimals are dropped, and a total row shows
