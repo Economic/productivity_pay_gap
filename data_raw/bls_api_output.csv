@@ -751,6 +751,7 @@ wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsu
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-06-01,2026,6,32.38,sa
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-07-01,2026,7,32.42,sa
 wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-08-01,2026,8,32.53,sa
+wage_private_prod,CES0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, seasonally adjusted",month,2026-09-01,2026,9,32.6,sa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-01-01,1964,1,2.5,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-02-01,1964,2,2.5,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,1964-03-01,1964,3,2.5,nsa
@@ -1503,3 +1504,4 @@ wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsu
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-06-01,2026,6,32.19,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-07-01,2026,7,32.28,nsa
 wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-08-01,2026,8,32.53,nsa
+wage_private_prod,CEU0500000008,"Average hourly earnings of production and nonsupervisory employees, total private, not seasonally adjusted",month,2026-09-01,2026,9,32.54,nsa
