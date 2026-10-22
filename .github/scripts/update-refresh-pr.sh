@@ -14,19 +14,22 @@ report="reports/change_report.md"
 
 pr=$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')
 
-# What I last saw: the open refresh PR, or main if none is open
+# A refresh PR is stale once main has the same numbers, for example after a
+# local data PR was merged
+if [ -n "$pr" ] && git diff --quiet origin/main -- "${web_files[@]}"; then
+  gh pr close "$pr" --delete-branch --comment "\`main\` already has these numbers."
+  exit 0
+fi
+
+# Notify only when the web files changed since I last saw them: in the open
+# refresh PR, or in main if none is open
 if [ -n "$pr" ]; then
   last_seen="origin/$branch"
 else
   last_seen="origin/main"
 fi
-
-# Notify only when the web files changed since then
 if git diff --quiet "$last_seen" -- "${web_files[@]}"; then
   echo "The web files match $last_seen, so there is nothing new to report."
-  if [ -n "$pr" ] && git diff --quiet origin/main -- "${web_files[@]}"; then
-    gh pr close "$pr" --delete-branch --comment "\`main\` already has these numbers."
-  fi
   exit 0
 fi
 
@@ -47,18 +50,21 @@ body=$(mktemp)
 {
   echo "Weekly data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
   echo
+  echo "To merge: approve the held check run (\"Approve and run workflows\"), then merge once it passes."
+  echo
   cat "$report"
 } > "$body"
 
 # Creating the PR assigned to me emails me; after that, each update's comment does
 if [ -z "$pr" ]; then
-  gh pr create --draft --base main --head "$branch" --title "$title" \
+  # Not a draft: the held check already keeps it from being merged by accident
+  gh pr create --base main --head "$branch" --title "$title" \
     --body-file "$body" --assignee benzipperer
 else
   gh pr edit "$pr" --title "$title" --body-file "$body"
   gh pr comment "$pr" --body-file "$report"
 fi
 
-# A push made with the built-in token doesn't start other workflows, but a
-# manual trigger does, so start the required check here
-gh workflow run check.yml --ref "$branch"
+# GitHub runs the check on this PR, but holds the run until a maintainer
+# approves it, because the bot opened the PR. That approval is a deliberate
+# gate: the PR's files come from a job that ran freshly updated package code.
