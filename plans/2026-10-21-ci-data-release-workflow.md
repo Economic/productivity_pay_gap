@@ -274,7 +274,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 - **Failing report** (PR #15, `PPG_BASELINE` set to a ref that doesn't exist): the report step errored, the run summary said the report could not be built, and the check passed. With `continue-on-error`, GitHub shows a failed step's conclusion as "success"; the workflow reads the step's outcome instead.
 - The test PRs were closed and their branches deleted.
 
-### Phase 4: Protect `main` (done 2026-10-21, except the required check)
+### Phase 4: Protect `main` (done 2026-10-22)
 
 The "protect main" ruleset on the default branch is active, with:
 
@@ -283,7 +283,7 @@ The "protect main" ruleset on the default branch is active, with:
 - force pushes and branch deletion blocked
 - merge commits only (no squash or rebase)
 - branches not required to be up to date, since that would force a rebuild for every unrelated merge
-- required status checks turned on, with no checks listed yet; Phase 3 step 5 adds the check job
+- the `check` job required, from GitHub Actions (added 2026-10-22, after Phase 3's first run)
 
 **Verification**: a direct `git push` to `main` is rejected.
 
@@ -292,6 +292,17 @@ The "protect main" ruleset on the default branch is active, with:
 1. Add `.github/workflows/refresh.yml` with `schedule` and `workflow_dispatch`, on `ubuntu-24.04`. GitHub's schedules are in UTC and ignore daylight saving time, so use `cron: "7 12 * * 1"`: Monday 8:07 a.m. EDT, 7:07 a.m. EST. The odd minute avoids the top-of-hour rush, when GitHub delays scheduled runs.
 2. Permissions: `contents: write`, `pull-requests: write`, `actions: write`. Set `GITHUB_PAT` to the built-in token so `renv::update()` doesn't hit GitHub API limits for the GitHub-hosted EPI packages.
 3. Implement the flow under "Weekly refresh flow" above.
+
+As built, the workflow has three jobs. The split keeps package code away from the write token, since `renv::update()` installs whatever is new:
+
+- **build** (read-only token):
+  - updates every package, then fetches and rebuilds with the three API secrets
+  - writes the change report to the run summary and reads the hours status from the fetch log
+  - uploads the changed files as an artifact
+- **publish** (`contents`, `pull-requests`, `issues` and `actions` write; `issues` because assigning a PR goes through the issues API): checks out `main`, adds the build job's files, and runs `.github/scripts/update-refresh-pr.sh`. It runs no R or package code.
+- **hours:** runs after publishing, and fails the run if the hours download fell back.
+
+A `dry_run` input for manual runs skips publishing, and publishing runs only on `main`.
 
 **Verification**:
 

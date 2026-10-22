@@ -1,0 +1,142 @@
+# The weekly data refresh (Phase 5 of plans/2026-10-21-ci-data-release-workflow.md,
+# "Weekly refresh flow"). Updates every package, fetches fresh data, rebuilds,
+# and writes the change report. If the web files changed since I last saw them,
+# opens or updates the rolling draft PR from the data-refresh branch, which
+# emails me. Never publishes a release.
+#
+# The build job runs package code (renv::update() installs whatever is new), so
+# it gets the API secrets but only a read-only token. The publish job, which
+# can write, runs no R or package code.
+name: refresh
+
+on:
+  schedule:
+    # Monday 12:07 UTC: 8:07 a.m. EDT, 7:07 a.m. EST
+    - cron: "7 12 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and report only; don't touch the refresh PR
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    outputs:
+      hours_status: ${{ steps.hours.outputs.status }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # full history and tags, for the change report
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
+        with:
+          r-version: renv
+
+      # as in check.yml
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libglpk-dev libx11-dev
+
+      - uses: r-lib/actions/setup-renv@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
+        env:
+          GITHUB_PAT: ${{ github.token }}
+
+      - name: Update every package
+        env:
+          # renv updates epidatatools and epitargets from GitHub
+          GITHUB_PAT: ${{ github.token }}
+        run: Rscript -e 'renv::update(prompt = FALSE); renv::snapshot(prompt = FALSE)'
+
+      - name: Fetch fresh data and rebuild
+        env:
+          BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+          BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
+          BLS_DOWNLOAD_EMAIL: ${{ secrets.BLS_DOWNLOAD_EMAIL }}
+        run: Rscript -e 'targets::tar_make()'
+
+      - name: Write the change report to the run summary
+        run: cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Read the hours download status
+        id: hours
+        run: |
+          # one line: a download error message can span several, which would
+          # break the GITHUB_OUTPUT format
+          Rscript -e 'log = readr::read_csv("data_raw/fetch_log.csv", show_col_types = FALSE)' \
+            -e 'status = gsub("[\r\n]+", " ", log$status[log$source == "bls_hours"])' \
+            -e 'cat("status=", status, "\n", sep = "", file = Sys.getenv("GITHUB_OUTPUT"), append = TRUE)'
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: refresh
+          retention-days: 7
+          path: |
+            data_raw/
+            data_outputs/
+            data_final/
+            renv.lock
+            renv/activate.R
+            reports/change_report.md
+
+  publish:
+    needs: build
+    # a dry run, or a run on another branch, leaves the refresh PR alone
+    if: ${{ !inputs.dry_run && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      # assigning the PR to me goes through the issues API
+      issues: write
+      # starting the check on the refresh branch
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          # all branches, to compare with the open refresh PR
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: refresh
+
+      - name: Open or update the refresh PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/update-refresh-pr.sh
+
+  # Runs after publishing, so a fallback week still updates the PR as usual,
+  # then fails the run so that GitHub's failure email says so
+  hours:
+    needs: [build, publish]
+    if: ${{ always() && needs.build.result == 'success' }}
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Fail if the hours download fell back to the committed file
+        env:
+          HOURS_STATUS: ${{ needs.build.outputs.hours_status }}
+        run: |
+          if [ "$HOURS_STATUS" != "ok" ]; then
+            echo "::error::BLS hours spreadsheet: $HOURS_STATUS"
+            exit 1
+          fi
+          echo "The hours spreadsheet downloaded."
