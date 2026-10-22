@@ -1,0 +1,80 @@
+# Phase 0 feasibility checks (plans/2026-10-21-ci-data-release-workflow.md).
+# Throwaway: removed in a follow-up commit once the results are recorded.
+name: Phase 0 spike
+
+on:
+  push:
+    branches: ["spike/**"]
+
+permissions: {}
+
+jobs:
+  secrets-and-downloads:
+    runs-on: ubuntu-24.04
+    permissions: {}
+    env:
+      BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+      BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
+      BLS_DOWNLOAD_EMAIL: ${{ secrets.BLS_DOWNLOAD_EMAIL }}
+    steps:
+      - name: Report which secrets are set
+        run: |
+          for name in BLS_API_KEY BEA_API_KEY BLS_DOWNLOAD_EMAIL; do
+            if [ -n "${!name}" ]; then echo "$name: set"; else echo "$name: MISSING"; fi
+          done
+
+      - name: BLS API call with the key
+        if: ${{ !cancelled() }}
+        run: |
+          body=$(jq -n --arg key "$BLS_API_KEY" \
+            '{seriesid: ["CES0500000008"], startyear: "2026", endyear: "2026", registrationkey: $key}')
+          resp=$(curl -sS --fail -X POST -H "Content-Type: application/json" -d "$body" \
+            https://api.bls.gov/publicAPI/v2/timeseries/data/)
+          echo "$resp" | jq '{status, message, points: (.Results.series[0].data | length)}'
+          test "$(echo "$resp" | jq -r .status)" = "REQUEST_SUCCEEDED"
+
+      - name: BEA API call with the key
+        if: ${{ !cancelled() }}
+        run: |
+          resp=$(curl -sS --fail --get https://apps.bea.gov/api/data \
+            --data-urlencode "UserID=$BEA_API_KEY" \
+            -d method=GetData -d DataSetName=NIPA -d TableName=T10705 \
+            -d Frequency=Q -d Year=2026 -d ResultFormat=JSON)
+          echo "$resp" | jq '{error: (.BEAAPI.Error // .BEAAPI.Results.Error), rows: (.BEAAPI.Results.Data | length)}'
+          test "$(echo "$resp" | jq '.BEAAPI.Results.Data | length')" -gt 0
+
+      - name: Download the BLS hours file with the email header
+        if: ${{ !cancelled() }}
+        run: |
+          file="$RUNNER_TEMP/hours.xlsx"
+          curl -sS --fail -A "$BLS_DOWNLOAD_EMAIL" -o "$file" \
+            https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx
+          size=$(stat -c %s "$file")
+          echo "size: $size bytes"
+          released=$(unzip -p "$file" xl/sharedStrings.xml | grep -o 'Data released[^<]*' | head -1)
+          echo "${released:-no 'Data released' line found}"
+          # SHA-256 of data_inputs/total-economy-hours-employment.xlsx on 2026-10-21
+          if echo "15572719a5366fca820031a6042ec2a70052eb1f0fb84cf94ed94f0d692076bd  $file" \
+            | sha256sum --quiet -c -; then
+            echo "identical to the committed file"
+          else
+            echo "differs from the committed file (BLS may have published a newer version)"
+          fi
+          test "$size" -gt 100000
+
+  bot-pr:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Open and close a draft PR with the built-in token
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+        run: |
+          url=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$HEAD_BRANCH" --draft \
+            --title "Phase 0 test PR (closes itself)" \
+            --body "Opened by the Phase 0 spike workflow to confirm that Actions can create pull requests. It closes right away.")
+          echo "opened: $url"
+          gh pr close "$url" --comment "Phase 0 test done; closing."
