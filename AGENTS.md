@@ -5,7 +5,7 @@ Guidance for coding agents working in this repository.
 ## Working here
 
 - **Plans:** the newest dated file in `plans/` is the current plan, with next steps. Its "Decisions made" and "Resolved questions" sections are settled: don't reopen them without a new argument. New plans go in `plans/YEAR-MM-DD-short-description.md`.
-- **Changes:** make each change on a branch and open a pull request. Don't push to `main`. Phase 4 of the current plan enforces this. The maintainer merges; ask them when a PR is ready.
+- **Changes:** make each change on a branch and open a pull request. `main` is protected, so direct pushes are rejected. The maintainer merges, with merge commits only (`gh pr merge N --merge`). Ask them when a PR is ready.
 - **Commits:** commit early and often. Give each self-contained change its own commit; small commits get faster, more focused reviews.
 - **Live data:** a live `tar_make()` calls the BLS and BEA APIs and changes the committed data (see "Running the Pipeline"). Don't run one without a reason.
 

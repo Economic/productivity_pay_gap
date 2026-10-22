@@ -27,8 +27,13 @@ Date: 2026-10-21
 
 - BLS returns an empty response without an email in the header and the full file with one (tested locally 2026-10-21). The downloaded file matched the committed one byte for byte, and the ReadMe sheet contains "Data released September 3, 2026".
 - `epidatatools`, `epitargets`, and `realtalk` are public repos, so CI can install them without a token.
-- I have admin rights on the repo. No rulesets exist on `main` yet. There is no `.github/` folder.
-- Repo secrets `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL` are set, and Actions may create pull requests (both done in GitHub settings 2026-10-21; confirmed by a real run in Phase 0).
+- I have admin rights on the repo. There is no `.github/` folder.
+- Since 2026-10-21, the "protect main" ruleset requires pull requests and merge commits on `main` (see Phase 4).
+- Phase 0 confirmed these from GitHub's servers on 2026-10-21 (Actions runs 39713125588 and 39713207415):
+  - all three repo secrets are set
+  - the BLS API key works ("REQUEST_SUCCEEDED") and the BEA API key works (68 rows from NIPA table 1.7.5)
+  - BLS accepts the hours download with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header. The file URL now redirects (301 to `/web/prod2/total-economy-hours-employment.xlsx`), so the download must follow redirects. The file matched the committed one byte for byte.
+  - the built-in Actions token can open and close a draft PR (test PRs #7 and #8)
 
 ## How it fits together
 
@@ -170,7 +175,7 @@ Fix real findings. Record findings that need several unusual conditions at once 
 
 **Verification**: the first hook review appears in `roborev list`. The exclusions get checked on the first Phase 1 commit that moves or rebuilds data files: its review should leave out the large data files. The docs don't say whether file-name patterns match at any depth, so check this rather than assume it.
 
-### Phase 0: Feasibility checks (on a branch, before anything else)
+### Phase 0: Feasibility checks (done 2026-10-21; results under "Already verified")
 
 1. ~~Add repo secrets `BLS_API_KEY`, `BEA_API_KEY`, `BLS_DOWNLOAD_EMAIL`.~~ Done 2026-10-21 in GitHub settings.
 2. ~~Allow Actions to create pull requests (Settings → Actions → General).~~ Done 2026-10-21.
@@ -179,14 +184,14 @@ Fix real findings. Record findings that need several unusual conditions at once 
 3. Push a throwaway workflow, triggered on push to a `spike/*` branch, with two jobs:
    - **Secrets and downloads**: report whether each secret is set, without printing values. Make one small BLS API call and one small BEA API call with the keys. Download the hours file with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header, and report the file size and the "Data released" line from its ReadMe sheet. This answers whether BLS accepts downloads from GitHub's servers.
    - **Bot PR**: with `pull-requests: write`, open a draft PR from the spike branch to `main` using the built-in token, then close it. This confirms the Actions setting.
-4. Delete the spike branch and workflow.
+4. Remove the spike workflow in a follow-up commit, and record the results in this plan. Merge the branch (`spike/phase-0`) through a PR, so its net change is the plan and AGENTS.md updates.
 
 **Exit criteria**: both API keys work from CI, I know whether automated hours download works from CI, and the bot can open PRs.
 
 ### Phase 1: Restructure the pipeline (local only)
 
 1. Create `data_raw/` and move the two API outputs and the hours spreadsheet there with `git mv`. Rename `release/` to `data_final/` with `git mv`. Update paths in `_targets.R` and `R/document_data.R`.
-2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`). On failure, keep the committed file and record the failure in the fetch log.
+2. Add a live hours download target (one-day cache, `User-Agent` from `BLS_DOWNLOAD_EMAIL`, following redirects). On failure, keep the committed file and record the failure in the fetch log. Treat a response that isn't a valid spreadsheet as a failure: the first Phase 0 run got HTTP success with a 23-byte body.
 3. Add `fetch_log.csv`, written in live mode and read in offline mode. Seed it with the dates currently in `release/epi_productivity_pay_gap_sources.csv`.
 4. Parse the hours release date from the ReadMe sheet. Delete `data_inputs/bls_hours_dates.csv`.
 5. Add offline mode (`PPG_OFFLINE`) with its own store.
@@ -220,16 +225,18 @@ Fix real findings. Record findings that need several unusual conditions at once 
 
 **Verification**: open two test PRs. One changes only the README and should pass. One changes rounding in `R/web.R` without rebuilding and should fail on the diff step. Then, on the README PR, make the report step fail on purpose (for example, by setting `PPG_BASELINE` to a ref that doesn't exist): the check must still pass.
 
-### Phase 4: Protect `main`
+5. After the check job has run once, add it to the required status checks of the "protect main" ruleset (Phase 4). A check only appears in the ruleset's list after it has run.
 
-Create a ruleset on `main` in the repo settings:
+### Phase 4: Protect `main` (done 2026-10-21, except the required check)
 
-- require a pull request, with 0 required approvals
+The "protect main" ruleset on the default branch is active, with:
+
+- a pull request required, with 0 required approvals
 - no bypass list, so admins follow the same rules
-- require the check job to pass (it must have run once to appear in the list)
-- block force pushes and branch deletion
-- allow squash merges only
-- do not require branches to be up to date, since that would force a rebuild for every unrelated merge
+- force pushes and branch deletion blocked
+- merge commits only (no squash or rebase)
+- branches not required to be up to date, since that would force a rebuild for every unrelated merge
+- required status checks turned on, with no checks listed yet; Phase 3 step 5 adds the check job
 
 **Verification**: a direct `git push` to `main` is rejected.
 
@@ -269,7 +276,7 @@ Make the first real release with the next data update. Afterward, confirm that t
 
 ## Risks
 
-- **BLS blocks GitHub's servers.** Then the hours file stays manual. The weekly report flags it, and I commit the file through a PR when BLS publishes.
+- **BLS starts blocking GitHub's servers, or moves the file.** Neither is happening as of 2026-10-21 (see Phase 0). If it happens, the download fails, the committed file is used, and the weekly report flags it. I then commit the file through a PR when BLS publishes.
 - **Exact match is brittle across machines.** Floating-point output could differ between my machine and the runner. Both are x86-64 Linux, so this is unlikely. If it happens, compare numbers with a tiny tolerance instead of comparing bytes.
 - **Org settings block the bot.** The Economic org may forbid Actions from creating PRs, or creating a GitHub App may need an org admin.
 - **Scheduled workflows get switched off.** GitHub disables them on public repos after 60 days without repository activity. Data changes nearly every month, so the bot's pushes should keep it active. If GitHub disables the workflow anyway, it shows a banner and I re-enable it.
@@ -287,7 +294,7 @@ Make the first real release with the next data update. Afterward, confirm that t
 
 8. **Stale refresh PR**: if the fresh numbers match `main` while a refresh PR is open (for example, after merging a local data PR), the weekly run closes the refresh PR with the comment "`main` already has these numbers". That causes one notification.
 9. **One refresh PR for data and packages**: package updates that change no numbers never open a PR by themselves. They ride along the next time the numbers change.
-10. **Squash merges only**, so `main` gets one commit per change and release tags point at clean commits.
+10. **Merge commits only** (`gh pr merge N --merge`), as in bls-index. Rebase merging would put commits where code and data disagree directly onto `main`. Squash and rebase would both replace the commits roborev reviewed with new ones it never saw. Merge commits keep every reviewed commit in `main`'s history, and `git log --first-parent main` still shows one entry per PR. (Changed from squash only on 2026-10-21.)
 11. **No extra release notifications**: the plan stops at publishing the GitHub release. Updating the EPI page and SWADL stays as it is now.
 
 ## Open questions
