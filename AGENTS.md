@@ -4,6 +4,7 @@ Guidance for coding agents working in this repository.
 
 ## Working here
 
+- **Overview:** README's "How updates work" describes the weekly refresh, merge and release cycle, and "Maintainer setup" lists the GitHub settings it depends on, such as secrets, notification email, and the `main` ruleset.
 - **Plans:** the newest dated file in `plans/` is the current plan, with next steps. Its "Decisions made" and "Resolved questions" sections are settled: don't reopen them without a new argument. New plans go in `plans/YEAR-MM-DD-short-description.md`.
 - **Changes:** make each change on a branch and open a pull request. `main` is protected, so direct pushes are rejected. The maintainer merges, with merge commits only (`gh pr merge N --merge`). Ask them when a PR is ready.
 - **CI check:** `.github/workflows/check.yml` runs on every PR and every push to `main`. It rebuilds offline and fails if anything in `data_final/` or `data_outputs/` differs from the committed files. So when code changes the outputs, rebuild offline (`TAR_PROJECT=offline`) and commit the result in the same PR. It also posts the change report as a PR comment, except on refresh PRs, which carry the refresh workflow's report.

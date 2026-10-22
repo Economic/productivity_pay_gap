@@ -395,6 +395,13 @@ The dry-run path of the publish script was also tested locally. The publishing p
 2. AGENTS.md: modes, checks, workflows, "never push to `main`", and how to run the offline check.
 3. Optional: retitle the v2026.3.23 release, currently "Version 2023.3.26". Leave the two old tags without a `v` as they are, since renaming tags breaks links.
 
+**As built (2026-10-22)**:
+
+- **README** is reorganized around the update cycle:
+  - "How updates work": the weekly refresh, merging, releasing, the required check, and the hours fallback
+  - "Maintainer setup": the repository secrets, the PR assignee, the notification settings, and the `main` ruleset. The emails only reached the maintainer after Economic organization notifications were routed to the right address, so the setup now lists that step.
+  - the local sections (setup, live and offline runs, the change report, making changes), the outputs, methodology and sources
+- **AGENTS.md** was kept current through each phase, and now points to the README's overview and setup sections.
 ## Risks
 
 - **BLS starts blocking GitHub's servers, or moves the file.** Neither is happening as of 2026-10-21 (see Phase 0). If it happens, the download fails, the committed file is used, the weekly report flags it, and the run ends as failed, so I get GitHub's failure email every week until it's fixed. I then commit the file through a PR when BLS publishes.
