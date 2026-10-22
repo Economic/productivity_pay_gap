@@ -14,7 +14,7 @@ Date: 2026-10-21
 
 | Topic | Decision |
 |---|---|
-| PR checks | Offline rebuild must match the committed files exactly, plus sanity checks. The change report is posted on the PR for information only and never blocks a merge. |
+| PR checks | Offline rebuild must match the committed files exactly, plus sanity checks. The change report is posted on the PR for information only and never blocks a merge: it is built in a separate step that can't fail the check. |
 | When checks run | On every PR to `main` and on every push to `main` (which, once `main` is protected, means merges). |
 | Releases | Manual. A `workflow_dispatch` workflow creates tag `vYYYY.M.D` and attaches the four final CSVs plus the report. It refuses if nothing but access dates changed since the last release. A second release on the same day is allowed only as an explicit correction with a reason, tagged `vYYYY.M.D.2`. |
 | Merge vs. release | Separate decisions. Merging a PR updates the numbers on `main` but publishes nothing. `main` can run ahead of the latest release. A release is a snapshot of `main` that I publish when I decide, typically when a new quarter arrives rather than for small revisions. |
@@ -82,14 +82,14 @@ A PR opened with GitHub's built-in Actions token doesn't trigger `pull_request` 
 ### Release flow
 
 1. Click "Run workflow" on the release workflow (on `main`). Inputs: `dry_run` (checkbox), `correction` (checkbox), and `reason` (text, required when `correction` is ticked).
-2. It runs the offline check.
+2. **One commit throughout**: the run records the commit it started from (`github.sha`) and uses only that commit. The offline check and the release job both check it out, the tag is created on it (`gh release create --target <sha>`; without `--target`, GitHub tags whatever `main` points to at that moment), and the attached files come from that checkout. A merge during the run can't mix commits. The offline check runs first.
 3. **No-change guard**: if the four final files match the previous release, ignoring the `date_accessed` column of the sources CSV (which changes on every data pull), it stops with "Nothing changed since vX". There is no override. The guard only catches pointless releases, such as an accidental click on an unchanged `main`. Whether a change is worth releasing is my decision, made from the report.
 4. It computes the tag from today's date in Eastern time:
    - No release today: `vYYYY.M.D`. If `correction` is ticked, it stops, since there's nothing to correct.
    - A release already exists today and `correction` is not ticked: it stops with "vYYYY.M.D already exists; tick 'correction' and give a reason to publish a corrected release". This catches double-clicks.
    - A release already exists today and `correction` is ticked: next suffix, `vYYYY.M.D.2` (then `.3`, and so on).
 5. It regenerates the report against the previous release tag (not `main`), so the notes cover everything since the last release. For a correction, the previous release is the one being corrected, so the report shows exactly what the fix changed.
-6. It creates the GitHub release, titled "Version YYYY.M.D" (or "Version YYYY.M.D.2"), with notes headed "Latest updates through YYYYqN". A correction's notes start with "Correction to vYYYY.M.D: <reason>". It attaches the four final CSVs and the report.
+6. It creates the GitHub release, titled "Version YYYY.M.D" (or "Version YYYY.M.D.2"), with notes headed "Latest updates through YYYYqN". A correction's notes start with "Correction to vYYYY.M.D: <reason>". It attaches the four final CSVs and the report. The release is created as a draft first. After uploading, the workflow checks that each attached file's digest matches the file in the checkout, then publishes the draft. If any check fails, it deletes the draft, so nothing becomes public.
 7. With `dry_run` ticked, it runs every check and prints the tag and notes without creating anything.
 
 Published releases are never deleted or overwritten.
@@ -130,10 +130,13 @@ Markdown only for now. Charts could be added later as an HTML report attached to
 
    With Δ meaning new minus old, the revision `Δlog(index_t)` equals the sum over inputs of `±(Δlog(input_t) − Δlog(input_0))`. This is an identity, so the result doesn't depend on any ordering of inputs and always comes out the same for the same files.
 2. **Index points.** Each log contribution is multiplied by the logarithmic mean of the old and new index values, L(a, b) = (a − b) / (log a − log b), or a when a = b. The contributions then add up exactly to the change in points, even when inputs offset each other.
-3. **Remainder check.** Compare the sum of contributions with the actual revision from the pipeline. If the code is unchanged, the remainder is rounding error. Anything above 1e-8 in logs is reported as "code or method change".
+3. **Remainder check.** Compare the sum of contributions with the actual revision from the pipeline. If the code is unchanged, the remainder is rounding error. Anything above 1e-8 in logs is reported as "code or method change". This check applies to the unrounded index series in the full data file. The web stats are built from rounded indexes, so they get their own treatment in step 6.
 4. **Upstream code changes.** A change in `R/bls.R` (for example, the wage splice) shows up inside an input's contribution, not in the remainder. For each input, check whether its raw data, its code, or both changed. If both changed, rerun the new code on the baseline raw data in offline mode and split that input's contribution into data and code parts.
 5. **New periods.** No old value exists to split. Report each source's latest available period, before and after, and which source limits the latest common quarter.
-6. **Headline stats.** Use the same identity with 1979q4 as the base. When the latest quarter moves, report the effect of the added quarters separately from revisions to existing quarters.
+6. **Headline stats.** `R/web.R` computes the published stats from indexes already rounded to one decimal, so the identity doesn't hold for them exactly. For example, for the 2026q1 pay growth factor in the v2026.7.30 to v2026.9.14 comparison, rounding alone leaves a log remainder of about 7.8e-5. So:
+   - Recompute each stat from the unrounded indexes and split its revision with the same identity, using 1979q4 as the base. This part is exact.
+   - Report the gap between the published stat and its unrounded version as a separate "rounding" line, never as a code or method change.
+   - When the latest quarter moves, report the effect of the added quarters separately from revisions to existing quarters.
 7. **Base-period revisions.** Revisions to 1948q1 values move every quarter, so they get their own line.
 8. **Limits.** This identifies which input moved and by how much, not why an agency revised its data. The report gives publication dates and the range of revised periods. The plain-language summaries are templates filled in largest contributor first, not generated text.
 
@@ -198,15 +201,16 @@ Fix real findings. Record findings that need several unusual conditions at once 
 3. Implement the log decomposition and the "code or method change" remainder.
 4. Add the `change_report` target.
 
-**Verification**: run the report comparing v2026.9.14 with v2026.7.30. Between those releases only data and `renv.lock` changed, so the remainder should be close to zero and the contributions should be plausible. Also run it against an unchanged working tree; it should report no changes.
+**Verification**: run the report comparing v2026.9.14 with v2026.7.30. Between those releases only data and `renv.lock` changed, so the remainder should be close to zero and the contributions should be plausible. Nothing may be attributed to "code or method change", including in the headline stats. Also run it against an unchanged working tree; it should report no changes.
 
 ### Phase 3: PR check workflow
 
 1. Add `.github/workflows/check.yml`, triggered on `pull_request` to `main`, `push` to `main`, `workflow_dispatch`, and `workflow_call`.
 2. Run on `ubuntu-24.04`, not `ubuntu-latest`. `.Rprofile` only uses prebuilt Posit binary packages for known Ubuntu codenames such as noble (24.04), so a future `ubuntu-latest` would compile every package from source.
-3. Steps: check out with full history; set up R using the version in `renv.lock` (`r-lib/actions/setup-r`); restore packages with caching (`r-lib/actions/setup-renv`); run offline `tar_make()`; fail if `git diff --exit-code -- data_final data_outputs` shows any difference; write the report to the job summary; post or update one PR comment with the report.
+3. Steps: check out with full history; set up R using the version in `renv.lock` (`r-lib/actions/setup-r`); restore packages with caching (`r-lib/actions/setup-renv`); run offline `tar_make()` for every target except the change report; fail if `git diff --exit-code -- data_final data_outputs` shows any difference.
+4. Then, in a separate step that can't fail the job (`continue-on-error: true`), build the report and write it, or its error message, to the job summary. Post or update one PR comment with it only for PRs from branches in this repo, because PRs from forks get a read-only token.
 
-**Verification**: open two test PRs. One changes only the README and should pass. One changes rounding in `R/web.R` without rebuilding and should fail on the diff step.
+**Verification**: open two test PRs. One changes only the README and should pass. One changes rounding in `R/web.R` without rebuilding and should fail on the diff step. Then, on the README PR, make the report step fail on purpose (for example, by setting `PPG_BASELINE` to a ref that doesn't exist): the check must still pass.
 
 ### Phase 4: Protect `main`
 
@@ -237,7 +241,7 @@ If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App t
 
 ### Phase 6: Release workflow
 
-1. Add `.github/workflows/release.yml` (`workflow_dispatch`, with `dry_run`, `correction`, and `reason` inputs). It reuses the check through `workflow_call`, then follows "Release flow" above.
+1. Add `.github/workflows/release.yml` (`workflow_dispatch`, with `dry_run`, `correction`, and `reason` inputs). It reuses the check through `workflow_call`, passing the pinned commit, then follows "Release flow" above.
 2. Look into GitHub's immutable releases setting, which as far as I know prevents changing or deleting a published release's tag and files. If it works as expected, turn it on so "never overwrite" is enforced in the GitHub interface too.
 
 **Verification** (all as dry runs):
@@ -246,7 +250,7 @@ If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App t
 - On a test branch with changed final files: no `correction` gives the expected `vYYYY.M.D` tag and notes; `correction` ticked with no release today stops; `correction` ticked without a reason stops.
 - The same-day branch logic (existing tag, with and without `correction`) is tested by pointing the date at an existing release tag, for example with a `date` override input available only in dry runs.
 
-Make the first real release with the next data update.
+Make the first real release with the next data update. Afterward, confirm that the tag points at the commit the run started from, and that the attached files match `data_final/` at that commit byte for byte.
 
 ### Phase 7: Documentation and cleanup
 
