@@ -47,7 +47,8 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           file="$RUNNER_TEMP/hours.xlsx"
-          curl -sS --fail -A "$BLS_DOWNLOAD_EMAIL" -o "$file" \
+          # BLS redirects this URL (301 to /web/prod2/...), so follow redirects
+          curl -sS --fail -L -A "$BLS_DOWNLOAD_EMAIL" -o "$file" \
             https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx
           size=$(stat -c %s "$file")
           echo "size: $size bytes"
