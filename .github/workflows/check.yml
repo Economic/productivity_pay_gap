@@ -44,6 +44,16 @@ jobs:
         with:
           r-version: renv
 
+      # System libraries that some of the prebuilt R packages link to (igraph
+      # needs libglpk, for example), as listed by renv::restore(). cmake and
+      # pandoc, also listed, are needed only to compile packages or render
+      # documents.
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libglpk-dev libx11-dev
+
       - uses: r-lib/actions/setup-renv@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         env:
           # renv installs epidatatools and epitargets from GitHub
