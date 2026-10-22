@@ -62,6 +62,7 @@ pipeline = tar_assign({
   bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
   bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
   bea_series_csv = tar_file("data_inputs/bea_series_codes.csv")
+  renv_lock = tar_file("renv.lock")
 
   data_documentation = document_data(
     bls_hours = bls_hours_xlsx,
@@ -116,6 +117,21 @@ pipeline = tar_assign({
     "data_final/epi_productivity_pay_gap_web_stats.csv"
   ) |>
     tar_csv_read()
+
+  ##########
+  # CHECKS #
+  ##########
+  output_checks = check_outputs(
+    data = output,
+    web_data = output_web_data_csv,
+    web_stats = output_web_stats_csv,
+    sources_csv = data_documentation
+  ) |>
+    tar_target()
+
+  # installed packages can change without any tracked file changing
+  package_check = check_packages(renv_lock, strict = offline) |>
+    tar_target(cue = tar_cue(mode = "always"))
 })
 
 c(fetched_files, pipeline)
