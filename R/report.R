@@ -198,7 +198,7 @@ contribution_text = function(contributions, digits = 3) {
   shown = contributions |>
     filter(
       abs(points) >= 0.5 * 10^-digits,
-      !is_method_change(label) | abs(log_contribution) > method_change_threshold
+      label != method_change_label | abs(log_contribution) > method_change_threshold
     ) |>
     arrange(desc(abs(points)))
   if (nrow(shown) == 0) {
@@ -271,15 +271,17 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   new_inputs = index_inputs(new)
   code_files = changed_code_files(old$ref, new$ref)
 
-  # Changed files that shape what an input contains: what is fetched, or how
-  # it is cleaned. The report names them but doesn't measure their effect, so
-  # it shows up in those inputs' contributions.
+  # Changed files that shape the published numbers in ways the report doesn't
+  # measure: what is fetched or how it is cleaned, whose effect shows in the
+  # inputs' contributions, and R/web.R, whose effect shows in the web data and
+  # the rounding lines of the headline stats
   unmeasured_code = intersect(
     code_files,
     c(
       "R/bls.R",
       "R/bea.R",
       "R/prices.R",
+      "R/web.R",
       "data_inputs/bea_series_codes.csv",
       "data_inputs/bls_series_codes.csv"
     )
@@ -288,14 +290,6 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   revisions = index_revisions(old_inputs, new_inputs)
   stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs)
   web_revisions = web_changes(old, new)
-  # Whether each side's web data is the indexes rounded to one decimal, as
-  # R/web.R should make it. A change in that, not in which quarters happen to
-  # match, means R/web.R changed: under some other rounding rule, data
-  # revisions and added quarters change which quarters match by chance.
-  new_mismatches = web_data_mismatches(new)
-  old_follows_rule = nrow(web_data_mismatches(old)) == 0
-  new_follows_rule = nrow(new_mismatches) == 0
-  web_rule_changed = old_follows_rule != new_follows_rule
   data_changes = full_data_changes(old, new)
   sources_differ = !same_contents(
     select(old$sources, -date_accessed),
@@ -424,23 +418,6 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     } else {
       c("No quarter changed after rounding.", "")
     },
-    if (web_rule_changed) {
-      c(
-        paste0(
-          "**The web data ",
-          if (new_follows_rule) {
-            "is now the indexes rounded to one decimal, and wasn't before"
-          } else {
-            paste0(
-              "is no longer the indexes rounded to one decimal (", n_distinct(new_mismatches$Year),
-              " quarters differ)"
-            )
-          },
-          ": ", web_method_change_label, ".**"
-        ),
-        ""
-      )
-    },
     "### Full data file",
     "",
     if (nrow(data_changes) > 0) md_table(data_changes) else c("No values changed.", "")
@@ -468,7 +445,7 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     }
     periods = revised_rows |> distinct(year, quarter) |> arrange(year, quarter)
     shares = revised_rows |>
-      filter(!is_method_change(label) | abs(log_contribution) > method_change_threshold) |>
+      filter(label != method_change_label | abs(log_contribution) > method_change_threshold) |>
       summarize(absolute = sum(abs(points)), .by = label) |>
       mutate(share = absolute / sum(absolute)) |>
       filter(share >= 0.005) |>
@@ -484,19 +461,14 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   }
   base_revisions = base_period_revisions(old_inputs, new_inputs)
   ratio = filter(stats, stat == "ratio")
-  ratio_method_change = (ratio$value_new - expected_published_ratio(new$web)) -
-    (ratio$value_old - expected_published_ratio(old$web))
-  method_changes = c(
-    revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
-    stat_revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
-    web_rule_changed,
-    abs(ratio_method_change) > method_change_threshold
-  )
+  method_changed = bind_rows(revisions, stat_revisions) |>
+    filter(label == method_change_label, abs(log_contribution) > method_change_threshold) |>
+    nrow() > 0
   # rows too small to show at four decimals are dropped, and a total row shows
   # that the rest add up to the published change
   shown_stat_rows = stat_revisions |>
     filter(abs(points) >= 0.00005 | label == "Rounding") |>
-    filter(!is_method_change(label) | abs(log_contribution) > method_change_threshold)
+    filter(label != method_change_label | abs(log_contribution) > method_change_threshold)
   stat_tables = distinct(stat_revisions, stat, index) |>
     pmap(\(stat, index) {
       all_rows = stat_revisions[stat_revisions$stat == stat & stat_revisions$index == index, ]
@@ -522,7 +494,7 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     index_sentence("productivity"),
     index_sentence("pay"),
     "",
-    if (sum(method_changes) > 0) {
+    if (method_changed) {
       c(
         paste0(
           "**The inputs don't explain all of the changes: the calculation itself changed.** ",
@@ -534,9 +506,10 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     if (length(unmeasured_code) > 0) {
       c(
         paste0(
-          "**These changed files shape what an input contains, and the report doesn't measure ",
+          "**These changed files shape the published numbers, and the report doesn't measure ",
           "their effect separately: ", paste0("`", unmeasured_code, "`", collapse = ", "),
-          ". The contributions of the inputs they shape may include a change in method.**"
+          ". The contributions of the inputs they shape, and for `R/web.R` the web data and ",
+          "the rounding lines, may include a change in method.**"
         ),
         ""
       )
@@ -561,17 +534,14 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     "",
     paste0(
       "Each stat's revision split by input, from the unrounded indexes. ",
-      "\"Rounding\" is the extra change in the published stats, which are ",
+      "\"Rounding\" is the rest of the change in the published stats, which are ",
       "computed from indexes rounded to one decimal."
     ),
     "",
     stat_tables,
     paste0(
       "**", ratio$name_new, "**: ", before_after(ratio$text_old, ratio$text_new),
-      " (not split; it follows from the two total growth stats).",
-      if (abs(ratio_method_change) > method_change_threshold) {
-        paste0(" ", web_method_change_label, ": ", signed(ratio_method_change, 1), ".")
-      }
+      " (not split; it follows from the two total growth stats)."
     ),
     ""
   )
