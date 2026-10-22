@@ -2,6 +2,24 @@
 
 Guidance for coding agents working in this repository.
 
+## Working here
+
+- **Plans:** the newest dated file in `plans/` is the current plan, with next steps. Its "Decisions made" and "Resolved questions" sections are settled: don't reopen them without a new argument. New plans go in `plans/YEAR-MM-DD-short-description.md`.
+- **Changes:** make each change on a branch and open a pull request. Don't push to `main`. Phase 4 of the current plan enforces this. The maintainer merges; ask them when a PR is ready.
+- **Commits:** commit early and often. Give each self-contained change its own commit; small commits get faster, more focused reviews.
+- **Live data:** a live `tar_make()` calls the BLS and BEA APIs and changes the committed data (see "Running the Pipeline"). Don't run one without a reason.
+
+## Reviews (roborev)
+
+- A post-commit hook sends every commit to one code reviewer automatically. See the results with `roborev list` and `roborev show <job>`.
+- At the end of each plan phase, run `roborev review --branch --base main --panel checkpoint_panel --wait`. That panel covers code, design and security.
+- `.roborev.toml` tells reviewers what matters here: wrong published numbers, calculation changes nobody declared, and the security of the GitHub workflows. Fix real findings. For a finding that needs several unusual conditions at once, record it as an accepted risk in the current plan's "Risks" section rather than adding code. Then close the job with `roborev comment <job> "..."` and `roborev close <job>`.
+
+## Style
+
+- **Prose:** short sentences, and no em dashes.
+- **R:** tidyverse style, the base pipe `|>`, and `=` for assignment.
+
 ## Project Overview
 
 This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi.org/productivity-pay-gap/) page, tracking the historical divergence between U.S. productivity growth and worker compensation (1948–present). Output is published to the EPI website and State of Working America Data Library.
@@ -28,6 +46,7 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 ### Wage Series Construction (`R/bls.R`)
 
 The BLS hourly wage series splices two sources:
+
 - **Pre-1964**: Series EEU00500006 (historical production workers, annual, from `data_inputs/bls_EEU00500006.csv`)
 - **1964–present**: Series CES0500000008 (seasonally adjusted, for quarterly data) and CEU0500000008 (not seasonally adjusted, for annual data), via BLS API
 
@@ -47,6 +66,7 @@ Intermediate files (API results, cleaned hours, spliced wages, prices) are writt
 ## Data Inputs
 
 Files in `data_inputs/`:
+
 - `total-economy-hours-employment.xlsx`: BLS total economy hours. Download manually from BLS for each release
 - `bls_hours_dates.csv`: access and publication dates for the hours file, used in the sources CSV. Update whenever the hours file changes
 - `bls_EEU00500006.csv`: historical production worker wages (pre-1964). Static; no updates needed
@@ -61,6 +81,7 @@ Files in `data_inputs/`:
 ## Packages
 
 Key non-standard packages:
+
 - `epidatatools`: EPI's wrapper for BLS and BEA APIs (`get_bls()`, `get_bea_nipa()`)
 - `epitargets`: EPI's targets helpers: `create_csv()` (writes a data frame, returns the file path), `tar_age_date()`, `tar_target_date()`, `collect_target_date()`, `tar_csv_read()`
 - `realtalk`: EPI's package providing Extended Chained CPI-U; see https://economic.github.io/realtalk/
