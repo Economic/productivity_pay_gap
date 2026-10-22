@@ -50,14 +50,15 @@ body=$(mktemp)
 {
   echo "Weekly data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
   echo
-  echo "To merge: approve the held check run (\"Approve and run workflows\"), click \"Ready for review\", then merge."
+  echo "To merge: approve the held check run (\"Approve and run workflows\"), then merge once it passes."
   echo
   cat "$report"
 } > "$body"
 
 # Creating the PR assigned to me emails me; after that, each update's comment does
 if [ -z "$pr" ]; then
-  gh pr create --draft --base main --head "$branch" --title "$title" \
+  # Not a draft: the held check already keeps it from being merged by accident
+  gh pr create --base main --head "$branch" --title "$title" \
     --body-file "$body" --assignee benzipperer
 else
   gh pr edit "$pr" --title "$title" --body-file "$body"

@@ -19,7 +19,7 @@ Date: 2026-10-21
 | Releases | Manual. A `workflow_dispatch` workflow creates tag `vYYYY.M.D` and attaches the four final CSVs plus the report. It refuses if nothing but access dates changed since the last release. A second release on the same day is allowed only as an explicit correction with a reason, tagged `vYYYY.M.D.2`. |
 | Merge vs. release | Separate decisions. Merging a PR updates the numbers on `main` but publishes nothing. `main` can run ahead of the latest release. A release is a snapshot of `main` that I publish when I decide, typically when a new quarter arrives rather than for small revisions. |
 | Weekly run | Scheduled weekly, plus a manual button. Updates all packages (`renv::update()`), pulls fresh data, runs the pipeline, writes the report. |
-| Notification | One rolling draft PR from a `data-refresh` branch, assigned to `benzipperer`. The run comments (and so emails) only when a web-visible output changes compared with what I last saw: the open refresh PR, or `main` if none is open. The PR title, which becomes the email subject, labels the change: "New quarter: 2026q3" or "Revisions only (largest: 0.1 points, 2026q2 pay, from CPI)". Separately, a failed run sends GitHub's failure email, and so does a run whose hours download fell back to the committed file (see "Hours spreadsheet"). |
+| Notification | One rolling PR from a `data-refresh` branch, assigned to `benzipperer`. The run comments (and so emails) only when a web-visible output changes compared with what I last saw: the open refresh PR, or `main` if none is open. The PR title, which becomes the email subject, labels the change: "New quarter: 2026q3" or "Revisions only (largest: 0.1 points, 2026q2 pay, from CPI)". Separately, a failed run sends GitHub's failure email, and so does a run whose hours download fell back to the committed file (see "Hours spreadsheet"). |
 | "Web-visible" change | Any change to `data_final/epi_productivity_pay_gap_web.csv` or `data_final/epi_productivity_pay_gap_web_stats.csv`. These files are already rounded, so smaller revisions are reported but don't trigger email. |
 | Hours spreadsheet | Downloaded automatically with `BLS_DOWNLOAD_EMAIL` in the `User-Agent` header. The release date is read from the ReadMe sheet. If the download fails, the committed file is used and the report says so. The weekly run then finishes as usual and ends as failed, so GitHub's failure email tells me, every week until the download works again. The sources CSV keeps the dates of the last successful download. |
 
@@ -79,16 +79,17 @@ The sources CSV currently takes access dates from when each target was built. An
 2. Run the pipeline in fresh live mode with secrets `BLS_API_KEY`, `BEA_API_KEY`, `BLS_DOWNLOAD_EMAIL`.
 3. Write the report to the run's summary page (always).
 4. Compare the two web files with the "last seen" version: the open refresh PR's branch, or `main` if no refresh PR is open.
-5. If they differ: commit all changed files onto a fresh branch from `main`, force-push it to `data-refresh`, open the draft PR (or update its title and description, with the title carrying the change label), and post the report as a comment.
+5. If they differ: commit all changed files onto a fresh branch from `main`, force-push it to `data-refresh`, open the PR (or update its title and description, with the title carrying the change label), and post the report as a comment.
 6. If they don't differ: do nothing to the branch or PR, with one exception. If a refresh PR is open and the fresh web files also match `main` (for example, because a local data PR with the same numbers was merged), close the refresh PR with the comment "`main` already has these numbers".
 7. If the hours download fell back to the committed file, steps 3 to 6 still happen as usual. Then the run ends as failed with the message "hours download failed; used the committed file released <date>", so GitHub's failure email tells me. Otherwise a blocked download could go unnoticed, especially in a week when nothing else changes or when BLS has just published a new quarter.
 8. If the run fails for any other reason, GitHub sends its own failure email. The BLS and BEA API fetches have no fallback, so an API failure stops the pipeline, and next week's run tries again. GitHub sends failure emails for scheduled runs to whoever created or last changed the workflow's schedule.
 
-**Merging a refresh PR** takes three clicks:
+**Merging a refresh PR** takes two clicks:
 
 1. Approve the held check run ("Approve and run workflows").
-2. Click "Ready for review".
-3. Merge.
+2. Merge, once the check passes.
+
+The PR is not a draft. It was at first, as a guard against merging by accident, but the held check already does that, so the draft only added a "Ready for review" click (changed 2026-10-22).
 
 GitHub does run the `pull_request` check on a PR the bot opened, but holds the run until a maintainer approves it, and the PR's required check follows that held run. Phase 5 test 1 showed this; the plan first assumed the check wouldn't run at all, and started it separately with `workflow_dispatch`, which didn't count. The approval is a deliberate gate: the PR's files come from a job that ran freshly updated package code. A GitHub App token would remove the click, and the gate with it.
 
@@ -312,7 +313,7 @@ A `dry_run` input for manual runs skips publishing, and publishing runs only on 
 
 **Verification**:
 
-- Run it manually: it opens a draft PR assigned to me, I get an email, and the check runs on the PR and shows as the required check.
+- Run it manually: it opens a PR assigned to me, I get an email, and the check runs on the PR and shows as the required check.
 - Run it again right away: it changes nothing and sends no email.
 - On a throwaway branch, point the hours download at a file that doesn't exist and run the workflow there. The report and the run summary must still be written, the run must end as failed with the fallback message, and I must get GitHub's failure email.
 - Mark the PR ready and merge it.

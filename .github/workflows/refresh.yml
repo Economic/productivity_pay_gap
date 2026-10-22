@@ -1,7 +1,7 @@
 # The weekly data refresh (Phase 5 of plans/2026-10-21-ci-data-release-workflow.md,
 # "Weekly refresh flow"). Updates every package, fetches fresh data, rebuilds,
 # and writes the change report. If the web files changed since I last saw them,
-# opens or updates the rolling draft PR from the data-refresh branch, which
+# opens or updates the rolling PR from the data-refresh branch, which
 # emails me. Never publishes a release.
 #
 # The build job runs package code (renv::update() installs whatever is new), so
