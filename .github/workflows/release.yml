@@ -1,0 +1,110 @@
+# The release workflow (Phase 6 of plans/2026-10-21-ci-data-release-workflow.md,
+# "Release flow"). A manual button: publishes the final files of the commit it
+# starts from as a dated GitHub release, after the offline check passes on that
+# commit. It never deletes or overwrites a published release.
+#
+# plan (read-only) chooses the tag and applies the guards; check is check.yml
+# at the same commit, with a change report against the previous release; the
+# release job, the only one that can write, runs no R and publishes from its
+# own checkout of that commit.
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run every check and show the tag and notes, but create nothing
+        type: boolean
+        default: false
+      correction:
+        description: Correct a release made earlier the same day
+        type: boolean
+        default: false
+      reason:
+        description: For a correction, what it fixes (starts the release notes)
+        type: string
+        default: ""
+      date:
+        description: Dry runs only, to test the same-day rules (YYYY-MM-DD)
+        type: string
+        default: ""
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.plan.outputs.tag }}
+      previous_tag: ${{ steps.plan.outputs.previous_tag }}
+      title: ${{ steps.plan.outputs.title }}
+      latest_quarter: ${{ steps.plan.outputs.latest_quarter }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          # full history and tags, to compare with the previous release
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Choose the tag and apply the release guards
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          CORRECTION: ${{ inputs.correction }}
+          REASON: ${{ inputs.reason }}
+          DATE_OVERRIDE: ${{ inputs.dry_run && inputs.date || '' }}
+        run: .github/scripts/release-plan.sh
+
+  check:
+    needs: plan
+    permissions:
+      contents: read
+      # check.yml's job asks for this to comment on PRs; there is no PR here
+      pull-requests: write
+    uses: ./.github/workflows/check.yml
+    with:
+      ref: ${{ github.sha }}
+      baseline: ${{ needs.plan.outputs.previous_tag }}
+
+  release:
+    needs: [plan, check]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      # outside the checkout; only the report file is read from it
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        continue-on-error: true
+        with:
+          name: change-report
+          path: ${{ runner.temp }}/report
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          TAG: ${{ needs.plan.outputs.tag }}
+          TITLE: ${{ needs.plan.outputs.title }}
+          PREVIOUS_TAG: ${{ needs.plan.outputs.previous_tag }}
+          LATEST_QUARTER: ${{ needs.plan.outputs.latest_quarter }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          CORRECTION: ${{ inputs.correction }}
+          REASON: ${{ inputs.reason }}
+          REPORT: ${{ runner.temp }}/report/change_report.md
+        run: .github/scripts/publish-release.sh
