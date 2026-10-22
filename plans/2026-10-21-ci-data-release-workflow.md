@@ -79,12 +79,18 @@ The sources CSV currently takes access dates from when each target was built. An
 2. Run the pipeline in fresh live mode with secrets `BLS_API_KEY`, `BEA_API_KEY`, `BLS_DOWNLOAD_EMAIL`.
 3. Write the report to the run's summary page (always).
 4. Compare the two web files with the "last seen" version: the open refresh PR's branch, or `main` if no refresh PR is open.
-5. If they differ: commit all changed files onto a fresh branch from `main`, force-push it to `data-refresh`, open the draft PR (or update its title and description, with the title carrying the change label), post the report as a comment, and trigger the check workflow on the branch.
+5. If they differ: commit all changed files onto a fresh branch from `main`, force-push it to `data-refresh`, open the draft PR (or update its title and description, with the title carrying the change label), and post the report as a comment.
 6. If they don't differ: do nothing to the branch or PR, with one exception. If a refresh PR is open and the fresh web files also match `main` (for example, because a local data PR with the same numbers was merged), close the refresh PR with the comment "`main` already has these numbers".
 7. If the hours download fell back to the committed file, steps 3 to 6 still happen as usual. Then the run ends as failed with the message "hours download failed; used the committed file released <date>", so GitHub's failure email tells me. Otherwise a blocked download could go unnoticed, especially in a week when nothing else changes or when BLS has just published a new quarter.
 8. If the run fails for any other reason, GitHub sends its own failure email. The BLS and BEA API fetches have no fallback, so an API failure stops the pipeline, and next week's run tries again. GitHub sends failure emails for scheduled runs to whoever created or last changed the workflow's schedule.
 
-A PR opened with GitHub's built-in Actions token doesn't trigger `pull_request` workflows. Step 5 works around this by starting the check with `gh workflow run check.yml --ref data-refresh`; manual triggers are exempt from that limitation. Phase 5 verifies that this satisfies the required check.
+**Merging a refresh PR** takes three clicks:
+
+1. Approve the held check run ("Approve and run workflows").
+2. Click "Ready for review".
+3. Merge.
+
+GitHub does run the `pull_request` check on a PR the bot opened, but holds the run until a maintainer approves it, and the PR's required check follows that held run. Phase 5 test 1 showed this; the plan first assumed the check wouldn't run at all, and started it separately with `workflow_dispatch`, which didn't count. The approval is a deliberate gate: the PR's files come from a job that ran freshly updated package code. A GitHub App token would remove the click, and the gate with it.
 
 ### Release flow
 
@@ -299,7 +305,7 @@ As built, the workflow has three jobs. The split keeps package code away from th
   - updates every package, then fetches and rebuilds with the three API secrets
   - writes the change report to the run summary and reads the hours status from the fetch log
   - uploads the changed files as an artifact
-- **publish** (`contents`, `pull-requests`, `issues` and `actions` write; `issues` because assigning a PR goes through the issues API): checks out `main`, adds the build job's files, and runs `.github/scripts/update-refresh-pr.sh`. It runs no R or package code.
+- **publish** (`contents`, `pull-requests` and `issues` write; `issues` because assigning a PR goes through the issues API): checks out the build job's commit and unpacks the artifact into a staging directory. `.github/scripts/copy-refresh-files.sh` then copies in only regular files at allowlisted paths, and `.github/scripts/update-refresh-pr.sh` updates the PR. It runs no R or package code. (After checkpoint review job 143. The first version unpacked the artifact straight over the checkout, where a crafted `.git/config` could have run commands with the write token present.)
 - **hours:** runs after publishing, and fails the run if the hours download fell back.
 
 A `dry_run` input for manual runs skips publishing, and publishing runs only on `main`.
@@ -311,7 +317,19 @@ A `dry_run` input for manual runs skips publishing, and publishing runs only on 
 - On a throwaway branch, point the hours download at a file that doesn't exist and run the workflow there. The report and the run summary must still be written, the run must end as failed with the fallback message, and I must get GitHub's failure email.
 - Mark the PR ready and merge it.
 
-If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App token for creating the PR (needs an Economic org admin).
+If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App token for creating the PR (needs an Economic org admin). (Resolved by test 1: approving the held check run is enough, so no App token is needed. See "Merging a refresh PR" above.)
+
+**Results (2026-10-22)**:
+
+- **Test 1** (run 39730736190):
+  - The manual run opened draft PR #17, "Data refresh: Revisions only (largest: 2.4 points, 2025q2 productivity, from NDP)", assigned to me. The new data since 2026-09-13 includes BEA revisions.
+  - The check started with `workflow_dispatch` passed on the PR's commit but didn't count. GitHub had also created a `pull_request` run for the bot's PR and held it (`action_required`), and the PR followed that run.
+  - Approving the held run (run 39730903579) ran the check, which passed; the PR then showed `check` passing and was blocked only as a draft.
+- **Test 2** (run 39731398993): a second run right away found "The web files match origin/data-refresh, so there is nothing new to report". The PR's commit and comments were unchanged, so no email went out.
+- **Checkpoint reviews:**
+  - Job 143's high finding (a crafted artifact could overwrite `.git/config` in the publish job) and low finding (publish from the build's commit) are fixed. So is job 148's low note (close a stale refresh PR before comparing with it). Job 143 finished only after PR #16 was merged; the fixes went in a follow-up PR.
+  - The copy script was tested locally against five crafted artifacts: a `.git/config`, a symlink, a nested path, a newline in a file name, and a dotfile. Each was rejected, and nothing was copied.
+- **Test 3** (the hours fallback) runs after the fixes are merged.
 
 ### Phase 6: Release workflow
 
