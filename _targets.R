@@ -10,7 +10,7 @@ tar_assign({
   ###############
   # INPUT FILES #
   ###############
-  bls_hours_xlsx = tar_file("data_inputs/total-economy-hours-employment.xlsx")
+  bls_hours_xlsx = tar_file("data_raw/total-economy-hours-employment.xlsx")
   bls_hours_dates_csv = tar_file("data_inputs/bls_hours_dates.csv")
   bls_early_wages_csv = tar_file("data_inputs/bls_EEU00500006.csv")
   bls_series_csv = tar_file("data_inputs/bls_series_codes.csv")
@@ -23,7 +23,7 @@ tar_assign({
     bls_current_wages = bls_series_csv,
     bea_data = bea_series_csv,
     source_dates = source_dates,
-    output_file = "release/epi_productivity_pay_gap_sources.csv"
+    output_file = "data_final/epi_productivity_pay_gap_sources.csv"
   ) |>
     tar_file()
 
@@ -32,7 +32,7 @@ tar_assign({
   #######################
   bls_api_output = bls_series_csv |>
     bls_grab_all() |>
-    create_csv("data_outputs/bls_api_output.csv") |>
+    create_csv("data_raw/bls_api_output.csv") |>
     tar_age_date(format = "file")
 
   bls_pay = clean_bls_pay(bls_early_wages_csv, bls_api_output) |>
@@ -45,7 +45,7 @@ tar_assign({
 
   bea_api_output = bea_series_csv |>
     bea_grab_all() |>
-    create_csv("data_outputs/bea_api_output.csv") |>
+    create_csv("data_raw/bea_api_output.csv") |>
     tar_age_date(format = "file")
 
   prices = make_prices() |>
@@ -72,19 +72,19 @@ tar_assign({
 
   output_data_csv = create_csv(
     output,
-    "release/epi_productivity_pay_gap.csv"
+    "data_final/epi_productivity_pay_gap.csv"
   ) |>
     tar_csv_read()
 
   output_web_data_csv = create_web_data_csv(
     output,
-    "release/epi_productivity_pay_gap_web.csv"
+    "data_final/epi_productivity_pay_gap_web.csv"
   ) |>
     tar_csv_read()
 
   output_web_stats_csv = create_web_stats_csv(
     output_web_data_csv,
-    "release/epi_productivity_pay_gap_web_stats.csv"
+    "data_final/epi_productivity_pay_gap_web_stats.csv"
   ) |>
     tar_csv_read()
 })
