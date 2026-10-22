@@ -330,7 +330,11 @@ If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App t
 - **Checkpoint reviews:**
   - Job 143's high finding (a crafted artifact could overwrite `.git/config` in the publish job) and low finding (publish from the build's commit) are fixed. So is job 148's low note (close a stale refresh PR before comparing with it). Job 143 finished only after PR #16 was merged; the fixes went in a follow-up PR.
   - The copy script was tested locally against five crafted artifacts: a `.git/config`, a symlink, a nested path, a newline in a file name, and a dotfile. Each was rejected, and nothing was copied.
-- **Test 3** (the hours fallback) runs after the fixes are merged.
+- **Test 3** (run 39732719173): a dry run on a throwaway branch, with the hours download pointed at a file that doesn't exist.
+  - The build job succeeded and wrote the change report, and publishing was skipped.
+  - The hours job failed the run with "BLS hours spreadsheet: download failed (cannot open URL '.../does-not-exist.xlsx': HTTP status was '404 Not Found'); kept file released 2026-09-03", which sends GitHub's failure email.
+  - The branch was deleted afterward.
+- **Duplicate reports:** approving the check on PR #17 also posted the check's change report as a comment, duplicating the refresh workflow's report. Worse, the check updates "its" comment with `--edit-last`, which on a refresh PR would overwrite the refresh workflow's latest weekly comment. The check no longer comments on refresh PRs (branch `data-refresh`); its report still goes to the run summary.
 
 ### Phase 6: Release workflow
 
