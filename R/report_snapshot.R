@@ -26,15 +26,6 @@ snapshot_files = list(
   prices = "data_outputs/prices.csv"
 )
 
-raw_input_files = list(
-  bls_api = snapshot_files$bls_api,
-  bls_early_wages = "data_inputs/bls_EEU00500006.csv",
-  bls_hours_xlsx = c(
-    "data_raw/total-economy-hours-employment.xlsx",
-    "data_inputs/total-economy-hours-employment.xlsx"
-  )
-)
-
 # system2() runs git through the shell, so every argument is quoted: a ref
 # can come from PPG_BASELINE and contain shell characters
 git_args = function(...) {
@@ -143,7 +134,7 @@ changed_code_files = function(old_ref, new_ref = NULL) {
     )
   }
   # before Phase 1 the hours spreadsheet sat in data_inputs/, but it's data
-  setdiff(sort(unique(changed)), raw_input_files$bls_hours_xlsx)
+  setdiff(sort(unique(changed)), "data_inputs/total-economy-hours-employment.xlsx")
 }
 
 # The final files at `ref` that differ from the latest release reachable from

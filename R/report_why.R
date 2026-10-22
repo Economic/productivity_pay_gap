@@ -86,67 +86,19 @@ log_revisions = function(old_inputs, new_inputs) {
     mutate(log_revision = log(value_new) - log(value_old))
 }
 
-# The file whose code turns each input's raw data into the series used
-code_file_by_series = c(ces_wage = "R/bls.R", hours = "R/bls.R", cpi = "R/prices.R")
-
-# Wages and hours from the baseline's raw files, cleaned with the current code
-# in R/bls.R. Comparing them with the baseline's own wages and hours isolates
-# the effect of a change in that code.
-recleaned_bls_inputs = function(old_ref) {
-  wages = clean_bls_pay(
-    snapshot_file_path(old_ref, raw_input_files$bls_early_wages),
-    snapshot_file_path(old_ref, raw_input_files$bls_api)
-  ) |>
-    filter(frequency == "quarterly") |>
-    transmute(year, quarter, series = "ces_wage", value)
-  hours = clean_hours_data(
-    snapshot_file_path(old_ref, raw_input_files$bls_hours_xlsx)
-  ) |>
-    filter(frequency == "quarterly") |>
-    transmute(year, quarter, series = "hours", value = hours_millions)
-
-  bind_rows(wages, hours)
-}
-
-# CPI from the current code in R/prices.R. Only comparable with the
-# baseline's CPI when both used the same realtalk version, which is the
-# installed one.
-recleaned_prices = function() {
-  make_prices() |>
-    filter(frequency == "quarterly") |>
-    transmute(year, quarter, series = "cpi", value = c_cpi_u)
-}
-
 # Splits the log revision of index_t / index_base into input contributions,
-# plus a "code or method change" remainder. With `code_revisions` (log changes
-# from the baseline's inputs to the same raw data processed with the current
-# code), those inputs' contributions are further split into data and code
-# parts.
-split_log_revision = function(revisions, base, code_revisions = NULL) {
-  relative_to_base = function(revisions) {
-    base_revisions = revisions |>
-      filter(year == base[1], quarter == base[2]) |>
-      select(series, base_revision = log_revision)
-    revisions |>
-      inner_join(base_revisions, by = "series") |>
-      mutate(relative = log_revision - base_revision)
-  }
+# plus a "code or method change" remainder
+split_log_revision = function(revisions, base) {
+  base_revisions = revisions |>
+    filter(year == base[1], quarter == base[2]) |>
+    select(series, base_revision = log_revision)
+  relative = revisions |>
+    inner_join(base_revisions, by = "series") |>
+    mutate(relative = log_revision - base_revision)
   # CPI enters both indexes, hence many-to-many
-  to_contributions = function(relative) {
-    relative |>
-      inner_join(index_terms, by = "series", relationship = "many-to-many") |>
-      transmute(
-        year,
-        quarter,
-        index,
-        series,
-        label,
-        log_contribution = sign * relative
-      )
-  }
-
-  relative = relative_to_base(revisions)
-  contributions = to_contributions(relative)
+  contributions = relative |>
+    inner_join(index_terms, by = "series", relationship = "many-to-many") |>
+    transmute(year, quarter, index, label, log_contribution = sign * relative)
 
   remainder = contributions |>
     summarize(explained = sum(log_contribution), .by = c(year, quarter, index)) |>
@@ -160,43 +112,22 @@ split_log_revision = function(revisions, base, code_revisions = NULL) {
       year,
       quarter,
       index,
-      series = NA_character_,
       label = method_change_label,
       log_contribution = actual - explained
     )
-
-  if (!is.null(code_revisions)) {
-    code_parts = code_revisions |>
-      relative_to_base() |>
-      to_contributions() |>
-      mutate(label = paste0(label, ", code change in ", code_file_by_series[series]))
-    data_parts = contributions |>
-      inner_join(
-        select(code_parts, year, quarter, index, series, code = log_contribution),
-        by = c("year", "quarter", "index", "series")
-      ) |>
-      mutate(
-        log_contribution = log_contribution - code,
-        label = paste0(label, ", data")
-      ) |>
-      select(-code)
-    contributions = contributions |>
-      anti_join(code_parts, by = c("year", "quarter", "index", "series")) |>
-      bind_rows(data_parts, code_parts)
-  }
 
   bind_rows(contributions, remainder)
 }
 
 # Revision of each index in every common quarter, split into contributions in
 # index points
-index_revisions = function(old_inputs, new_inputs, code_revisions = NULL) {
+index_revisions = function(old_inputs, new_inputs) {
   revisions = log_revisions(old_inputs, new_inputs)
   levels = revisions |>
     filter(series %in% index_names) |>
     select(year, quarter, index = series, old = value_old, new = value_new)
 
-  split_log_revision(revisions, base = c(1948, 1), code_revisions) |>
+  split_log_revision(revisions, base = c(1948, 1)) |>
     inner_join(levels, by = c("year", "quarter", "index")) |>
     mutate(points = log_mean(new, old) * log_contribution)
 }
@@ -256,8 +187,7 @@ split_growth_stat = function(
   start,
   end_old,
   end_new,
-  annualized,
-  code_revisions
+  annualized
 ) {
   index_at = function(inputs, period) {
     inputs |>
@@ -275,7 +205,7 @@ split_growth_stat = function(
   stat_old = exp(log_stat(old_inputs, end_old)) - 1
   stat_new = exp(log_stat(new_inputs, end_new)) - 1
 
-  contributions = split_log_revision(revisions, start, code_revisions) |>
+  contributions = split_log_revision(revisions, start) |>
     filter(index == index_name, year == end_common[1], quarter == end_common[2]) |>
     transmute(label, log_contribution = log_contribution * power(end_common)) |>
     bind_rows(tibble(
@@ -338,13 +268,7 @@ web_data_mismatches = function(snapshot) {
 #   rounding) moves the stat, beyond the unrounded change
 #   "Code or method change in R/web.R": any gap between the published stat
 #   and what that arithmetic gives
-headline_stat_revisions = function(
-  old,
-  new,
-  old_inputs,
-  new_inputs,
-  code_revisions = NULL
-) {
+headline_stat_revisions = function(old, new, old_inputs, new_inputs) {
   revisions = log_revisions(old_inputs, new_inputs)
   end_old = last_quarter(old_inputs)
   end_new = last_quarter(new_inputs)
@@ -371,8 +295,7 @@ headline_stat_revisions = function(
         spec$start,
         spec$end_old,
         spec$end_new,
-        spec$annualized,
-        code_revisions
+        spec$annualized
       )
       shown = published[published$stat == stat & published$index %in% index, ]
       expected_old = expected_published_stat(old$web, index, spec$start, spec$end_old, spec$annualized)

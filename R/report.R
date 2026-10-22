@@ -271,41 +271,22 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   new_inputs = index_inputs(new)
   code_files = changed_code_files(old$ref, new$ref)
 
-  # Code changes that alter an input are split from its data revisions by
-  # processing the baseline's raw data with the current code. Only possible
-  # for the working tree, where the loaded code is the current code; for CPI,
-  # only when realtalk didn't change, since only the installed version exists.
-  working_tree = is.null(new$ref)
-  realtalk_version = function(snapshot) {
-    snapshot$packages$version[snapshot$packages$package == "realtalk"]
-  }
-  same_realtalk = identical(realtalk_version(old), realtalk_version(new))
-  # an old baseline's raw files can predate the current code's format
-  recleaned_bls = if ("R/bls.R" %in% code_files && working_tree) {
-    tryCatch(recleaned_bls_inputs(old$ref), error = \(e) NULL)
-  }
-  split_bls = !is.null(recleaned_bls)
-  split_prices = "R/prices.R" %in% code_files && working_tree && same_realtalk
-  recleaned = bind_rows(
-    recleaned_bls,
-    if (split_prices) recleaned_prices()
-  )
-  code_revisions = if (nrow(recleaned) > 0) {
-    log_revisions(filter(old_inputs, series %in% recleaned$series), recleaned)
-  }
-  # changed files that shape what an input contains, whose effect can't be
-  # separated from the data: they decide what is fetched, or couldn't be split
-  unsplit_code = c(
-    intersect(
-      code_files,
-      c("R/bea.R", "data_inputs/bea_series_codes.csv", "data_inputs/bls_series_codes.csv")
-    ),
-    if ("R/bls.R" %in% code_files && !split_bls) "R/bls.R",
-    if ("R/prices.R" %in% code_files && !split_prices) "R/prices.R"
+  # Changed files that shape what an input contains: what is fetched, or how
+  # it is cleaned. The report names them but doesn't measure their effect, so
+  # it shows up in those inputs' contributions.
+  unmeasured_code = intersect(
+    code_files,
+    c(
+      "R/bls.R",
+      "R/bea.R",
+      "R/prices.R",
+      "data_inputs/bea_series_codes.csv",
+      "data_inputs/bls_series_codes.csv"
+    )
   )
 
-  revisions = index_revisions(old_inputs, new_inputs, code_revisions)
-  stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs, code_revisions)
+  revisions = index_revisions(old_inputs, new_inputs)
+  stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs)
   web_revisions = web_changes(old, new)
   # Whether each side's web data is the indexes rounded to one decimal, as
   # R/web.R should make it. A change in that, not in which quarters happen to
@@ -550,11 +531,11 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
         ""
       )
     },
-    if (length(unsplit_code) > 0) {
+    if (length(unmeasured_code) > 0) {
       c(
         paste0(
-          "**These changed files shape what an input contains, and the report can't separate ",
-          "their effect from data revisions: ", paste0("`", unsplit_code, "`", collapse = ", "),
+          "**These changed files shape what an input contains, and the report doesn't measure ",
+          "their effect separately: ", paste0("`", unmeasured_code, "`", collapse = ", "),
           ". The contributions of the inputs they shape may include a change in method.**"
         ),
         ""
