@@ -18,7 +18,7 @@ create_web_data_csv <- function(data, file) {
       Pay = comp_private_real_index_1948,
       Productivity = productivity_real_index_1948
     ) |>
-    mutate(across(Pay | Productivity, ~ round(.x, 1))) |>
+    mutate(across(Pay | Productivity, ~ round(.x, 2))) |>
     select(Year, Productivity, Pay)
 
   write_csv(output, file)
