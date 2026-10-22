@@ -350,6 +350,30 @@ If the dispatched check doesn't satisfy the ruleset, fall back to a GitHub App t
 
 Make the first real release with the next data update. Afterward, confirm that the tag points at the commit the run started from, and that the attached files match `data_final/` at that commit byte for byte.
 
+**As built (2026-10-22)**: `.github/workflows/release.yml` has three jobs.
+
+- **plan** (read-only) runs `.github/scripts/release-plan.sh`. It applies the tag rules, the stray-tag check and the no-change guard. The guard compares the four final files with the previous release in Python's `csv` module, dropping the `date_accessed` column; releases through v2026.9.14 keep the files in `release/`. It also refuses a real release from any branch but `main`.
+- **check** is `check.yml` called at the same commit, with the change report's baseline set to the previous release. When called this way, `check.yml` uploads the report as an artifact, for the release notes.
+- **release** (`contents: write`; runs no R) runs `.github/scripts/publish-release.sh`:
+  - creates the tag through the API, and the release as a draft with the four final CSVs and the report attached
+  - checks that the tag points at the commit and downloads every file again to compare it byte for byte
+  - only then publishes, marking the release as latest
+  - if anything fails before publishing, deletes the draft and the tag
+  - if the report is missing, the notes say so rather than blocking the release
+
+The plan script was tested locally against the real releases, in eight cases:
+
+- a normal release today gives `v2026.10.22`, compared with `v2026.9.14`
+- a correction without a reason stops
+- a correction with no release that day stops
+- a same-day release without the correction box stops
+- a same-day correction gives `v2026.9.14.2`
+- an unchanged commit (`v2026.9.14` itself) stops with "Nothing changed since v2026.9.14, apart from access dates"
+- a real release from another branch stops
+- a stray local tag stops
+
+The dry-run path of the publish script was also tested locally. The publishing path runs for the first time on the first real release, and its own checks (tag commit, byte-for-byte files) guard it.
+
 ### Phase 7: Documentation and cleanup
 
 1. README: new layout, local workflow, weekly run, PRs and checks, releasing, and `BLS_DOWNLOAD_EMAIL`. State plainly that official data comes from GitHub releases, and that the files on `main` may include updates that haven't been released yet.
