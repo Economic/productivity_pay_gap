@@ -39,6 +39,8 @@ jobs:
           ref: ${{ inputs.ref }}
           # full history and tags, for the change report
           fetch-depth: 0
+          # the PR's own code runs later, and no step needs git credentials
+          persist-credentials: false
 
       - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
