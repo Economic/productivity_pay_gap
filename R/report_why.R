@@ -26,7 +26,12 @@ index_terms = tribble(
 )
 
 method_change_label = "Code or method change"
+web_method_change_label = "Code or method change in R/web.R"
 method_change_threshold = 1e-8
+
+is_method_change = function(label) {
+  str_starts(label, method_change_label)
+}
 
 quarter_label = function(year, quarter) {
   paste0(year, "q", quarter)
@@ -277,9 +282,49 @@ split_growth_stat = function(
   )
 }
 
-# Every headline stat split into contributions, plus a "Rounding" line: the
-# published stats come from indexes rounded to one decimal, then are rounded
-# again for display, so they differ slightly from the unrounded ones
+# What R/web.R should publish for a stat: computed from the web data, whose
+# indexes are rounded to one decimal, then formatted as R/web.R formats it.
+# If the published value differs, R/web.R computes the stats differently.
+expected_published_stat = function(web, index_name, start, end, annualized) {
+  column = if (index_name == "productivity") "Productivity" else "Pay"
+  value_at = function(period) {
+    web[[column]][web$Year == quarter_label(period[1], period[2])]
+  }
+  power = if (annualized) 4 / (quarter_count(end) - quarter_count(start)) else 1
+  growth = (value_at(end) / value_at(start))^power - 1
+  parse_number(label_percent(accuracy = 0.1)(growth))
+}
+
+expected_published_ratio = function(web) {
+  growth = map_dbl(c("Productivity", "Pay"), \(column) {
+    last(web[[column]]) / web[[column]][web$Year == "1979q4"] - 1
+  })
+  parse_number(label_number(accuracy = 0.1)(max(growth) / min(growth)))
+}
+
+# Quarters where the web data isn't the indexes rounded to one decimal, which
+# is how R/web.R should make it
+web_data_mismatches = function(snapshot) {
+  snapshot$data |>
+    filter(frequency == "quarterly", name %in% names(index_names)) |>
+    transmute(
+      Year = quarter_label(year, quarter),
+      Series = if_else(index_names[name] == "productivity", "Productivity", "Pay"),
+      expected = round(value, 1)
+    ) |>
+    inner_join(
+      pivot_longer(snapshot$web, -Year, names_to = "Series"),
+      by = c("Year", "Series")
+    ) |>
+    filter(abs(value - expected) > 1e-9)
+}
+
+# Every headline stat split into contributions, plus two lines for what the
+# unrounded indexes don't explain:
+#   "Rounding": how the published arithmetic (rounded indexes, then display
+#   rounding) moves the stat, beyond the unrounded change
+#   "Code or method change in R/web.R": any gap between the published stat
+#   and what that arithmetic gives
 headline_stat_revisions = function(
   old,
   new,
@@ -317,11 +362,20 @@ headline_stat_revisions = function(
         code_revisions
       )
       shown = published[published$stat == stat & published$index %in% index, ]
-      rounding = (shown$value_new - shown$value_old) -
+      expected_old = expected_published_stat(old$web, index, spec$start, spec$end_old, spec$annualized)
+      expected_new = expected_published_stat(new$web, index, spec$start, spec$end_new, spec$annualized)
+      rounding = (expected_new - expected_old) -
         (split$unrounded_new - split$unrounded_old)
+      web_method_change = (shown$value_new - expected_new) -
+        (shown$value_old - expected_old)
 
       split$contributions |>
-        bind_rows(tibble(label = "Rounding", points = rounding)) |>
+        bind_rows(tibble(
+          label = c("Rounding", web_method_change_label),
+          points = c(rounding, web_method_change),
+          # the gap itself, so the method-change threshold applies to it too
+          log_contribution = c(NA, web_method_change)
+        )) |>
         mutate(
           stat = stat,
           index = index,

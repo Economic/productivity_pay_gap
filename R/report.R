@@ -198,7 +198,7 @@ contribution_text = function(contributions, digits = 3) {
   shown = contributions |>
     filter(
       abs(points) >= 0.5 * 10^-digits,
-      label != method_change_label | abs(log_contribution) > method_change_threshold
+      !is_method_change(label) | abs(log_contribution) > method_change_threshold
     ) |>
     arrange(desc(abs(points)))
   if (nrow(shown) == 0) {
@@ -237,6 +237,15 @@ change_label = function(
   if (nrow(web_revisions) > 0) {
     largest = web_revisions[1, ]
     index_name = if_else(largest$Series == "Productivity", "productivity", "pay")
+    index_rows = revisions |>
+      filter(index == index_name, quarter_label(year, quarter) == largest$Year)
+    # a web value can change while its index doesn't, if R/web.R changed
+    source = if (revised(index_rows$old[1], index_rows$new[1])) {
+      # the short name: "CPI", not "CPI (realtalk)"
+      str_remove(main_source(revisions, index_name, largest$Year), " \\([^)]*\\)")
+    } else {
+      "a change in R/web.R"
+    }
     return(paste0(
       "Revisions only (largest: ",
       sprintf("%.1f", abs(largest$change)),
@@ -245,8 +254,7 @@ change_label = function(
       " ",
       tolower(largest$Series),
       ", from ",
-      # the short name: "CPI", not "CPI (realtalk)"
-      str_remove(main_source(revisions, index_name, largest$Year), " \\([^)]*\\)"),
+      source,
       ")"
     ))
   }
@@ -274,6 +282,7 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   revisions = index_revisions(old_inputs, new_inputs, code_revisions)
   stat_revisions = headline_stat_revisions(old, new, old_inputs, new_inputs, code_revisions)
   web_revisions = web_changes(old, new)
+  web_mismatches = web_data_mismatches(new)
   data_changes = full_data_changes(old, new)
   sources_differ = !same_contents(
     select(old$sources, -date_accessed),
@@ -402,6 +411,15 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     } else {
       c("No quarter changed after rounding.", "")
     },
+    if (nrow(web_mismatches) > 0) {
+      c(
+        paste0(
+          "**", n_distinct(web_mismatches$Year), " quarters of the web data are not the indexes ",
+          "rounded to one decimal: ", web_method_change_label, ".**"
+        ),
+        ""
+      )
+    },
     "### Full data file",
     "",
     if (nrow(data_changes) > 0) md_table(data_changes) else c("No values changed.", "")
@@ -429,7 +447,7 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     }
     periods = revised_rows |> distinct(year, quarter) |> arrange(year, quarter)
     shares = revised_rows |>
-      filter(label != method_change_label | abs(log_contribution) > method_change_threshold) |>
+      filter(!is_method_change(label) | abs(log_contribution) > method_change_threshold) |>
       summarize(absolute = sum(abs(points)), .by = label) |>
       mutate(share = absolute / sum(absolute)) |>
       filter(share >= 0.005) |>
@@ -444,15 +462,20 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     )
   }
   base_revisions = base_period_revisions(old_inputs, new_inputs)
+  ratio = filter(stats, stat == "ratio")
+  ratio_method_change = (ratio$value_new - expected_published_ratio(new$web)) -
+    (ratio$value_old - expected_published_ratio(old$web))
   method_changes = c(
-    revisions |> filter(label == method_change_label, abs(log_contribution) > method_change_threshold) |> nrow(),
-    stat_revisions |> filter(label == method_change_label, abs(log_contribution) > method_change_threshold) |> nrow()
+    revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
+    stat_revisions |> filter(is_method_change(label), abs(log_contribution) > method_change_threshold) |> nrow(),
+    nrow(web_mismatches),
+    abs(ratio_method_change) > method_change_threshold
   )
   # rows too small to show at four decimals are dropped, and a total row shows
   # that the rest add up to the published change
   shown_stat_rows = stat_revisions |>
     filter(abs(points) >= 0.00005 | label == "Rounding") |>
-    filter(label != method_change_label | abs(log_contribution) > method_change_threshold)
+    filter(!is_method_change(label) | abs(log_contribution) > method_change_threshold)
   stat_tables = distinct(stat_revisions, stat, index) |>
     pmap(\(stat, index) {
       all_rows = stat_revisions[stat_revisions$stat == stat & stat_revisions$index == index, ]
@@ -470,7 +493,6 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
       )
     }) |>
     unlist()
-  ratio = filter(stats, stat == "ratio")
   why_lines = c(
     "## Why",
     "",
@@ -482,8 +504,8 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     if (sum(method_changes) > 0) {
       c(
         paste0(
-          "**The inputs don't explain all of the revisions: the calculation itself changed.** ",
-          "See \"", method_change_label, "\" above and below, and the code changes under Inputs."
+          "**The inputs don't explain all of the changes: the calculation itself changed.** ",
+          "See the \"", method_change_label, "\" lines, and the code changes under Inputs."
         ),
         ""
       )
@@ -515,7 +537,10 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     stat_tables,
     paste0(
       "**", ratio$name_new, "**: ", before_after(ratio$text_old, ratio$text_new),
-      " (not split; it follows from the two total growth stats)."
+      " (not split; it follows from the two total growth stats).",
+      if (abs(ratio_method_change) > method_change_threshold) {
+        paste0(" ", web_method_change_label, ": ", signed(ratio_method_change, 1), ".")
+      }
     ),
     ""
   )
