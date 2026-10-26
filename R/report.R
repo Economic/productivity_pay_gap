@@ -356,12 +356,16 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     if (!packages_ok) "- The installed packages don't match `renv.lock`; run `renv::status()`."
   )
   packages = package_changes(old, new)
+  inputs = input_changes(old, new)
   input_lines = c(
     "## Inputs",
     "",
-    "### Sources",
+    "### Source coverage and changes",
     "",
-    md_table(input_changes(old, new)),
+    md_table(select(inputs, Source, `Latest period`, `Revised values`, `New values`, `Removed values`)),
+    "### Source dates",
+    "",
+    md_table(select(inputs, Source, Accessed, Published)),
     "### Packages",
     "",
     if (nrow(packages) > 0) md_table(packages) else c("No package changes.", ""),
