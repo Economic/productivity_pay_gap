@@ -73,13 +73,33 @@ jobs:
             exit 1
           fi
 
-      # Runs only if the check passed: otherwise the working tree holds the
-      # rebuilt files, not the committed ones
-      - name: Build the change report
-        id: report
+      - name: Check report comparisons
+        if: ${{ github.event_name == 'pull_request' }}
+        # Report checks are informational too. A fixture failure must not
+        # prevent the report itself from being built and posted.
+        continue-on-error: true
+        run: Rscript tests/report-comparisons.R
+
+      - name: Choose the published release baseline
+        id: release_baseline
+        if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
         env:
-          PPG_BASELINE: ${{ inputs.baseline || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release_tag=$(gh release view --json tagName --jq .tagName)
+          echo "tag=$release_tag" >> "$GITHUB_OUTPUT"
+
+      # Runs only if the check passed: otherwise the working tree holds the
+      # rebuilt files, not the committed ones. A failed release lookup must
+      # not silently turn a PR report into a single-baseline report.
+      - name: Build the change report
+        id: report
+        if: ${{ success() && (github.event_name != 'pull_request' || steps.release_baseline.outcome == 'success') }}
+        continue-on-error: true
+        env:
+          PPG_BASELINE: ${{ inputs.baseline || github.event.pull_request.base.sha || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
+          PPG_RELEASE_BASELINE: ${{ steps.release_baseline.outputs.tag }}
         run: Rscript -e 'targets::tar_make(names = change_report)'
 
       # When the release workflow calls this check (with a ref), its change
@@ -111,13 +131,7 @@ jobs:
           # this repo. Refresh PRs carry the report already, and --edit-last
           # would overwrite the refresh workflow's latest weekly comment.
           if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ] && [ "$HEAD_REF" != "data-refresh" ]; then
-            comment=reports/change_report.md
-            # When the final files match main, a one-line note replaces the
-            # full report, which stays in the run summary
-            if grep -qx '\*\*No changes\*\*' reports/change_report.md; then
-              comment=$(mktemp)
-              run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-              echo "**No data changes.** Merging this PR leaves the final data files on \`main\` unchanged, and the offline rebuild matches the committed files. [Full report]($run_url)" > "$comment"
-            fi
-            gh pr comment "$PR_NUMBER" --body-file "$comment" --edit-last --create-if-none
+            # Keep both comparisons even when the PR introduces no data changes:
+            # main can still contain changes since the last release.
+            gh pr comment "$PR_NUMBER" --body-file reports/change_report.md --edit-last --create-if-none
           fi

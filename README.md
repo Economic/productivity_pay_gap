@@ -16,7 +16,7 @@ Official data comes from the [GitHub releases](https://github.com/Economic/produ
 
 1. **Every Monday at 12:07 UTC** (8:07 a.m. Eastern in daylight saving time, 7:07 a.m. otherwise), the `refresh` workflow:
    * updates every R package and fetches the latest BLS and BEA data
-   * rebuilds the numbers and writes a change report
+   * rebuilds the numbers and writes a change report against both `main` and the last published release
    * if the published numbers changed since the maintainer last saw them, opens or updates a pull request from the `data-refresh` branch, assigned to the maintainer, which emails them; if nothing changed, does nothing
 2. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
 3. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything.
@@ -70,6 +70,10 @@ To use newer package versions, such as the latest price indices in `realtalk`, r
 ### The change report
 
 Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why: each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag from v2026.3.11 on.
+
+Weekly refreshes and PR checks compare the proposed data with both `main` and the last published GitHub release. The overview shows both summaries and the headline stats for the release, `main`, and the proposed data. Expand each comparison for its inputs, outputs, and revision explanations. The `main` comparison shows what merging changes. The release comparison includes changes already merged into `main`. Both baselines are recorded by commit. PR checks use the proposed merge result and the PR's base commit as `main`.
+
+To generate both views locally, set `PPG_RELEASE_BASELINE` to the published release tag as well as setting `PPG_BASELINE` for `main`. No release lookup happens inside the R pipeline. Post-merge checks keep their comparison with the commit before the push. Release notes keep their single comparison with the previous release.
 
 ### Offline mode
 
