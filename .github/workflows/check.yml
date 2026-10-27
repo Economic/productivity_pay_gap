@@ -73,6 +73,13 @@ jobs:
             exit 1
           fi
 
+      - name: Check report comparisons
+        if: ${{ github.event_name == 'pull_request' }}
+        # Report checks are informational too. A fixture failure must not
+        # prevent the report itself from being built and posted.
+        continue-on-error: true
+        run: Rscript tests/report-comparisons.R
+
       # Runs only if the check passed: otherwise the working tree holds the
       # rebuilt files, not the committed ones
       - name: Build the change report
@@ -87,7 +94,6 @@ jobs:
             release_tag=$(gh release view --json tagName --jq .tagName)
             export PPG_RELEASE_BASELINE="$release_tag"
           fi
-          Rscript tests/report-comparisons.R
           Rscript -e 'targets::tar_make(names = change_report)'
 
       # When the release workflow calls this check (with a ref), its change

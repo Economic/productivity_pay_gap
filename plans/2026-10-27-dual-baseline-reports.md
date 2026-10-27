@@ -36,4 +36,5 @@ Show what merging a PR changes and what publishing its data would change for rea
 - The regression script passed: separate NDP attribution against both baselines, no new data with unreleased changes, access dates, different commits with identical outputs, shared details for one commit, added quarters, and a missing release baseline.
 - Single-baseline reports against main and v2026.9.14 match the original renderer byte for byte.
 - actionlint passed for all workflows. The generated combined report was inspected locally.
-- Checkpoint review and GitHub CI are pending.
+- GitHub CI passed for the implementation and posted both comparisons on PR #27. The published report identifies main a01dc84 and release v2026.9.14 at 60a1503.
+- Commit review 488 passed. Checkpoint review 493 found one low-severity issue: regression tests shared the report step, so their failure could suppress reports. The tests now run in a separate informational PR-only step. Release and post-merge report generation do not run fixture tests. Final review and CI for this adjustment are pending.
