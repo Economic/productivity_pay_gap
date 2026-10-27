@@ -75,6 +75,8 @@ Weekly refreshes and PR checks compare the proposed data with both `main` and th
 
 To generate both views locally, set `PPG_RELEASE_BASELINE` to the published release tag as well as setting `PPG_BASELINE` for `main`. No release lookup happens inside the R pipeline. Post-merge checks keep their comparison with the commit before the push. Release notes keep their single comparison with the previous release.
 
+The report's Why section uses paired productivity and pay tables. It shows input contributions to the latest common quarter's index revision and average signed contributions across revised quarters, in index points. Three headline-growth tables use percentage points and include rounding and added or removed quarters when applicable. Zero effects stay visible; a dash marks an input outside an index's formula. The productivity-to-pay growth multiple is shown as previous → revised without a decomposition.
+
 ### Offline mode
 
 To rebuild everything from the committed files without fetching anything:

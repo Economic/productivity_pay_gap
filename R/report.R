@@ -215,18 +215,101 @@ full_data_changes = function(old, new) {
     )
 }
 
-# Lines describing the contributions, largest first, skipping tiny ones
-contribution_text = function(contributions, digits = 3) {
-  shown = contributions |>
-    filter(
-      abs(points) >= 0.5 * 10^-digits,
-      label != method_change_label | abs(log_contribution) > method_change_threshold
-    ) |>
-    arrange(desc(abs(points)))
-  if (nrow(shown) == 0) {
-    return("no input changed it")
+# Common input order and labels for all Why tables. Applicability comes from
+# index_terms: an unused input gets a dash, while a zero effect stays visible.
+why_input_labels = c(
+  "NDP (BEA)" = "NDP (BEA)",
+  "Hours (BLS)" = "Hours (BLS)",
+  "CES wages (BLS)" = "Production/nonsupervisory wages (BLS)",
+  "Compensation (BEA)" = "NIPA compensation",
+  "NIPA wages (BEA)" = "NIPA wages",
+  "CPI (realtalk)" = "CPI"
+)
+
+paired_why_table = function(rows) {
+  rows |>
+    mutate(index = str_to_sentence(index)) |>
+    pivot_wider(names_from = index, values_from = text, values_fill = "\u2014") |>
+    select(`Measure or contribution` = label, Productivity, Pay)
+}
+
+why_contribution_rows = function(rows, digits = 3, extra_labels = character()) {
+  distinct(index_terms, index, label) |>
+    bind_rows(expand_grid(index = c("productivity", "pay"), label = extra_labels)) |>
+    left_join(select(rows, index, label, points), by = c("index", "label")) |>
+    arrange(match(label, c(names(why_input_labels), extra_labels))) |>
+    transmute(
+      index,
+      label = coalesce(unname(why_input_labels[label]), label),
+      text = signed(coalesce(points, 0), digits)
+    )
+}
+
+has_method_change = function(rows) {
+  any(rows$label == method_change_label &
+        abs(rows$log_contribution) > method_change_threshold, na.rm = TRUE)
+}
+
+why_index_table = function(revisions, average = FALSE) {
+  rows = if (average) filter(revisions, revised(old, new)) else revisions
+  levels = distinct(rows, index, year, quarter, old, new)
+  contributions = rows |>
+    summarize(points = mean(points), .by = c(index, label))
+  extras = if (has_method_change(rows)) method_change_label else character()
+  inputs = why_contribution_rows(contributions, extra_labels = extras)
+  totals = levels |>
+    summarize(points = mean(new - old), .by = index) |>
+    transmute(index, label = "**Net revision**", text = paste0("**", signed(points), "**"))
+  summary = if (!average) {
+    levels |>
+      select(index, old, new) |>
+      pivot_longer(c(old, new), names_to = "label", values_to = "value") |>
+      transmute(
+        index,
+        label = recode(label, old = "Previous index", new = "Revised index"),
+        text = sprintf("%.3f", value)
+      ) |>
+      bind_rows(tibble(
+        index = c("productivity", "pay"),
+        label = "**Contributions, in index points**", text = ""
+      ))
   }
-  paste(paste(shown$label, signed(shown$points, digits)), collapse = ", ")
+  # Complete totals for an empty revised-quarter population, then label its
+  # applicable cells n/a. An average over zero quarters is not a zero effect.
+  totals = tibble(index = c("productivity", "pay")) |>
+    left_join(totals, by = "index") |>
+    mutate(label = "**Net revision**", text = coalesce(text, "n/a"))
+  table = paired_why_table(bind_rows(summary, inputs, totals))
+  if (average) {
+    for (index_name in setdiff(c("productivity", "pay"), levels$index)) {
+      column = str_to_sentence(index_name)
+      table[[column]] = if_else(table[[column]] == "\u2014", "\u2014", "n/a")
+    }
+  }
+  table
+}
+
+why_stat_table = function(rows, period_change = character()) {
+  summary = distinct(rows, index, text_old, text_new) |>
+    pivot_longer(c(text_old, text_new), names_to = "label", values_to = "text") |>
+    mutate(label = recode(label,
+      text_old = "Previous published growth", text_new = "Revised published growth"
+    )) |>
+    bind_rows(tibble(
+      index = c("productivity", "pay"),
+      label = "**Contributions, in percentage points**", text = ""
+    ))
+  extras = c(
+    if (has_method_change(rows)) method_change_label,
+    period_change,
+    "Rounding"
+  )
+  totals = rows |>
+    summarize(points = sum(points), .by = index) |>
+    transmute(index, label = "**Net revision**", text = paste0("**", signed(points, 4), "**"))
+  paired_why_table(bind_rows(
+    summary, why_contribution_rows(rows, digits = 4, extra_labels = extras), totals
+  ))
 }
 
 # The input contributing most to one index revision
@@ -491,79 +574,62 @@ build_change_report = function(
   # ---- why ----
   common_last = revisions |> slice_max(year * 4 + quarter, n = 1)
   common_period = quarter_label(common_last$year[1], common_last$quarter[1])
-  index_sentence = function(index_name) {
-    rows = filter(common_last, index == index_name)
-    change = rows$new[1] - rows$old[1]
-    if (!revised(rows$old[1], rows$new[1])) {
-      return(paste0("- The ", index_name, " index for ", common_period, " is unchanged."))
-    }
-    paste0(
-      "- The ", index_name, " index for ", common_period, " was revised from ",
-      sprintf("%.3f", rows$old[1]), " to ", sprintf("%.3f", rows$new[1]),
-      " (", signed(change), " points): ", contribution_text(rows), "."
-    )
-  }
   across_quarters = function(index_name) {
     revised_rows = revisions |> filter(index == index_name, revised(old, new))
     if (nrow(revised_rows) == 0) {
       return(paste0("- ", str_to_sentence(index_name), ": no quarter revised."))
     }
     periods = revised_rows |> distinct(year, quarter) |> arrange(year, quarter)
-    shares = revised_rows |>
-      filter(label != method_change_label | abs(log_contribution) > method_change_threshold) |>
-      summarize(absolute = sum(abs(points)), .by = label) |>
-      mutate(share = absolute / sum(absolute)) |>
-      filter(share >= 0.005) |>
-      arrange(desc(share))
     paste0(
       "- ", str_to_sentence(index_name), ": ", nrow(periods), " quarters revised (",
       quarter_label(periods$year[1], periods$quarter[1]), " to ",
       quarter_label(last(periods$year), last(periods$quarter)),
-      "). Share of the absolute revisions: ",
-      paste(paste0(shares$label, " ", round(100 * shares$share), "%"), collapse = ", "),
-      "."
+      ")."
     )
   }
-  base_revisions = base_period_revisions(old_inputs, new_inputs)
   ratio = filter(stats, stat == "ratio")
-  method_changed = bind_rows(revisions, stat_revisions) |>
-    filter(label == method_change_label, abs(log_contribution) > method_change_threshold) |>
-    nrow() > 0
-  # rows too small to show at four decimals are dropped, and a total row shows
-  # that the rest add up to the published change
-  shown_stat_rows = stat_revisions |>
-    filter(abs(points) >= 0.00005 | label == "Rounding") |>
-    filter(label != method_change_label | abs(log_contribution) > method_change_threshold)
-  stat_tables = distinct(stat_revisions, stat, index) |>
-    pmap(\(stat, index) {
-      all_rows = stat_revisions[stat_revisions$stat == stat & stat_revisions$index == index, ]
-      rows = shown_stat_rows[shown_stat_rows$stat == stat & shown_stat_rows$index == index, ] |>
-        bind_rows(tibble(label = "Total", points = sum(all_rows$points)))
-      c(
-        paste0(
-          "**", rows$name[1], "**: ",
-          before_after(rows$text_old[1], rows$text_new[1]),
-          " (unrounded: ", sprintf("%.3f", rows$unrounded_old[1]), " → ",
-          sprintf("%.3f", rows$unrounded_new[1]), ")"
-        ),
-        "",
-        md_table(transmute(rows, Contribution = label, `Percentage points` = signed(points, 4)))
-      )
-    }) |>
+  method_changed = has_method_change(bind_rows(revisions, stat_revisions))
+  period_change = sign(quarter_count(last_quarter(new_inputs)) - quarter_count(last_quarter(old_inputs)))
+  period_effect = if (period_change > 0) {
+    "Added quarters"
+  } else if (period_change < 0) {
+    "Removed quarters"
+  } else {
+    character()
+  }
+  stat_titles = c(
+    total_growth = "Total growth, 1979q4 to latest quarter",
+    growth_1948_1979 = "Average annual growth, 1948q1 to 1979q4",
+    growth_1979_latest = "Average annual growth, 1979q4 to latest quarter"
+  )
+  stat_tables = map(names(stat_titles), \(stat_name) {
+    rows = filter(stat_revisions, stat == stat_name)
+    c(
+      paste0("#### ", stat_titles[[stat_name]]), "",
+      md_table(why_stat_table(
+        rows,
+        period_change = if (stat_name != "growth_1948_1979") period_effect else character()
+      ))
+    )
+  }) |>
     unlist()
   why_lines = c(
     "## Why",
     "",
+    paste0(
+      "Contributions are signed. A dash means the input does not enter that index's formula. ",
+      "NIPA compensation and NIPA wages are the two components of the benefits adjustment. ",
+      "Totals are calculated before rounding, so displayed contributions may not add exactly to the displayed total."
+    ),
+    "",
     paste0("### Index revisions in ", common_period, ", the latest quarter in both"),
     "",
-    index_sentence("productivity"),
-    index_sentence("pay"),
-    "",
+    md_table(why_index_table(common_last)),
     if (method_changed) {
       c(
         paste0(
           "**The inputs don't explain all of the changes: the calculation itself changed.** ",
-          "See the \"", method_change_label, "\" lines, and the code changes under Inputs."
+          "See the \"", method_change_label, "\" rows, and the code changes under Inputs."
         ),
         ""
       )
@@ -579,34 +645,26 @@ build_change_report = function(
         ""
       )
     },
-    "### Base period (1948q1)",
-    "",
-    if (nrow(base_revisions) > 0) {
-      c(
-        "Revisions to 1948q1 inputs move every quarter of an index:",
-        "",
-        md_table(transmute(base_revisions, Input = label, `Revision (%)` = signed(percent, 4)))
-      )
-    } else {
-      c("No 1948q1 input was revised.", "")
-    },
     "### Across all revised quarters",
     "",
     across_quarters("productivity"),
     across_quarters("pay"),
     "",
+    "Average contribution per revised quarter, in index points. n/a means no quarters were revised.",
+    "",
+    md_table(why_index_table(revisions, average = TRUE)),
     "### Headline stats",
     "",
     paste0(
-      "Each stat's revision split by input, from the unrounded indexes. ",
-      "\"Rounding\" is the rest of the change in the published stats, which are ",
-      "computed from indexes rounded to one decimal."
+      "Contributions are in percentage points, from the unrounded indexes. ",
+      "\"Rounding\" reconciles these contributions with changes in the published stats, ",
+      "which use indexes rounded to one decimal and are themselves rounded for display. ",
+      "When the latest quarter changes, its effect is shown as added or removed quarters."
     ),
     "",
     stat_tables,
     paste0(
-      "**", ratio$name_new, "**: ", before_after(ratio$text_old, ratio$text_new),
-      " (not split; it follows from the two total growth stats)."
+      "**", ratio$name_new, "**: ", ratio$text_old, " → ", ratio$text_new
     ),
     ""
   )
