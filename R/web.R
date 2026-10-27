@@ -1,58 +1,42 @@
-create_web_data_csv <- function(data, file) {
+# Quarterly series in wide format, one column per series, rounded. `series`
+# maps each column name to its series name in `data`.
+create_web_quarterly_csv = function(data, series, digits, file) {
   output = data |>
-    filter(frequency == "quarterly") |>
-    select(-frequency) |>
-    filter(
-      name %in%
-        c(
-          "comp_private_real_index_1948",
-          "productivity_real_index_1948"
-        )
-    ) |>
+    filter(frequency == "quarterly", name %in% series) |>
     pivot_wider(id_cols = c(year, quarter)) |>
-    mutate(date = paste0(year, "q", quarter)) |>
     arrange(year, quarter) |>
-    select(date, comp_private_real_index_1948, productivity_real_index_1948) |>
-    rename(
-      Year = date,
-      Pay = comp_private_real_index_1948,
-      Productivity = productivity_real_index_1948
-    ) |>
-    mutate(across(Pay | Productivity, ~ round(.x, 1))) |>
-    select(Year, Productivity, Pay)
+    mutate(Year = paste0(year, "q", quarter)) |>
+    select(Year, all_of(series)) |>
+    mutate(across(-Year, ~ round(.x, digits)))
 
   write_csv(output, file)
 
   file
 }
 
-create_web_counter_csv <- function(data, file) {
-  output = data |>
-    filter(frequency == "quarterly", 
-    year > 1979 | (year == 1979 & quarter == 4)) |> 
-    select(-frequency) |>
-    filter(
-      name %in%
-        c(
-          "wage_actual_real",
-          "wage_counter_real"
-        )
-    ) |>
-    pivot_wider(id_cols = c(year, quarter)) |>
-    mutate(date = paste0(year, "q", quarter)) |>
-    arrange(year, quarter) |>
-    select(date, wage_actual_real, wage_counter_real) |>
-    rename(
-      Year = date,
-      `Actual wage` = wage_actual_real,
-      `Counterfactual wage` = wage_counter_real
-    ) |>
-    mutate(across(`Actual wage` | `Counterfactual wage`, ~ round(.x, 2))) |>
-    select(Year, `Actual wage`, `Counterfactual wage`)
+create_web_data_csv <- function(data, file) {
+  create_web_quarterly_csv(
+    data,
+    series = c(
+      Productivity = "productivity_real_index_1948",
+      Pay = "comp_private_real_index_1948"
+    ),
+    digits = 1,
+    file = file
+  )
+}
 
-  write_csv(output, file)
-
-  file
+# The wages start in 1979q4, the base of the counterfactual
+create_web_counter_csv = function(data, file) {
+  create_web_quarterly_csv(
+    data,
+    series = c(
+      `Actual wage` = "wage_actual_real",
+      `Counterfactual wage` = "wage_counter_real"
+    ),
+    digits = 2,
+    file = file
+  )
 }
 
 create_web_stats_csv <- function(web_data, file) {
