@@ -1,5 +1,5 @@
 # Sanity checks on the final files. Each failure stops the pipeline.
-check_outputs = function(data, web_data, web_stats, sources_csv) {
+check_outputs = function(data, web_data, web_stats, counter_web, sources_csv) {
   quarters = yq(web_data$Year)
   expected_quarters = seq(yq("1948q1"), max(quarters), by = "quarter")
   if (!identical(as.numeric(quarters), as.numeric(expected_quarters))) {
@@ -8,6 +8,30 @@ check_outputs = function(data, web_data, web_stats, sources_csv) {
 
   if (anyNA(web_data)) {
     stop("The web data has missing values, so the two series end in different quarters.")
+  }
+
+  counter_quarters = yq(counter_web$Year)
+  expected_counter_quarters = seq(yq("1979q4"), max(quarters), by = "quarter")
+  if (!identical(as.numeric(counter_quarters), as.numeric(expected_counter_quarters))) {
+    stop("The counterfactual wage data does not have every quarter from 1979q4 to the web data's last quarter.")
+  }
+
+  if (anyNA(counter_web)) {
+    stop("The counterfactual wage data has missing values, so the two wages end in different quarters.")
+  }
+
+  base_wages = data |>
+    filter(
+      name %in% c("wage_actual_real", "wage_counter_real"),
+      year == 1979,
+      quarter == 4 | is.na(quarter)
+    ) |>
+    pivot_wider(id_cols = frequency)
+  if (
+    nrow(base_wages) != 2 ||
+      any(abs(base_wages$wage_actual_real - base_wages$wage_counter_real) > 1e-9)
+  ) {
+    stop("The actual and counterfactual wages differ in 1979q4 or in 1979, their base.")
   }
 
   base_values = data |>
