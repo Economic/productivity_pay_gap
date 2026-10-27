@@ -22,6 +22,18 @@ if [ -n "$pr" ] && git diff --quiet origin/main -- "${web_files[@]}"; then
   exit 0
 fi
 
+body=$(mktemp)
+trap 'rm -f "$body"' EXIT
+{
+  echo "Weekly data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
+  echo
+  echo "To merge: approve the held check run (\"Approve and run workflows\"), then merge once it passes."
+  echo
+  echo "The report below describes the latest refresh build. When its web numbers match this PR, only this description is updated; the branch keeps its existing files."
+  echo
+  cat "$report"
+} > "$body"
+
 # Notify only when the web files changed since I last saw them: in the open
 # refresh PR, or in main if none is open
 if [ -n "$pr" ]; then
@@ -30,7 +42,12 @@ else
   last_seen="origin/main"
 fi
 if git diff --quiet "$last_seen" -- "${web_files[@]}"; then
-  echo "The web files match $last_seen, so there is nothing new to report."
+  if [ -n "$pr" ]; then
+    gh pr edit "$pr" --body-file "$body"
+    echo "The web files match $last_seen. Updated the PR description without rewriting the branch or posting a comment."
+  else
+    echo "The web files match $last_seen, so there is nothing new to report."
+  fi
   exit 0
 fi
 
@@ -46,15 +63,6 @@ git -c user.name="github-actions[bot]" \
   commit --quiet -m "$title"
 gh auth setup-git
 git push --quiet --force origin "$branch"
-
-body=$(mktemp)
-{
-  echo "Weekly data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
-  echo
-  echo "To merge: approve the held check run (\"Approve and run workflows\"), then merge once it passes."
-  echo
-  cat "$report"
-} > "$body"
 
 # Creating the PR assigned to me emails me; after that, each update's comment does
 if [ -z "$pr" ]; then
