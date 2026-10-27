@@ -17,7 +17,8 @@ Official data comes from the [GitHub releases](https://github.com/Economic/produ
 1. **Every Monday at 12:07 UTC** (8:07 a.m. Eastern in daylight saving time, 7:07 a.m. otherwise), the `refresh` workflow:
    * updates every R package and fetches the latest BLS and BEA data
    * rebuilds the numbers and writes a change report against both `main` and the last published release
-   * if the published numbers changed since the maintainer last saw them, opens or updates a pull request from the `data-refresh` branch, assigned to the maintainer, which emails them; if nothing changed, does nothing
+   * if the published numbers changed since the maintainer last saw them, opens or updates a pull request from the `data-refresh` branch, assigned to the maintainer, which emails them
+   * if the numbers match an existing refresh PR, updates its description with the latest report without rewriting the branch or posting another comment; if no PR exists and the numbers match `main`, does nothing
 2. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
 3. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything.
 

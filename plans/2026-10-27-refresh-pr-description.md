@@ -25,4 +25,7 @@ Date: 2026-10-27
 
 ## Validation
 
-Results are recorded below and in the implementation PR.
+- All five local PR lifecycle cases passed with real temporary Git repos and a stub GitHub CLI: unchanged numbers, a stale PR, no PR with unchanged numbers, changed numbers, and a new PR.
+- The unchanged-number case verifies that only the description is edited, its latest report is included, the title is untouched, the branch stays unchanged, and no comment is posted.
+- A complete offline rebuild passed all 25 targets. Committed final and intermediate files are unchanged.
+- Bash syntax checks and actionlint passed. Checkpoint review, GitHub CI, and live validation are recorded in the implementation PR.
