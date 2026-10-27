@@ -37,4 +37,5 @@ Make the Why section show the signed contribution of every applicable input to p
 - A complete offline rebuild passed all 25 targets. Every committed file in data_final/ and data_outputs/ stayed unchanged.
 - Regression checks passed for zero and unused inputs, signed averages with opposing effects, different revised-quarter populations, no revised quarters, moving endpoints, headline totals, and material calculation-change warnings.
 - The new tables were inspected using PR #21's actual refresh snapshot against v2026.9.14. They reproduce the latest-quarter, historical-average, and headline contributions discussed with the user, including the unchanged growth multiple shown as 2.9x → 2.9x.
-- Calculations in R/report_why.R are unchanged. The existing accepted report risks apply. Checkpoint review and GitHub checks are recorded in the implementation PR.
+- The decomposition calculations are unchanged. The standalone base-period display helper was removed after checkpoint review identified it as unused; split_log_revision() continues to account for base-period effects.
+- Commit review 525 passed. Checkpoint review 530 found only the unused helper, which was deleted. It found no calculation, design, or security issues. The existing accepted report risks apply. Final checks and delivery are recorded in the implementation PR.
