@@ -264,9 +264,8 @@ change_label = function(
   if (final_files_differ) "No web-visible changes" else "No changes"
 }
 
-# The report as a character vector of Markdown lines. `old` and `new` come from
-# read_snapshot(); `baseline` names old's ref.
-build_change_report = function(old, new, baseline, packages_ok = TRUE) {
+# Calculate each comparison independently, including its revision attribution.
+compare_snapshots = function(old, new) {
   old_inputs = index_inputs(old)
   new_inputs = index_inputs(new)
   code_files = changed_code_files(old$ref, new$ref)
@@ -308,9 +307,39 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     final_files_differ
   )
 
+  list(
+    old_inputs = old_inputs,
+    new_inputs = new_inputs,
+    code_files = code_files,
+    unmeasured_code = unmeasured_code,
+    revisions = revisions,
+    stat_revisions = stat_revisions,
+    web_revisions = web_revisions,
+    data_changes = data_changes,
+    web_visible = web_visible,
+    label = label
+  )
+}
+
+# The report as a character vector of Markdown lines. `old` and `new` come from
+# read_snapshot(); `baseline` names old's ref.
+build_change_report = function(
+  old, new, baseline, packages_ok = TRUE,
+  comparison = compare_snapshots(old, new), show_unreleased = TRUE
+) {
+  old_inputs = comparison$old_inputs
+  new_inputs = comparison$new_inputs
+  code_files = comparison$code_files
+  unmeasured_code = comparison$unmeasured_code
+  revisions = comparison$revisions
+  stat_revisions = comparison$stat_revisions
+  web_revisions = comparison$web_revisions
+  data_changes = comparison$data_changes
+  web_visible = comparison$web_visible
+  label = comparison$label
   latest_old = last(old$web$Year)
   latest_new = last(new$web$Year)
-  unreleased = if (!is.null(old$ref)) unreleased_changes(old$ref)
+  unreleased = if (show_unreleased && !is.null(old$ref)) unreleased_changes(old$ref)
 
   # ---- summary ----
   stats = inner_join(
@@ -356,12 +385,16 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
     if (!packages_ok) "- The installed packages don't match `renv.lock`; run `renv::status()`."
   )
   packages = package_changes(old, new)
+  inputs = input_changes(old, new)
   input_lines = c(
     "## Inputs",
     "",
-    "### Sources",
+    "### Source coverage and changes",
     "",
-    md_table(input_changes(old, new)),
+    md_table(select(inputs, Source, `Latest period`, `Revised values`, `New values`, `Removed values`)),
+    "### Source dates",
+    "",
+    md_table(select(inputs, Source, Accessed, Published)),
     "### Packages",
     "",
     if (nrow(packages) > 0) md_table(packages) else c("No package changes.", ""),
@@ -560,14 +593,86 @@ build_change_report = function(old, new, baseline, packages_ok = TRUE) {
   c(summary_lines, input_lines, output_lines, why_lines, check_lines)
 }
 
-write_change_report = function(baseline, packages_ok, file, ...) {
-  # `...` takes the final files only so the report runs after them
-  report = build_change_report(
-    old = read_snapshot(baseline),
-    new = read_snapshot(),
-    baseline = baseline,
-    packages_ok = packages_ok
+build_dual_change_report = function(main, released, new, release_tag, packages_ok = TRUE) {
+  against_main = compare_snapshots(main, new)
+  same_baseline = identical(main$commit, released$commit)
+  against_release = if (same_baseline) against_main else compare_snapshots(released, new)
+  overview = tibble(
+    Comparison = c("Proposed vs main", paste0("Proposed vs ", release_tag)),
+    Summary = c(against_main$label, against_release$label),
+    `Web-visible changes` = if_else(
+      c(against_main$web_visible, against_release$web_visible), "yes", "no"
+    )
   )
+  stats_column = function(snapshot, label) {
+    published_stats(snapshot$web_stats) |>
+      select(stat, index, all_of(setNames("text", label)))
+  }
+  stats = published_stats(new$web_stats) |>
+    select(stat, index, Statistic = name, Proposed = text) |>
+    full_join(stats_column(main, "main"), by = c("stat", "index")) |>
+    full_join(stats_column(released, "Last release"), by = c("stat", "index")) |>
+    select(Statistic, `Last release`, main, Proposed)
+  quarters = tibble(
+    Statistic = "Latest quarter",
+    `Last release` = last(released$web$Year),
+    main = last(main$web$Year),
+    Proposed = last(new$web$Year)
+  )
+  details = function(old, baseline, comparison, title) {
+    report = build_change_report(
+      old, new, baseline, packages_ok,
+      comparison = comparison, show_unreleased = FALSE
+    )
+    c(
+      paste0("## ", title), "",
+      "<details>", "<summary>Inputs, outputs, and revision explanations</summary>", "",
+      # Drop the single-report title and move its headings down one level.
+      sub("^(#+) ", "#\\1 ", report[-c(1, 2)]),
+      "", "</details>", ""
+    )
+  }
+  c(
+    "# Change report", "",
+    paste0("Proposed: working tree based on commit `", substr(git_commit("HEAD"), 1, 7), "`."),
+    "PR checks use the proposed merge result; weekly refreshes use the freshly built files.",
+    paste0("Baselines: `main` at `", substr(main$commit, 1, 7),
+           "`; last published release `", release_tag, "` at `", substr(released$commit, 1, 7), "`."),
+    "",
+    # update-refresh-pr.sh uses the first bold line for the title against main.
+    paste0("**", against_main$label, "**"), "",
+    md_table(overview),
+    if (against_main$label == "No changes") {
+      c("No data changes introduced by this PR or refresh, ignoring access dates.", "")
+    },
+    "## Headline stats", "",
+    md_table(bind_rows(quarters, stats)),
+    details(main, "main", against_main, "Changes introduced by this PR or refresh"),
+    if (same_baseline) {
+      c("## Changes since the last release", "",
+        "The release and main are the same commit. The comparison details above apply to both.", "")
+    } else {
+      details(released, release_tag, against_release, "Changes since the last release")
+    }
+  )
+}
+
+write_change_report = function(
+  baseline, packages_ok, file, ...,
+  release_baseline = Sys.getenv("PPG_RELEASE_BASELINE", "")
+) {
+  # `...` takes the final files only so the report runs after them
+  # Resolve refs once so both views describe fixed snapshots throughout the run.
+  baseline_commit = git_commit(baseline)
+  release_commit = if (nzchar(release_baseline)) git_commit(release_baseline)
+  old = read_snapshot(baseline_commit)
+  new = read_snapshot()
+  report = if (nzchar(release_baseline)) {
+    released = read_snapshot(release_commit)
+    build_dual_change_report(old, released, new, release_baseline, packages_ok)
+  } else {
+    build_change_report(old, new, baseline, packages_ok)
+  }
   dir.create(dirname(file), showWarnings = FALSE, recursive = TRUE)
   writeLines(report, file)
   file

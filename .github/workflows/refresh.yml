@@ -41,6 +41,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Choose report baselines
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release_tag=$(gh release view --json tagName --jq .tagName)
+          echo "PPG_RELEASE_BASELINE=$release_tag" >> "$GITHUB_ENV"
+          echo "PPG_BASELINE=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
       - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           r-version: renv
