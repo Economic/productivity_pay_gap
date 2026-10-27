@@ -118,6 +118,11 @@ pipeline = tar_assign({
   ) |>
     tar_csv_read()
 
+  output_web_counter_csv = create_web_counter_csv(
+    output,
+    "data_final/epi_productivity_pay_counter_web.csv"
+  ) |>
+    tar_csv_read()
   ##########
   # CHECKS #
   ##########

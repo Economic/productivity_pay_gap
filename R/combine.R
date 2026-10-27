@@ -44,11 +44,26 @@ combine_data <- function(bls_pay_csv, bls_hours_csv, bea_csv, prices_csv) {
     filter(row_number() == n(), .by = frequency) |>
     select(frequency, cpi_base = cpi)
 
-  output = combined_data |>
+   output = combined_data |>
     inner_join(cpi_bases, by = "frequency") |>
     mutate(
       comp_private_real = comp_private_nominal * cpi_base / cpi,
-      productivity_real = productivity_nominal * cpi_base / cpi
+      productivity_real = productivity_nominal * cpi_base / cpi,
+      # pay if it had grown with productivity since 1979q4 (1979 for annual
+      # data), converted from compensation to wages
+      is_base = year == 1979 & (quarter == 4 | is.na(quarter)),
+      wage_counter_real = if_else(
+        year >= 1979,
+        comp_private_real[is_base] / productivity_real[is_base] *
+          productivity_real / nipa_comp_wage_ratio,
+        NA
+      ),
+      wage_actual_real = if_else(
+        year >= 1979,
+        comp_private_real/nipa_comp_wage_ratio,
+        NA
+      ),
+      .by = frequency
     ) |>
     select(
       frequency,
@@ -59,9 +74,12 @@ combine_data <- function(bls_pay_csv, bls_hours_csv, bea_csv, prices_csv) {
       productivity_nominal,
       comp_private_real,
       productivity_real,
-      comp_wage_ratio = nipa_comp_wage_ratio
+      comp_wage_ratio = nipa_comp_wage_ratio,
+      wage_actual_real,
+      wage_counter_real
     ) |>
-    pivot_longer(-c(frequency, year, quarter))
+    pivot_longer(-c(frequency, year, quarter)) |> 
+     filter(!(name %in% c("wage_counter_real", "wage_actual_real") & is.na(value)))
 
   bases_1948 = output |>
     filter(name %in% c("comp_private_real", "productivity_real")) |>

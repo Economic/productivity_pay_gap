@@ -26,6 +26,35 @@ create_web_data_csv <- function(data, file) {
   file
 }
 
+create_web_counter_csv <- function(data, file) {
+  output = data |>
+    filter(frequency == "quarterly", 
+    year > 1979 | (year == 1979 & quarter == 4)) |> 
+    select(-frequency) |>
+    filter(
+      name %in%
+        c(
+          "wage_actual_real",
+          "wage_counter_real"
+        )
+    ) |>
+    pivot_wider(id_cols = c(year, quarter)) |>
+    mutate(date = paste0(year, "q", quarter)) |>
+    arrange(year, quarter) |>
+    select(date, wage_actual_real, wage_counter_real) |>
+    rename(
+      Year = date,
+      `Actual wage` = wage_actual_real,
+      `Counterfactual wage` = wage_counter_real
+    ) |>
+    mutate(across(`Actual wage` | `Counterfactual wage`, ~ round(.x, 2))) |>
+    select(Year, `Actual wage`, `Counterfactual wage`)
+
+  write_csv(output, file)
+
+  file
+}
+
 create_web_stats_csv <- function(web_data, file) {
   data = web_data |>
     clean_names() |>
