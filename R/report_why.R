@@ -127,19 +127,6 @@ index_revisions = function(old_inputs, new_inputs) {
     mutate(points = log_mean(new, old) * log_contribution)
 }
 
-# Revisions to the 1948q1 inputs, which move every quarter of an index
-base_period_revisions = function(old_inputs, new_inputs) {
-  log_revisions(old_inputs, new_inputs) |>
-    filter(
-      year == 1948,
-      quarter == 1,
-      !series %in% index_names,
-      log_revision != 0
-    ) |>
-    inner_join(distinct(index_terms, series, label), by = "series") |>
-    transmute(label, percent = 100 * (exp(log_revision) - 1))
-}
-
 last_quarter = function(inputs) {
   last = inputs |>
     filter(series == "productivity") |>

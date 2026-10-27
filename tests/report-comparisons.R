@@ -113,4 +113,96 @@ problem = tryCatch(
   error = identity
 )
 stopifnot(inherits(problem, "error"), !file.exists(file))
+
+# The Why section uses the same complete input layout for index levels and
+# growth stats. Unchanged inputs remain visible, and unused inputs get a dash.
+comparison = compare_snapshots(main, proposed)
+latest_revisions = comparison$revisions |> slice_max(year * 4 + quarter, n = 1)
+table = why_index_table(latest_revisions)
+cell = function(table, label, index) {
+  table[[index]][match(label, table$`Measure or contribution`)]
+}
+stopifnot(
+  cell(table, "Hours (BLS)", "Productivity") == "+0.000",
+  cell(table, "Hours (BLS)", "Pay") == "\u2014",
+  cell(table, "Production/nonsupervisory wages (BLS)", "Pay") == "+0.000",
+  cell(table, "CPI", "Productivity") == "+0.000",
+  cell(table, "CPI", "Pay") == "+0.000"
+)
+
+# Signed averages use each index's own revised-quarter population. Opposing
+# effects cancel, and unchanged quarters do not dilute the average.
+fixture = expand_grid(year = 2020, quarter = 1:3) |>
+  cross_join(distinct(index_terms, index, label)) |>
+  mutate(
+    old = 100,
+    new = case_when(
+      index == "productivity" & quarter == 1 ~ 103,
+      index == "productivity" & quarter == 2 ~ 99,
+      index == "pay" & quarter == 2 ~ 98,
+      .default = 100
+    ),
+    points = case_when(
+      label == "NDP (BEA)" & quarter == 1 ~ 5,
+      label == "NDP (BEA)" & quarter == 2 ~ -1,
+      label == "Hours (BLS)" & quarter == 1 ~ -2,
+      label == "Compensation (BEA)" & quarter == 2 ~ 1,
+      label == "NIPA wages (BEA)" & quarter == 2 ~ -3,
+      .default = 0
+    ),
+    log_contribution = 0
+  )
+table = why_index_table(fixture, average = TRUE)
+stopifnot(
+  cell(table, "NDP (BEA)", "Productivity") == "+2.000",
+  cell(table, "Hours (BLS)", "Productivity") == "-1.000",
+  cell(table, "**Net revision**", "Productivity") == "**+1.000**",
+  cell(table, "NIPA compensation", "Pay") == "+1.000",
+  cell(table, "NIPA wages", "Pay") == "-3.000",
+  cell(table, "**Net revision**", "Pay") == "**-2.000**"
+)
+unchanged = compare_snapshots(base, base)
+table = why_index_table(unchanged$revisions, average = TRUE)
+stopifnot(cell(table, "CPI", "Pay") == "n/a")
+table = why_index_table(comparison$revisions, average = TRUE)
+stopifnot(cell(table, "CPI", "Pay") == "n/a", cell(table, "CPI", "Productivity") == "+0.000")
+
+# Headline totals include rounding and moving endpoints. Calculation changes
+# retain their own row and warning, even if other inputs are unchanged.
+for (pair in list(list(earlier, main), list(main, earlier))) {
+  stats = headline_stat_revisions(pair[[1]], pair[[2]], index_inputs(pair[[1]]), index_inputs(pair[[2]]))
+  effect = if (nrow(pair[[1]]$web) < nrow(pair[[2]]$web)) "Added quarters" else "Removed quarters"
+  for (stat_name in unique(stats$stat)) {
+    rows = filter(stats, stat == stat_name)
+    table = why_stat_table(rows, if (stat_name != "growth_1948_1979") effect else character())
+    for (index_name in c("productivity", "pay")) {
+      values = filter(rows, index == index_name)
+      expected = first(parse_number(values$text_new) - parse_number(values$text_old))
+      stopifnot(abs(sum(values$points) - expected) < 1e-8)
+      column = str_to_sentence(index_name)
+      displayed = parse_number(cell(table, "**Net revision**", column))
+      stopifnot(abs(displayed - expected) < 0.00005)
+    }
+    stopifnot("Rounding" %in% table$`Measure or contribution`)
+    if (stat_name != "growth_1948_1979") stopifnot(effect %in% table$`Measure or contribution`)
+  }
+}
+method_new = base
+method_new$data = method_new$data |>
+  mutate(value = if_else(
+    name == "productivity_real_index_1948" & year == latest[1] & quarter == latest[2],
+    value * 1.01, value
+  ))
+method = compare_snapshots(base, method_new)
+stopifnot(method_change_label %in% why_index_table(method$revisions |> slice_max(year * 4 + quarter, n = 1))$`Measure or contribution`)
+report = build_change_report(base, method_new, "HEAD")
+stopifnot(any(grepl("the calculation itself changed", report, fixed = TRUE)))
+report = build_change_report(base, base, "HEAD")
+stopifnot(
+  !any(grepl("### Base period", report, fixed = TRUE)),
+  !any(grepl("Share of the absolute revisions", report, fixed = TRUE)),
+  sum(grepl("^#### (Total growth|Average annual growth)", report)) == 3,
+  any(grepl("as much as pay.*[0-9]x → [0-9].*x$", report)),
+  !any(grepl("not split; it follows", report, fixed = TRUE))
+)
 cat("Report comparison checks passed.\n")
