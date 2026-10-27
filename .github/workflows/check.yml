@@ -79,8 +79,16 @@ jobs:
         id: report
         continue-on-error: true
         env:
-          PPG_BASELINE: ${{ inputs.baseline || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
-        run: Rscript -e 'targets::tar_make(names = change_report)'
+          PPG_BASELINE: ${{ inputs.baseline || github.event.pull_request.base.sha || (github.event_name == 'push' && github.event.before) || 'origin/main' }}
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            release_tag=$(gh release view --json tagName --jq .tagName)
+            export PPG_RELEASE_BASELINE="$release_tag"
+          fi
+          Rscript tests/report-comparisons.R
+          Rscript -e 'targets::tar_make(names = change_report)'
 
       # When the release workflow calls this check (with a ref), its change
       # report against the previous release becomes the release notes
@@ -111,13 +119,7 @@ jobs:
           # this repo. Refresh PRs carry the report already, and --edit-last
           # would overwrite the refresh workflow's latest weekly comment.
           if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ] && [ "$HEAD_REF" != "data-refresh" ]; then
-            comment=reports/change_report.md
-            # When the final files match main, a one-line note replaces the
-            # full report, which stays in the run summary
-            if grep -qx '\*\*No changes\*\*' reports/change_report.md; then
-              comment=$(mktemp)
-              run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-              echo "**No data changes.** Merging this PR leaves the final data files on \`main\` unchanged, and the offline rebuild matches the committed files. [Full report]($run_url)" > "$comment"
-            fi
-            gh pr comment "$PR_NUMBER" --body-file "$comment" --edit-last --create-if-none
+            # Keep both comparisons even when the PR introduces no data changes:
+            # main can still contain changes since the last release.
+            gh pr comment "$PR_NUMBER" --body-file reports/change_report.md --edit-last --create-if-none
           fi
