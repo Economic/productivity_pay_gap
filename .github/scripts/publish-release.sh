@@ -14,6 +14,7 @@ files=(
   data_final/epi_productivity_pay_gap_web.csv
   data_final/epi_productivity_pay_gap_web_stats.csv
   data_final/epi_productivity_pay_gap_sources.csv
+  data_final/epi_productivity_pay_counter_web.csv
 )
 
 notes=$(mktemp)
