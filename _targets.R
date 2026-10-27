@@ -118,6 +118,12 @@ pipeline = tar_assign({
   ) |>
     tar_csv_read()
 
+  output_web_counter_csv = create_web_counter_csv(
+    output,
+    "data_final/epi_productivity_pay_counter_web.csv"
+  ) |>
+    tar_csv_read()
+
   ##########
   # CHECKS #
   ##########
@@ -125,6 +131,7 @@ pipeline = tar_assign({
     data = output,
     web_data = output_web_data_csv,
     web_stats = output_web_stats_csv,
+    counter_web = output_web_counter_csv,
     sources_csv = data_documentation
   ) |>
     tar_target()
@@ -149,6 +156,7 @@ pipeline = tar_assign({
     output_data_csv_file,
     output_web_data_csv_file,
     output_web_stats_csv_file,
+    output_web_counter_csv_file,
     data_documentation,
     bls_pay,
     bls_hours,

@@ -255,6 +255,8 @@ annual,1979,NA,comp_wage_ratio,1.1786599367756205
 annual,1979,NA,productivity_nominal,11.92868571186582
 annual,1979,NA,productivity_real,46.139743218840295
 annual,1979,NA,productivity_real_index_1948,216.26130772574484
+annual,1979,NA,wage_actual_real,24.506783910533912
+annual,1979,NA,wage_counter_real,24.506783910533905
 annual,1980,NA,bls_prod_wage_nominal,6.841666666666667
 annual,1980,NA,comp_private_nominal,8.081182058391377
 annual,1980,NA,comp_private_real,28.150238476306807
@@ -263,6 +265,8 @@ annual,1980,NA,comp_wage_ratio,1.181171555428703
 annual,1980,NA,productivity_nominal,12.901967398160751
 annual,1980,NA,productivity_real,44.943110605289014
 annual,1980,NA,productivity_real_index_1948,210.65257833497947
+annual,1980,NA,wage_actual_real,23.83247238466537
+annual,1980,NA,wage_counter_real,23.820442107372
 annual,1981,NA,bls_prod_wage_nominal,7.43
 annual,1981,NA,comp_private_nominal,8.81216003594083
 annual,1981,NA,comp_private_real,28.020160114281605
@@ -271,6 +275,8 @@ annual,1981,NA,comp_wage_ratio,1.1860242309476219
 annual,1981,NA,productivity_nominal,14.374994219210192
 annual,1981,NA,productivity_real,45.70838909204379
 annual,1981,NA,productivity_real_index_1948,214.23951044110328
+annual,1981,NA,wage_actual_real,23.625284697508892
+annual,1981,NA,wage_counter_real,24.1269277562519
 annual,1982,NA,bls_prod_wage_nominal,7.8625
 annual,1982,NA,comp_private_nominal,9.375382334488387
 annual,1982,NA,comp_private_real,28.110416496192528
@@ -279,6 +285,8 @@ annual,1982,NA,comp_wage_ratio,1.19241746702555
 annual,1982,NA,productivity_nominal,15.102459077035656
 annual,1982,NA,productivity_real,45.28203753466899
 annual,1982,NA,productivity_real_index_1948,212.24116066894564
+annual,1982,NA,wage_actual_real,23.574307885906038
+annual,1982,NA,wage_counter_real,23.773728643700025
 annual,1983,NA,bls_prod_wage_nominal,8.1975
 annual,1983,NA,comp_private_nominal,9.83442666465178
 annual,1983,NA,comp_private_real,28.29971086913483
@@ -287,6 +295,8 @@ annual,1983,NA,comp_wage_ratio,1.1996860829096407
 annual,1983,NA,productivity_nominal,16.228987647601976
 annual,1983,NA,productivity_real,46.70080664454868
 annual,1983,NA,productivity_real_index_1948,218.89106467053935
+annual,1983,NA,wage_actual_real,23.589263285024153
+annual,1983,NA,wage_counter_real,24.370050621371306
 annual,1984,NA,bls_prod_wage_nominal,8.485833333333334
 annual,1984,NA,comp_private_nominal,10.192079570061495
 annual,1984,NA,comp_private_real,28.150303232921
@@ -295,6 +305,8 @@ annual,1984,NA,comp_wage_ratio,1.2010699679931054
 annual,1984,NA,productivity_nominal,17.309902609658504
 annual,1984,NA,productivity_real,47.80957645047874
 annual,1984,NA,productivity_real_index_1948,224.08797283407122
+annual,1984,NA,wage_actual_real,23.437688047398247
+annual,1984,NA,wage_counter_real,24.9198978918524
 annual,1985,NA,bls_prod_wage_nominal,8.731666666666667
 annual,1985,NA,comp_private_nominal,10.514396808823655
 annual,1985,NA,comp_private_real,28.085541251670953
@@ -303,6 +315,8 @@ annual,1985,NA,comp_wage_ratio,1.204168369019697
 annual,1985,NA,productivity_nominal,18.193606142510372
 annual,1985,NA,productivity_real,48.597868724463424
 annual,1985,NA,productivity_real_index_1948,227.78277272130634
+annual,1985,NA,wage_actual_real,23.32359990034878
+annual,1985,NA,wage_counter_real,25.265603631257555
 annual,1986,NA,bls_prod_wage_nominal,8.921666666666667
 annual,1986,NA,comp_private_nominal,10.787737792343593
 annual,1986,NA,comp_private_real,28.34954034546765
@@ -311,6 +325,8 @@ annual,1986,NA,comp_wage_ratio,1.209161717804251
 annual,1986,NA,productivity_nominal,18.93551586819214
 annual,1986,NA,productivity_real,49.76142184773434
 annual,1986,NA,productivity_real_index_1948,233.2364554358689
+annual,1986,NA,wage_actual_real,23.44561519607843
+annual,1986,NA,wage_counter_real,25.76368984297025
 annual,1987,NA,bls_prod_wage_nominal,9.138333333333334
 annual,1987,NA,comp_private_nominal,11.026285611735373
 annual,1987,NA,comp_private_real,28.028410224994467
@@ -319,6 +335,8 @@ annual,1987,NA,comp_wage_ratio,1.206597002925629
 annual,1987,NA,productivity_nominal,19.477141157249573
 annual,1987,NA,productivity_real,49.51017247226883
 annual,1987,NA,productivity_real_index_1948,232.0588260276224
+annual,1987,NA,wage_actual_real,23.22930535798957
+annual,1987,NA,wage_counter_real,25.688093130644155
 annual,1988,NA,bls_prod_wage_nominal,9.433333333333334
 annual,1988,NA,comp_private_nominal,11.39829051666638
 annual,1988,NA,comp_private_real,27.940665505189052
@@ -327,6 +345,8 @@ annual,1988,NA,comp_wage_ratio,1.2082993480565067
 annual,1988,NA,productivity_nominal,20.458822177799224
 annual,1988,NA,productivity_real,50.15077535216352
 annual,1988,NA,productivity_real_index_1948,235.0613918607659
+annual,1988,NA,wage_actual_real,23.123959762231365
+annual,1988,NA,wage_counter_real,25.983806936397993
 annual,1989,NA,bls_prod_wage_nominal,9.805
 annual,1989,NA,comp_private_nominal,11.917607435935254
 annual,1989,NA,comp_private_real,27.98523585810289
@@ -335,6 +355,8 @@ annual,1989,NA,comp_wage_ratio,1.2154622576170582
 annual,1989,NA,productivity_nominal,21.49312415890783
 annual,1989,NA,productivity_real,50.4707133665812
 annual,1989,NA,productivity_real_index_1948,236.56097136776438
+annual,1989,NA,wage_actual_real,23.024356110381078
+annual,1989,NA,wage_counter_real,25.995467703826506
 annual,1990,NA,bls_prod_wage_nominal,10.199166666666668
 annual,1990,NA,comp_private_nominal,12.428510646557706
 annual,1990,NA,comp_private_real,27.831765069421827
@@ -343,6 +365,8 @@ annual,1990,NA,comp_wage_ratio,1.2185809932077167
 annual,1990,NA,productivity_nominal,22.63867583733258
 annual,1990,NA,productivity_real,50.695881856282355
 annual,1990,NA,productivity_real_index_1948,237.61635721615198
+annual,1990,NA,wage_actual_real,22.83948725981621
+annual,1990,NA,wage_counter_real,26.044615612898994
 annual,1991,NA,bls_prod_wage_nominal,10.5125
 annual,1991,NA,comp_private_nominal,12.888197900285595
 annual,1991,NA,comp_private_real,27.849104773652183
@@ -351,6 +375,8 @@ annual,1991,NA,comp_wage_ratio,1.2259879096585584
 annual,1991,NA,productivity_nominal,23.615783515567276
 annual,1991,NA,productivity_real,51.02951045020401
 annual,1991,NA,productivity_real_index_1948,239.1801057544563
+annual,1991,NA,wage_actual_real,22.71564389359129
+annual,1991,NA,wage_counter_real,26.05762829650029
 annual,1992,NA,bls_prod_wage_nominal,10.770833333333334
 annual,1992,NA,comp_private_nominal,13.323055149689944
 annual,1992,NA,comp_private_real,28.075824943981047
@@ -359,6 +385,8 @@ annual,1992,NA,comp_wage_ratio,1.2369567643812713
 annual,1992,NA,productivity_nominal,25.13913929075641
 annual,1992,NA,productivity_real,52.97599282144069
 annual,1992,NA,productivity_real_index_1948,248.30345134986197
+annual,1992,NA,wage_actual_real,22.6974990172956
+annual,1992,NA,wage_counter_real,26.81169403399621
 annual,1993,NA,bls_prod_wage_nominal,11.043333333333331
 annual,1993,NA,comp_private_nominal,13.689818565017177
 annual,1993,NA,comp_private_real,28.151560156140036
@@ -367,6 +395,8 @@ annual,1993,NA,comp_wage_ratio,1.2396455084531102
 annual,1993,NA,productivity_nominal,25.872804783878163
 annual,1993,NA,productivity_real,53.20449038986222
 annual,1993,NA,productivity_real_index_1948,249.37444090272135
+annual,1993,NA,wage_actual_real,22.709363252780967
+annual,1993,NA,wage_counter_real,26.868934623475624
 annual,1994,NA,bls_prod_wage_nominal,11.333333333333334
 annual,1994,NA,comp_private_nominal,14.028197381049413
 annual,1994,NA,comp_private_real,28.23016747740462
@@ -375,6 +405,8 @@ annual,1994,NA,comp_wage_ratio,1.237782121857301
 annual,1994,NA,productivity_nominal,26.651385681293302
 annual,1994,NA,productivity_real,53.63291240143145
 annual,1994,NA,productivity_real_index_1948,251.38249508804728
+annual,1994,NA,wage_actual_real,22.807057057057058
+annual,1994,NA,wage_counter_real,27.1260679534113
 annual,1995,NA,bls_prod_wage_nominal,11.649166666666666
 annual,1995,NA,comp_private_nominal,14.307756589434863
 annual,1995,NA,comp_private_real,28.127569884840593
@@ -383,6 +415,8 @@ annual,1995,NA,comp_wage_ratio,1.228221468439934
 annual,1995,NA,productivity_nominal,27.312580802651897
 annual,1995,NA,productivity_real,53.6937094547183
 annual,1995,NA,productivity_real_index_1948,251.66745658398204
+annual,1995,NA,wage_actual_real,22.9010570223689
+annual,1995,NA,wage_counter_real,27.368210040740973
 annual,1996,NA,bls_prod_wage_nominal,12.0375
 annual,1996,NA,comp_private_nominal,14.70189273708692
 annual,1996,NA,comp_private_real,28.158930676499814
@@ -391,6 +425,8 @@ annual,1996,NA,comp_wage_ratio,1.2213410373488616
 annual,1996,NA,productivity_nominal,28.40843256266506
 annual,1996,NA,productivity_real,54.41143514413983
 annual,1996,NA,productivity_real_index_1948,255.03150426509876
+annual,1996,NA,wage_actual_real,23.055747588424435
+annual,1996,NA,wage_counter_real,27.890281729309685
 annual,1997,NA,bls_prod_wage_nominal,12.505
 annual,1997,NA,comp_private_nominal,15.18858357210143
 annual,1997,NA,comp_private_real,28.48058640434969
@@ -399,6 +435,8 @@ annual,1997,NA,comp_wage_ratio,1.2146008454299424
 annual,1997,NA,productivity_nominal,29.44581354172414
 annual,1997,NA,productivity_real,55.21476264329594
 annual,1997,NA,productivity_real_index_1948,258.7967756641085
+annual,1997,NA,wage_actual_real,23.44851521511018
+annual,1997,NA,wage_counter_real,28.4591090998766
 annual,1998,NA,bls_prod_wage_nominal,13.005833333333332
 annual,1998,NA,comp_private_nominal,15.772461086415714
 annual,1998,NA,comp_private_real,29.177420249922235
@@ -407,6 +445,8 @@ annual,1998,NA,comp_wage_ratio,1.2127220672582084
 annual,1998,NA,productivity_nominal,30.47378723203547
 annual,1998,NA,productivity_real,56.373351742906195
 annual,1998,NA,productivity_real_index_1948,264.22719153378756
+annual,1998,NA,wage_actual_real,24.059445307108348
+annual,1998,NA,wage_counter_real,29.10129040788958
 annual,1999,NA,bls_prod_wage_nominal,13.480833333333331
 annual,1999,NA,comp_private_nominal,16.337789275775325
 annual,1999,NA,comp_private_real,29.610171841592805
@@ -415,6 +455,8 @@ annual,1999,NA,comp_wage_ratio,1.2119272504747725
 annual,1999,NA,productivity_nominal,31.796948824885256
 annual,1999,NA,productivity_real,57.62793869175451
 annual,1999,NA,productivity_real_index_1948,270.10755833441596
+annual,1999,NA,wage_actual_real,24.432301386071668
+annual,1999,NA,wage_counter_real,29.76844880690061
 annual,2000,NA,bls_prod_wage_nominal,14.011666666666668
 annual,2000,NA,comp_private_nominal,16.98014044164087
 annual,2000,NA,comp_private_real,29.748540165894347
@@ -423,6 +465,8 @@ annual,2000,NA,comp_wage_ratio,1.2118572933251481
 annual,2000,NA,productivity_nominal,33.27610223392803
 annual,2000,NA,productivity_real,58.298426168656256
 annual,2000,NA,productivity_real_index_1948,273.2501960790772
+annual,2000,NA,wage_actual_real,24.547890522875818
+annual,2000,NA,wage_counter_real,30.116536132273847
 annual,2001,NA,bls_prod_wage_nominal,14.540833333333332
 annual,2001,NA,comp_private_nominal,17.724885236127946
 annual,2001,NA,comp_private_real,30.368523410317007
@@ -431,6 +475,8 @@ annual,2001,NA,comp_wage_ratio,1.2189731379078192
 annual,2001,NA,productivity_nominal,34.591033591059585
 annual,2001,NA,productivity_real,59.26574978640794
 annual,2001,NA,productivity_real_index_1948,277.7841326806914
+annual,2001,NA,wage_actual_real,24.91320150207734
+annual,2001,NA,wage_counter_real,30.437523782233647
 annual,2002,NA,bls_prod_wage_nominal,14.961666666666666
 annual,2002,NA,comp_private_nominal,18.373584916833188
 annual,2002,NA,comp_private_real,31.09242068786071
@@ -439,6 +485,8 @@ annual,2002,NA,comp_wage_ratio,1.22804399577809
 annual,2002,NA,productivity_nominal,36.19691153231608
 annual,2002,NA,productivity_real,61.25367510250837
 annual,2002,NA,productivity_real_index_1948,287.10172524903163
+annual,2002,NA,wage_actual_real,25.318653724747474
+annual,2002,NA,wage_counter_real,31.226110675074313
 annual,2003,NA,bls_prod_wage_nominal,15.364166666666666
 annual,2003,NA,comp_private_nominal,18.99819988372219
 annual,2003,NA,comp_private_real,31.49330537310905
@@ -447,6 +495,8 @@ annual,2003,NA,comp_wage_ratio,1.236526542304422
 annual,2003,NA,productivity_nominal,38.19673729166769
 annual,2003,NA,productivity_real,63.31871014861795
 annual,2003,NA,productivity_real_index_1948,296.7807383604179
+annual,2003,NA,wage_actual_real,25.4691705318491
+annual,2003,NA,wage_counter_real,32.057399277819805
 annual,2004,NA,bls_prod_wage_nominal,15.680833333333334
 annual,2004,NA,comp_private_nominal,19.436801198693335
 annual,2004,NA,comp_private_real,31.43308935933483
@@ -455,6 +505,8 @@ annual,2004,NA,comp_wage_ratio,1.2395260370107881
 annual,2004,NA,productivity_nominal,40.319891242795414
 annual,2004,NA,productivity_real,65.20510918631258
 annual,2004,NA,productivity_real_index_1948,305.6224677313315
+annual,2004,NA,wage_actual_real,25.358958521870285
+annual,2004,NA,wage_counter_real,32.93257144927577
 annual,2005,NA,bls_prod_wage_nominal,16.1125
 annual,2005,NA,comp_private_nominal,20.00440473872852
 annual,2005,NA,comp_private_real,31.440520024721078
@@ -463,6 +515,8 @@ annual,2005,NA,comp_wage_ratio,1.2415456781212426
 annual,2005,NA,productivity_nominal,42.30573984869435
 annual,2005,NA,productivity_real,66.49107925208162
 annual,2005,NA,productivity_real_index_1948,311.649930146983
+annual,2005,NA,wage_actual_real,25.323691732629726
+annual,2005,NA,wage_counter_real,33.52743659626225
 annual,2006,NA,bls_prod_wage_nominal,16.7425
 annual,2006,NA,comp_private_nominal,20.67589100834624
 annual,2006,NA,comp_private_real,31.579330967448488
@@ -471,6 +525,8 @@ annual,2006,NA,comp_wage_ratio,1.234934508487158
 annual,2006,NA,productivity_nominal,43.822407635946895
 annual,2006,NA,productivity_real,66.93217303028811
 annual,2006,NA,productivity_real_index_1948,313.71737809206985
+annual,2006,NA,wage_actual_real,25.57166452991453
+annual,2006,NA,wage_counter_real,33.93053196863543
 annual,2007,NA,bls_prod_wage_nominal,17.411666666666665
 annual,2007,NA,comp_private_nominal,21.44605592366238
 annual,2007,NA,comp_private_real,31.936751612987226
@@ -479,6 +535,8 @@ annual,2007,NA,comp_wage_ratio,1.2317060930599626
 annual,2007,NA,productivity_nominal,45.464982334225844
 annual,2007,NA,productivity_real,67.70493619271798
 annual,2007,NA,productivity_real_index_1948,317.33939157568904
+annual,2007,NA,wage_actual_real,25.928873611111108
+annual,2007,NA,wage_counter_real,34.412237644044225
 annual,2008,NA,bls_prod_wage_nominal,18.059166666666663
 annual,2008,NA,comp_private_nominal,22.26774534780001
 annual,2008,NA,comp_private_real,31.987508791413674
@@ -487,6 +545,8 @@ annual,2008,NA,comp_wage_ratio,1.2330439027899043
 annual,2008,NA,productivity_nominal,46.73137045592751
 annual,2008,NA,productivity_real,67.12938826747786
 annual,2008,NA,productivity_real_index_1948,314.6417444218912
+annual,2008,NA,wage_actual_real,25.941905814576625
+annual,2008,NA,wage_counter_real,34.08268648464127
 annual,2009,NA,bls_prod_wage_nominal,18.606666666666666
 annual,2009,NA,comp_private_nominal,23.10240661363511
 annual,2009,NA,comp_private_real,33.32042019254717
@@ -495,6 +555,8 @@ annual,2009,NA,comp_wage_ratio,1.2416198466661652
 annual,2009,NA,productivity_nominal,48.404893748875516
 annual,2009,NA,productivity_real,69.81399929720786
 annual,2009,NA,productivity_real_index_1948,327.22476832973337
+annual,2009,NA,wage_actual_real,26.836249663707285
+annual,2009,NA,wage_counter_real,35.2008816789944
 annual,2010,NA,bls_prod_wage_nominal,19.04
 annual,2010,NA,comp_private_nominal,23.679684419483063
 annual,2010,NA,comp_private_real,33.690761192369614
@@ -503,6 +565,8 @@ annual,2010,NA,comp_wage_ratio,1.2436809043846146
 annual,2010,NA,productivity_nominal,50.56115800436768
 annual,2010,NA,productivity_real,71.93693419888936
 annual,2010,NA,productivity_real_index_1948,337.17516349939694
+annual,2010,NA,wage_actual_real,27.089554140127387
+annual,2010,NA,wage_counter_real,36.21117598290193
 annual,2011,NA,bls_prod_wage_nominal,19.435
 annual,2011,NA,comp_private_nominal,24.12787803368516
 annual,2011,NA,comp_private_real,33.2946085298806
@@ -511,6 +575,8 @@ annual,2011,NA,comp_wage_ratio,1.2414652963048707
 annual,2011,NA,productivity_nominal,51.650310532731126
 annual,2011,NA,productivity_real,71.27344009420116
 annual,2011,NA,productivity_real_index_1948,334.06530434678683
+annual,2011,NA,wage_actual_real,26.818799227799225
+annual,2011,NA,wage_counter_real,35.94121936902405
 annual,2012,NA,bls_prod_wage_nominal,19.734166666666667
 annual,2012,NA,comp_private_nominal,24.403398284417737
 annual,2012,NA,comp_private_real,33.03702479867764
@@ -519,6 +585,8 @@ annual,2012,NA,comp_wage_ratio,1.23660647528826
 annual,2012,NA,productivity_nominal,52.84804627055681
 annual,2012,NA,productivity_real,71.54504445870076
 annual,2012,NA,productivity_real_index_1948,335.3383394994124
+annual,2012,NA,wage_actual_real,26.715875631313132
+annual,2012,NA,wage_counter_real,36.21993876007898
 annual,2013,NA,bls_prod_wage_nominal,20.129166666666663
 annual,2013,NA,comp_private_nominal,24.998892680750078
 annual,2013,NA,comp_private_real,33.43789013510508
@@ -527,6 +595,8 @@ annual,2013,NA,comp_wage_ratio,1.2419238756737776
 annual,2013,NA,productivity_nominal,54.12879867261487
 annual,2013,NA,productivity_real,72.40131978140926
 annual,2013,NA,productivity_real_index_1948,339.35178231776365
+annual,2013,NA,wage_actual_real,26.924267090818358
+annual,2013,NA,wage_counter_real,36.49649653900246
 annual,2014,NA,bls_prod_wage_nominal,20.6025
 annual,2014,NA,comp_private_nominal,25.49076342784135
 annual,2014,NA,comp_private_real,33.61770793029704
@@ -535,6 +605,8 @@ annual,2014,NA,comp_wage_ratio,1.237265546794872
 annual,2014,NA,productivity_nominal,55.29633936583907
 annual,2014,NA,productivity_real,72.92587339243867
 annual,2014,NA,productivity_real_index_1948,341.81041433388555
+annual,2014,NA,wage_actual_real,27.170972324723245
+annual,2014,NA,wage_counter_real,36.89932227305202
 annual,2015,NA,bls_prod_wage_nominal,21.028333333333332
 annual,2015,NA,comp_private_nominal,25.951152489650926
 annual,2015,NA,comp_private_real,34.250154726001625
@@ -543,6 +615,8 @@ annual,2015,NA,comp_wage_ratio,1.2341041050796986
 annual,2015,NA,productivity_nominal,56.279385477161334
 annual,2015,NA,productivity_real,74.27715055220627
 annual,2015,NA,productivity_real_index_1948,348.143977229657
+annual,2015,NA,wage_actual_real,27.753051452486456
+annual,2015,NA,wage_counter_real,37.67932446752305
 annual,2016,NA,bls_prod_wage_nominal,21.5325
 annual,2016,NA,comp_private_nominal,26.52192334326053
 annual,2016,NA,comp_private_real,34.69595681874566
@@ -551,6 +625,8 @@ annual,2016,NA,comp_wage_ratio,1.2317159337401848
 annual,2016,NA,productivity_nominal,57.14121800529568
 annual,2016,NA,productivity_real,74.75209119726455
 annual,2016,NA,productivity_real_index_1948,350.37006861697256
+annual,2016,NA,wage_actual_real,28.168797584187406
+annual,2016,NA,wage_counter_real,37.99377592650354
 annual,2017,NA,bls_prod_wage_nominal,22.05
 annual,2017,NA,comp_private_nominal,27.12370567390532
 annual,2017,NA,comp_private_real,34.87054822968979
@@ -559,6 +635,8 @@ annual,2017,NA,comp_wage_ratio,1.2301000305625995
 annual,2017,NA,productivity_nominal,58.86423412471396
 annual,2017,NA,productivity_real,75.67653696465024
 annual,2017,NA,productivity_real_index_1948,354.7030327088647
+annual,2017,NA,wage_actual_real,28.34773381294964
+annual,2017,NA,wage_counter_real,38.514165374851565
 annual,2018,NA,bls_prod_wage_nominal,22.70916666666667
 annual,2018,NA,comp_private_nominal,27.95937466516192
 annual,2018,NA,comp_private_real,35.23512166900166
@@ -567,6 +645,8 @@ annual,2018,NA,comp_wage_ratio,1.2311933359581044
 annual,2018,NA,productivity_nominal,60.87105285093203
 annual,2018,NA,productivity_real,76.71126336009557
 annual,2018,NA,productivity_real_index_1948,359.552892456805
+annual,2018,NA,wage_actual_real,28.61867477668077
+annual,2018,NA,wage_counter_real,39.006101735629464
 annual,2019,NA,bls_prod_wage_nominal,23.509166666666665
 annual,2019,NA,comp_private_nominal,28.857493864706
 annual,2019,NA,comp_private_real,35.83623456305046
@@ -575,6 +655,8 @@ annual,2019,NA,comp_wage_ratio,1.2274996504075433
 annual,2019,NA,productivity_nominal,62.734049675041355
 annual,2019,NA,productivity_real,77.90531394669833
 annual,2019,NA,productivity_real_index_1948,365.14951964488097
+annual,2019,NA,wage_actual_real,29.19449675700718
+annual,2019,NA,wage_counter_real,39.73245269670513
 annual,2020,NA,bls_prod_wage_nominal,24.6925
 annual,2020,NA,comp_private_nominal,30.256380837440332
 annual,2020,NA,comp_private_real,37.18579955743182
@@ -583,6 +665,8 @@ annual,2020,NA,comp_wage_ratio,1.225326752554028
 annual,2020,NA,productivity_nominal,65.95432870477872
 annual,2020,NA,productivity_real,81.0594122389543
 annual,2020,NA,productivity_real_index_1948,379.93307442418643
+annual,2020,NA,wage_actual_real,30.347659903713886
+annual,2020,NA,wage_counter_real,41.414383889408086
 annual,2021,NA,bls_prod_wage_nominal,25.89
 annual,2021,NA,comp_private_nominal,31.52080682510688
 annual,2021,NA,comp_private_real,37.082081498660955
@@ -591,6 +675,8 @@ annual,2021,NA,comp_wage_ratio,1.217489641757701
 annual,2021,NA,productivity_nominal,70.67388775923364
 annual,2021,NA,productivity_real,83.14301344684036
 annual,2021,NA,productivity_real_index_1948,389.69910887867354
+annual,2021,NA,wage_actual_real,30.45782093482554
+annual,2021,NA,wage_counter_real,42.752366171003345
 annual,2022,NA,bls_prod_wage_nominal,27.559166666666663
 annual,2022,NA,comp_private_nominal,33.30899592590957
 annual,2022,NA,comp_private_real,36.383359241809536
@@ -599,6 +685,8 @@ annual,2022,NA,comp_wage_ratio,1.2086358172142206
 annual,2022,NA,productivity_nominal,75.05220672863717
 annual,2022,NA,productivity_real,81.97939695848082
 annual,2022,NA,productivity_real_index_1948,384.2451291659924
+annual,2022,NA,wage_actual_real,30.102830582722078
+annual,2022,NA,wage_counter_real,42.462829434187206
 annual,2023,NA,bls_prod_wage_nominal,28.929166666666667
 annual,2023,NA,comp_private_nominal,35.031851085653614
 annual,2023,NA,comp_private_real,36.82465758239
@@ -607,6 +695,8 @@ annual,2023,NA,comp_wage_ratio,1.2109526516717366
 annual,2023,NA,productivity_nominal,79.17723221319888
 annual,2023,NA,productivity_real,83.22924350881551
 annual,2023,NA,productivity_real_index_1948,390.10327727379376
+annual,2023,NA,wage_actual_real,30.409659313725488
+annual,2023,NA,wage_counter_real,43.02773198439748
 annual,2024,NA,bls_prod_wage_nominal,30.1225
 annual,2024,NA,comp_private_nominal,36.539811031165904
 annual,2024,NA,comp_private_real,37.44073527103983
@@ -615,6 +705,8 @@ annual,2024,NA,comp_wage_ratio,1.213040452524389
 annual,2024,NA,productivity_nominal,83.02863063473681
 annual,2024,NA,productivity_real,85.07578150474465
 annual,2024,NA,productivity_real_index_1948,398.7581742000916
+annual,2024,NA,wage_actual_real,30.865199254587154
+annual,2024,NA,wage_counter_real,43.90665311775594
 annual,2025,NA,bls_prod_wage_nominal,31.3475
 annual,2025,NA,comp_private_nominal,38.04401561589412
 annual,2025,NA,comp_private_real,38.04401561589412
@@ -623,6 +715,8 @@ annual,2025,NA,comp_wage_ratio,1.2136219990715087
 annual,2025,NA,productivity_nominal,86.74580230493461
 annual,2025,NA,productivity_real,86.74580230493461
 annual,2025,NA,productivity_real_index_1948,406.58571845982647
+annual,2025,NA,wage_actual_real,31.3475
+annual,2025,NA,wage_counter_real,44.74707975127337
 quarterly,1948,1,bls_prod_wage_nominal,1.2670833333333331
 quarterly,1948,1,comp_private_nominal,1.351193068899606
 quarterly,1948,1,comp_private_real,15.500954026444548
@@ -1647,6 +1741,8 @@ quarterly,1979,4,comp_wage_ratio,1.179882775717278
 quarterly,1979,4,productivity_nominal,12.243056832329133
 quarterly,1979,4,productivity_real,47.11026243606648
 quarterly,1979,4,productivity_real_index_1948,216.84015731925342
+quarterly,1979,4,wage_actual_real,25.0499375
+quarterly,1979,4,wage_counter_real,25.0499375
 quarterly,1980,1,bls_prod_wage_nominal,6.63
 quarterly,1980,1,comp_private_nominal,7.822093363433318
 quarterly,1980,1,comp_private_real,29.186679681336035
@@ -1655,6 +1751,8 @@ quarterly,1980,1,comp_wage_ratio,1.1798029205781777
 quarterly,1980,1,productivity_nominal,12.55978180668283
 quarterly,1980,1,productivity_real,46.864478781703404
 quarterly,1980,1,productivity_real_index_1948,215.70885888187115
+quarterly,1980,1,wage_actual_real,24.73860606060606
+quarterly,1980,1,wage_counter_real,24.920933632700205
 quarterly,1980,2,bls_prod_wage_nominal,6.766666666666667
 quarterly,1980,2,comp_private_nominal,7.9926273569006785
 quarterly,1980,2,comp_private_real,29.174669423311368
@@ -1663,6 +1761,8 @@ quarterly,1980,2,comp_wage_ratio,1.1811764566848293
 quarterly,1980,2,productivity_nominal,12.672088050381541
 quarterly,1980,2,productivity_real,46.25562574911997
 quarterly,1980,2,productivity_real_index_1948,212.90641668472
+quarterly,1980,2,wage_actual_real,24.699670619235835
+quarterly,1980,2,wage_counter_real,24.56856340691944
 quarterly,1980,3,bls_prod_wage_nominal,6.906666666666667
 quarterly,1980,3,comp_private_nominal,8.166829371239325
 quarterly,1980,3,comp_private_real,29.119949514824388
@@ -1671,6 +1771,8 @@ quarterly,1980,3,comp_wage_ratio,1.182455990044304
 quarterly,1980,3,productivity_nominal,12.96435915010281
 quarterly,1980,3,productivity_real,46.22619951783763
 quarterly,1980,3,productivity_real_index_1948,212.77097297690295
+quarterly,1980,3,wage_actual_real,24.62666666666667
+quarterly,1980,3,wage_counter_real,24.526365053042635
 quarterly,1980,4,bls_prod_wage_nominal,7.08
 quarterly,1980,4,comp_private_nominal,8.362956977845345
 quarterly,1980,4,comp_private_real,29.0892307685129
@@ -1679,6 +1781,8 @@ quarterly,1980,4,comp_wage_ratio,1.1812086126900203
 quarterly,1980,4,productivity_nominal,13.411991280607818
 quarterly,1980,4,productivity_real,46.65150262765092
 quarterly,1980,4,productivity_real_index_1948,214.72856753213256
+quarterly,1980,4,wage_actual_real,24.626666666666665
+quarterly,1980,4,wage_counter_real,24.7781578972265
 quarterly,1981,1,bls_prod_wage_nominal,7.233333333333333
 quarterly,1981,1,comp_private_nominal,8.573631712660454
 quarterly,1981,1,comp_private_real,28.94972170618621
@@ -1687,6 +1791,8 @@ quarterly,1981,1,comp_wage_ratio,1.1852947068194175
 quarterly,1981,1,productivity_nominal,14.020566799911405
 quarterly,1981,1,productivity_real,47.34184073023101
 quarterly,1981,1,productivity_real_index_1948,217.9060710107025
+quarterly,1981,1,wage_actual_real,24.42407068860451
+quarterly,1981,1,wage_counter_real,25.058137000865518
 quarterly,1981,2,bls_prod_wage_nominal,7.37
 quarterly,1981,2,comp_private_nominal,8.739263758591498
 quarterly,1981,2,comp_private_real,29.031331226831824
@@ -1695,6 +1801,8 @@ quarterly,1981,2,comp_wage_ratio,1.185788841057191
 quarterly,1981,2,productivity_nominal,14.17870207861961
 quarterly,1981,2,productivity_real,47.100832264766936
 quarterly,1981,2,productivity_real_index_1948,216.7967519183407
+quarterly,1981,2,wage_actual_real,24.48271582733813
+quarterly,1981,2,wage_counter_real,24.92018180165087
 quarterly,1981,3,bls_prod_wage_nominal,7.51
 quarterly,1981,3,comp_private_nominal,8.906026680273806
 quarterly,1981,3,comp_private_real,29.011342642796677
@@ -1703,6 +1811,8 @@ quarterly,1981,3,comp_wage_ratio,1.1858890386516387
 quarterly,1981,3,productivity_nominal,14.618468547027518
 quarterly,1981,3,productivity_real,47.61959683661345
 quarterly,1981,3,productivity_real_index_1948,219.18453295699467
+quarterly,1981,3,wage_actual_real,24.46379188712522
+quarterly,1981,3,wage_counter_real,25.19252183558618
 quarterly,1981,4,bls_prod_wage_nominal,7.62
 quarterly,1981,4,comp_private_nominal,9.04551546940268
 quarterly,1981,4,comp_private_real,28.904960332157007
@@ -1711,6 +1821,8 @@ quarterly,1981,4,comp_wage_ratio,1.187075520918987
 quarterly,1981,4,productivity_nominal,14.683662768526757
 quarterly,1981,4,productivity_real,46.9216697810881
 quarterly,1981,4,productivity_real_index_1948,215.97209887805357
+quarterly,1981,4,wage_actual_real,24.349723183391003
+quarterly,1981,4,wage_counter_real,24.798481812814273
 quarterly,1982,1,bls_prod_wage_nominal,7.73
 quarterly,1982,1,comp_private_nominal,9.195212486076894
 quarterly,1982,1,comp_private_real,29.031722156895764
@@ -1719,6 +1831,8 @@ quarterly,1982,1,comp_wage_ratio,1.1895488339038671
 quarterly,1982,1,productivity_nominal,14.823776208711013
 quarterly,1982,1,productivity_real,46.80258915810126
 quarterly,1982,1,productivity_real_index_1948,215.423991954277
+quarterly,1982,1,wage_actual_real,24.40565811965812
+quarterly,1982,1,wage_counter_real,24.684116528676856
 quarterly,1982,2,bls_prod_wage_nominal,7.819999999999999
 quarterly,1982,2,comp_private_nominal,9.316150553283443
 quarterly,1982,2,comp_private_real,29.11494090002456
@@ -1727,6 +1841,8 @@ quarterly,1982,2,comp_wage_ratio,1.1913236001641232
 quarterly,1982,2,productivity_nominal,14.955631691191012
 quarterly,1982,2,productivity_real,46.73951223964433
 quarterly,1982,2,productivity_real_index_1948,215.13366011967983
+quarterly,1982,2,wage_actual_real,24.43915397631133
+quarterly,1982,2,wage_counter_real,24.614125745485918
 quarterly,1982,3,bls_prod_wage_nominal,7.926666666666667
 quarterly,1982,3,comp_private_nominal,9.457533517326281
 quarterly,1982,3,comp_private_real,29.064999012481927
@@ -1735,6 +1851,8 @@ quarterly,1982,3,comp_wage_ratio,1.1931287027745519
 quarterly,1982,3,productivity_nominal,15.191035718320771
 quarterly,1982,3,productivity_real,46.68526284815052
 quarterly,1982,3,productivity_real_index_1948,214.88395982132224
+quarterly,1982,3,wage_actual_real,24.360321686078755
+quarterly,1982,3,wage_counter_real,24.54836087706828
 quarterly,1982,4,bls_prod_wage_nominal,7.983333333333333
 quarterly,1982,4,comp_private_nominal,9.544780567962766
 quarterly,1982,4,comp_private_real,28.99541070563689
@@ -1743,6 +1861,8 @@ quarterly,1982,4,comp_wage_ratio,1.1955883801205969
 quarterly,1982,4,productivity_nominal,15.442058320524755
 quarterly,1982,4,productivity_real,46.91033177304148
 quarterly,1982,4,productivity_real_index_1948,215.91991204398843
+quarterly,1982,4,wage_actual_real,24.252001096491227
+quarterly,1982,4,wage_counter_real,24.615961460514374
 quarterly,1983,1,bls_prod_wage_nominal,8.083333333333334
 quarterly,1983,1,comp_private_nominal,9.70133622073791
 quarterly,1983,1,comp_private_real,29.326297871854198
@@ -1751,6 +1871,8 @@ quarterly,1983,1,comp_wage_ratio,1.200165305658298
 quarterly,1983,1,productivity_nominal,15.720416971627847
 quarterly,1983,1,productivity_real,47.52145686840692
 quarterly,1983,1,productivity_real_index_1948,218.73281214193682
+quarterly,1983,1,wage_actual_real,24.435215493726133
+quarterly,1983,1,wage_counter_real,24.841548413537232
 quarterly,1983,2,bls_prod_wage_nominal,8.163333333333334
 quarterly,1983,2,comp_private_nominal,9.799397211854274
 quarterly,1983,2,comp_private_real,29.28719522701431
@@ -1759,6 +1881,8 @@ quarterly,1983,2,comp_wage_ratio,1.2004161549841903
 quarterly,1983,2,productivity_nominal,16.115652067178637
 quarterly,1983,2,productivity_real,48.16441645320217
 quarterly,1983,2,productivity_real_index_1948,221.6922407315383
+quarterly,1983,2,wage_actual_real,24.397535059331176
+quarterly,1983,2,wage_counter_real,25.172390230516946
 quarterly,1983,3,bls_prod_wage_nominal,8.23
 quarterly,1983,3,comp_private_nominal,9.875751845359332
 quarterly,1983,3,comp_private_real,29.231592401247894
@@ -1767,6 +1891,8 @@ quarterly,1983,3,comp_wage_ratio,1.1999698475527742
 quarterly,1983,3,productivity_nominal,16.370379300945633
 quarterly,1983,3,productivity_real,48.45527334751055
 quarterly,1983,3,productivity_real_index_1948,223.03100327409066
+quarterly,1983,3,wage_actual_real,24.360272435897436
+quarterly,1983,3,wage_counter_real,25.333821066056192
 quarterly,1983,4,bls_prod_wage_nominal,8.316666666666666
 quarterly,1983,4,comp_private_nominal,9.965596120873304
 quarterly,1983,4,comp_private_real,29.216596881353954
@@ -1775,6 +1901,8 @@ quarterly,1983,4,comp_wage_ratio,1.1982680706460886
 quarterly,1983,4,productivity_nominal,16.688806008806008
 quarterly,1983,4,productivity_real,48.92734079089634
 quarterly,1983,4,productivity_real_index_1948,225.2038457376195
+quarterly,1983,4,wage_actual_real,24.382354497354495
+quarterly,1983,4,wage_counter_real,25.61696114552126
 quarterly,1984,1,bls_prod_wage_nominal,8.39
 quarterly,1984,1,comp_private_nominal,10.082288323657561
 quarterly,1984,1,comp_private_real,29.142388941777018
@@ -1783,6 +1911,8 @@ quarterly,1984,1,comp_wage_ratio,1.2017030183143695
 quarterly,1984,1,productivity_nominal,16.94670600404584
 quarterly,1984,1,productivity_real,48.983671345027645
 quarterly,1984,1,productivity_real_index_1948,225.46312525736937
+quarterly,1984,1,wage_actual_real,24.250907668231612
+quarterly,1984,1,wage_counter_real,25.573146398539848
 quarterly,1984,2,bls_prod_wage_nominal,8.459999999999999
 quarterly,1984,2,comp_private_nominal,10.158425953782581
 quarterly,1984,2,comp_private_real,29.089322072304537
@@ -1791,6 +1921,8 @@ quarterly,1984,2,comp_wage_ratio,1.2007595690050334
 quarterly,1984,2,productivity_nominal,17.216825414414732
 quarterly,1984,2,productivity_real,49.30151401616125
 quarterly,1984,2,productivity_real_index_1948,226.92609853001704
+quarterly,1984,2,wage_actual_real,24.22576744186046
+quarterly,1984,2,wage_counter_real,25.759307552946705
 quarterly,1984,3,bls_prod_wage_nominal,8.523333333333333
 quarterly,1984,3,comp_private_nominal,10.233249904037564
 quarterly,1984,3,comp_private_real,29.078173188857505
@@ -1799,6 +1931,8 @@ quarterly,1984,3,comp_wage_ratio,1.2006159449398783
 quarterly,1984,3,productivity_nominal,17.44829280028871
 quarterly,1984,3,productivity_real,49.57999508020499
 quarterly,1984,3,productivity_real_index_1948,228.207897327458
+quarterly,1984,3,wage_actual_real,24.219379487179484
+quarterly,1984,3,wage_counter_real,25.90790863672362
 quarterly,1984,4,bls_prod_wage_nominal,8.576666666666666
 quarterly,1984,4,comp_private_nominal,10.302472750852383
 quarterly,1984,4,comp_private_real,29.051400260800534
@@ -1807,6 +1941,8 @@ quarterly,1984,4,comp_wage_ratio,1.2012210747204488
 quarterly,1984,4,productivity_nominal,17.619941331417625
 quarterly,1984,4,productivity_real,49.685544487218856
 quarterly,1984,4,productivity_real_index_1948,228.6937224712449
+quarterly,1984,4,wage_actual_real,24.184890585241725
+quarterly,1984,4,wage_counter_real,25.949984018542413
 quarterly,1985,1,bls_prod_wage_nominal,8.636666666666667
 quarterly,1985,1,comp_private_nominal,10.386066524268943
 quarterly,1985,1,comp_private_real,29.021278169931524
@@ -1815,6 +1951,8 @@ quarterly,1985,1,comp_wage_ratio,1.2025549815826642
 quarterly,1985,1,productivity_nominal,17.875819066784302
 quarterly,1985,1,productivity_real,49.94952771006143
 quarterly,1985,1,productivity_real_index_1948,229.90879028472847
+quarterly,1985,1,wage_actual_real,24.133015632879474
+quarterly,1985,1,wage_counter_real,26.058920967910296
 quarterly,1985,2,bls_prod_wage_nominal,8.709999999999999
 quarterly,1985,2,comp_private_nominal,10.484344029871268
 quarterly,1985,2,comp_private_real,29.032358955280703
@@ -1823,6 +1961,8 @@ quarterly,1985,2,comp_wage_ratio,1.203713436265358
 quarterly,1985,2,productivity_nominal,18.041111352076022
 quarterly,1985,2,productivity_real,49.95792004090617
 quarterly,1985,2,productivity_real_index_1948,229.9474186906542
+quarterly,1985,2,wage_actual_real,24.11899550224887
+quarterly,1985,2,wage_counter_real,26.03821595120386
 quarterly,1985,3,bls_prod_wage_nominal,8.766666666666667
 quarterly,1985,3,comp_private_nominal,10.561795606590382
 quarterly,1985,3,comp_private_real,29.072483584757727
@@ -1831,6 +1971,8 @@ quarterly,1985,3,comp_wage_ratio,1.2047675596871157
 quarterly,1985,3,productivity_nominal,18.354256702067644
 quarterly,1985,3,productivity_real,50.522074707479796
 quarterly,1985,3,productivity_real_index_1948,232.5441222606721
+quarterly,1985,3,wage_actual_real,24.131197218082466
+quarterly,1985,3,wage_counter_real,26.309215365202803
 quarterly,1985,4,bls_prod_wage_nominal,8.823333333333332
 quarterly,1985,4,comp_private_nominal,10.63697551625069
 quarterly,1985,4,comp_private_real,29.019931726019234
@@ -1839,6 +1981,8 @@ quarterly,1985,4,comp_wage_ratio,1.2055506818568973
 quarterly,1985,4,productivity_nominal,18.49793621563005
 quarterly,1985,4,productivity_real,50.46630456465096
 quarterly,1985,4,productivity_real_index_1948,232.28742221445327
+quarterly,1985,4,wage_actual_real,24.071930083702604
+quarterly,1985,4,wage_counter_real,26.263101711391485
 quarterly,1986,1,bls_prod_wage_nominal,8.873333333333333
 quarterly,1986,1,comp_private_nominal,10.711918674909471
 quarterly,1986,1,comp_private_real,29.05273684663406
@@ -1847,6 +1991,8 @@ quarterly,1986,1,comp_wage_ratio,1.2072034569770254
 quarterly,1986,1,productivity_nominal,18.757810248218114
 quarterly,1986,1,productivity_real,50.87470709024796
 quarterly,1986,1,productivity_real_index_1948,234.1672263870625
+quarterly,1986,1,wage_actual_real,24.066147821830643
+quarterly,1986,1,wage_counter_real,26.43939028123482
 quarterly,1986,2,bls_prod_wage_nominal,8.9
 quarterly,1986,2,comp_private_nominal,10.761322535646968
 quarterly,1986,2,comp_private_real,29.35917684392902
@@ -1855,6 +2001,8 @@ quarterly,1986,2,comp_wage_ratio,1.2091373635558391
 quarterly,1986,2,productivity_nominal,18.882156970978883
 quarterly,1986,2,productivity_real,51.514540510189065
 quarterly,1986,2,productivity_real_index_1948,237.112265795969
+quarterly,1986,2,wage_actual_real,24.281093057607087
+quarterly,1986,2,wage_counter_real,26.72908999366085
 quarterly,1986,3,bls_prod_wage_nominal,8.93
 quarterly,1986,3,comp_private_nominal,10.806808670555272
 quarterly,1986,3,comp_private_real,29.353199433111154
@@ -1863,6 +2011,8 @@ quarterly,1986,3,comp_wage_ratio,1.2101689440711392
 quarterly,1986,3,productivity_nominal,19.028795468126763
 quarterly,1986,3,productivity_real,51.685566514161955
 quarterly,1986,3,productivity_real_index_1948,237.8994680676077
+quarterly,1986,3,wage_actual_real,24.25545588235294
+quarterly,1986,3,wage_counter_real,26.794969156193858
 quarterly,1986,4,bls_prod_wage_nominal,8.993333333333334
 quarterly,1986,4,comp_private_nominal,10.882608042965854
 quarterly,1986,4,comp_private_real,29.34332416840574
@@ -1871,6 +2021,8 @@ quarterly,1986,4,comp_wage_ratio,1.2100750233097688
 quarterly,1986,4,productivity_nominal,19.07104320448968
 quarterly,1986,4,productivity_real,51.42221430466049
 quarterly,1986,4,productivity_real_index_1948,236.68730469627923
+quarterly,1986,4,wage_actual_real,24.249177615571778
+quarterly,1986,4,wage_counter_real,26.660510514097922
 quarterly,1987,1,bls_prod_wage_nominal,9.046666666666669
 quarterly,1987,1,comp_private_nominal,10.924385170712608
 quarterly,1987,1,comp_private_real,29.115929885001712
@@ -1879,6 +2031,8 @@ quarterly,1987,1,comp_wage_ratio,1.207559156674201
 quarterly,1987,1,productivity_nominal,19.113147106492516
 quarterly,1987,1,productivity_real,50.94081198512507
 quarterly,1987,1,productivity_real_index_1948,234.47149545846023
+quarterly,1987,1,wage_actual_real,24.111390091390096
+quarterly,1987,1,wage_counter_real,26.465946611981686
 quarterly,1987,2,bls_prod_wage_nominal,9.1
 quarterly,1987,2,comp_private_nominal,10.985927243047863
 quarterly,1987,2,comp_private_real,28.987153739870575
@@ -1887,6 +2041,8 @@ quarterly,1987,2,comp_wage_ratio,1.2072447519832816
 quarterly,1987,2,productivity_nominal,19.36332892221732
 quarterly,1987,2,productivity_real,51.091526456193414
 quarterly,1987,2,productivity_real_index_1948,235.1652073574567
+quarterly,1987,2,wage_actual_real,24.010999999999996
+quarterly,1987,2,wage_counter_real,26.551162234734548
 quarterly,1987,3,bls_prod_wage_nominal,9.163333333333332
 quarterly,1987,3,comp_private_nominal,11.057825064900461
 quarterly,1987,3,comp_private_real,28.88798146374986
@@ -1895,6 +2051,8 @@ quarterly,1987,3,comp_wage_ratio,1.2067470059913201
 quarterly,1987,3,productivity_nominal,19.547463553004814
 quarterly,1987,3,productivity_real,51.06671171485132
 quarterly,1987,3,productivity_real_index_1948,235.05098951747425
+quarterly,1987,3,wage_actual_real,23.938722300801505
+quarterly,1987,3,wage_counter_real,26.5492127679029
 quarterly,1987,4,bls_prod_wage_nominal,9.256666666666666
 quarterly,1987,4,comp_private_nominal,11.153610462691864
 quarterly,1987,4,comp_private_real,28.893013358473873
@@ -1903,6 +2061,8 @@ quarterly,1987,4,comp_wage_ratio,1.2049273096174142
 quarterly,1987,4,productivity_nominal,19.875897794889745
 quarterly,1987,4,productivity_real,51.487774512147766
 quarterly,1987,4,productivity_real_index_1948,236.98906666851863
+quarterly,1987,4,wage_actual_real,23.97905095839177
+quarterly,1987,4,wage_counter_real,26.808545811860096
 quarterly,1988,1,bls_prod_wage_nominal,9.296666666666669
 quarterly,1988,1,comp_private_nominal,11.22727312300021
 quarterly,1988,1,comp_private_real,28.881300081032574
@@ -1911,6 +2071,8 @@ quarterly,1988,1,comp_wage_ratio,1.2076665245249416
 quarterly,1988,1,productivity_nominal,20.06990238813755
 quarterly,1988,1,productivity_real,51.628286505417904
 quarterly,1988,1,productivity_real_index_1948,237.63581837717845
+quarterly,1988,1,wage_actual_real,23.914962859795736
+quarterly,1988,1,wage_counter_real,26.82073452996941
 quarterly,1988,2,bls_prod_wage_nominal,9.393333333333333
 quarterly,1988,2,comp_private_nominal,11.339051542968853
 quarterly,1988,2,comp_private_real,28.88721131015651
@@ -1919,6 +2081,8 @@ quarterly,1988,2,comp_wage_ratio,1.2071382054260669
 quarterly,1988,2,productivity_nominal,20.2956523339037
 quarterly,1988,2,productivity_real,51.70492394582087
 quarterly,1988,2,productivity_real_index_1948,237.98856688194593
+quarterly,1988,2,wage_actual_real,23.930326436781606
+quarterly,1988,2,wage_counter_real,26.872303296061286
 quarterly,1988,3,bls_prod_wage_nominal,9.473333333333333
 quarterly,1988,3,comp_private_nominal,11.446530626663211
 quarterly,1988,3,comp_private_real,28.84275861861794
@@ -1927,6 +2091,8 @@ quarterly,1988,3,comp_wage_ratio,1.2082896509496706
 quarterly,1988,3,productivity_nominal,20.606916897214614
 quarterly,1988,3,productivity_real,51.92493248179453
 quarterly,1988,3,productivity_real_index_1948,239.00122703464297
+quarterly,1988,3,wage_actual_real,23.870732150977716
+quarterly,1988,3,wage_counter_real,26.960930012328312
 quarterly,1988,4,bls_prod_wage_nominal,9.58
 quarterly,1988,4,comp_private_nominal,11.592039904997213
 quarterly,1988,4,comp_private_real,28.933105006121423
@@ -1935,6 +2101,8 @@ quarterly,1988,4,comp_wage_ratio,1.2100250422752832
 quarterly,1988,4,productivity_nominal,20.852339002128634
 quarterly,1988,4,productivity_real,52.046310995853496
 quarterly,1988,4,productivity_real_index_1948,239.55991074224156
+quarterly,1988,4,wage_actual_real,23.91116216216216
+quarterly,1988,4,wage_counter_real,26.985196095125854
 quarterly,1989,1,bls_prod_wage_nominal,9.676666666666666
 quarterly,1989,1,comp_private_nominal,11.726608511892158
 quarterly,1989,1,comp_private_real,28.955943745273814
@@ -1943,6 +2111,8 @@ quarterly,1989,1,comp_wage_ratio,1.2118438007466923
 quarterly,1989,1,productivity_nominal,21.090495215923852
 quarterly,1989,1,productivity_real,52.07773350776919
 quarterly,1989,1,productivity_real_index_1948,239.70454297468584
+quarterly,1989,1,wage_actual_real,23.894122103386806
+quarterly,1989,1,wage_counter_real,26.96096382230505
 quarterly,1989,2,bls_prod_wage_nominal,9.753333333333334
 quarterly,1989,2,comp_private_nominal,11.850070174494153
 quarterly,1989,2,comp_private_real,28.836732032003553
@@ -1951,6 +2121,8 @@ quarterly,1989,2,comp_wage_ratio,1.2149764362092432
 quarterly,1989,2,productivity_nominal,21.411111359921176
 quarterly,1989,2,productivity_real,52.10319193909672
 quarterly,1989,2,productivity_real_index_1948,239.82172360516216
+quarterly,1989,2,wage_actual_real,23.734396135265698
+quarterly,1989,2,wage_counter_real,26.904595004029197
 quarterly,1989,3,bls_prod_wage_nominal,9.843333333333334
 quarterly,1989,3,comp_private_nominal,11.980382924595908
 quarterly,1989,3,comp_private_real,28.925185963043976
@@ -1959,6 +2131,8 @@ quarterly,1989,3,comp_wage_ratio,1.2171062910188866
 quarterly,1989,3,productivity_nominal,21.668134892094365
 quarterly,1989,3,productivity_real,52.315091693723254
 quarterly,1989,3,productivity_real_index_1948,240.79706047982904
+quarterly,1989,3,wage_actual_real,23.765538126361655
+quarterly,1989,3,wage_counter_real,26.966741241937076
 quarterly,1989,4,bls_prod_wage_nominal,9.943333333333332
 quarterly,1989,4,comp_private_nominal,12.109058847558629
 quarterly,1989,4,comp_private_real,29.00834201224486
@@ -1967,6 +2141,8 @@ quarterly,1989,4,comp_wage_ratio,1.217806789898622
 quarterly,1989,4,productivity_nominal,21.79955412876761
 quarterly,1989,4,productivity_real,52.22279698551722
 quarterly,1989,4,productivity_real_index_1948,240.3722443567117
+quarterly,1989,4,wage_actual_real,23.820151318633805
+quarterly,1989,4,wage_counter_real,26.90368203148389
 quarterly,1990,1,bls_prod_wage_nominal,10.066666666666666
 quarterly,1990,1,comp_private_nominal,12.27291357243783
 quarterly,1990,1,comp_private_real,28.95028271812602
@@ -1975,6 +2151,8 @@ quarterly,1990,1,comp_wage_ratio,1.2191635999110426
 quarterly,1990,1,productivity_nominal,22.24896597731821
 quarterly,1990,1,productivity_real,52.48255448289493
 quarterly,1990,1,productivity_real_index_1948,241.56786190761537
+quarterly,1990,1,wage_actual_real,23.746019582801193
+quarterly,1990,1,wage_counter_real,27.007411519715355
 quarterly,1990,2,bls_prod_wage_nominal,10.16
 quarterly,1990,2,comp_private_nominal,12.3704790071096
 quarterly,1990,2,comp_private_real,28.92186674193852
@@ -1983,6 +2161,8 @@ quarterly,1990,2,comp_wage_ratio,1.2175668314084251
 quarterly,1990,2,productivity_nominal,22.62742581625514
 quarterly,1990,2,productivity_real,52.90234871218132
 quarterly,1990,2,productivity_real_index_1948,243.50010006578123
+quarterly,1990,2,wage_actual_real,23.753822784810126
+quarterly,1990,2,wage_counter_real,27.25913870540261
 quarterly,1990,3,bls_prod_wage_nominal,10.243333333333334
 quarterly,1990,3,comp_private_nominal,12.474535814577159
 quarterly,1990,3,comp_private_real,28.657298071547277
@@ -1991,6 +2171,8 @@ quarterly,1990,3,comp_wage_ratio,1.2178199623732988
 quarterly,1990,3,productivity_nominal,22.862293149486057
 quarterly,1990,3,productivity_real,52.52071573022481
 quarterly,1990,3,productivity_real_index_1948,241.74351134038466
+quarterly,1990,3,wage_actual_real,23.531637645107793
+quarterly,1990,3,wage_counter_real,27.056868532517683
 quarterly,1990,4,bls_prod_wage_nominal,10.32
 quarterly,1990,4,comp_private_nominal,12.588124791006772
 quarterly,1990,4,comp_private_real,28.492973638467532
@@ -1999,6 +2181,8 @@ quarterly,1990,4,comp_wage_ratio,1.2197795340122841
 quarterly,1990,4,productivity_nominal,22.818032889613004
 quarterly,1990,4,productivity_real,51.64817003322944
 quarterly,1990,4,productivity_real_index_1948,237.7273387185174
+quarterly,1990,4,wage_actual_real,23.359117647058827
+quarterly,1990,4,wage_counter_real,26.56461832607994
 quarterly,1991,1,bls_prod_wage_nominal,10.39
 quarterly,1991,1,comp_private_nominal,12.698376168810155
 quarterly,1991,1,comp_private_real,28.602318029015066
@@ -2007,6 +2191,8 @@ quarterly,1991,1,comp_wage_ratio,1.2221728747651737
 quarterly,1991,1,productivity_nominal,23.044109036204272
 quarterly,1991,1,productivity_real,51.905450475450344
 quarterly,1991,1,productivity_real_index_1948,238.91155482518965
+quarterly,1991,1,wage_actual_real,23.40284146341463
+quarterly,1991,1,wage_counter_real,26.644667693419674
 quarterly,1991,2,bls_prod_wage_nominal,10.49
 quarterly,1991,2,comp_private_nominal,12.840642313165926
 quarterly,1991,2,comp_private_real,28.782362078176533
@@ -2015,6 +2201,8 @@ quarterly,1991,2,comp_wage_ratio,1.2240841099300215
 quarterly,1991,2,productivity_nominal,23.52136551018838
 quarterly,1991,2,productivity_real,52.72325497247322
 quarterly,1991,2,productivity_real_index_1948,242.67576344176217
+quarterly,1991,2,wage_actual_real,23.513385922330095
+quarterly,1991,2,wage_counter_real,27.022214584018663
 quarterly,1991,3,bls_prod_wage_nominal,10.56
 quarterly,1991,3,comp_private_nominal,12.956620240636502
 quarterly,1991,3,comp_private_real,28.867162345543562
@@ -2023,6 +2211,8 @@ quarterly,1991,3,comp_wage_ratio,1.226952674302699
 quarterly,1991,3,productivity_nominal,23.82325728627309
 quarterly,1991,3,productivity_real,53.07787238570132
 quarterly,1991,3,productivity_real_index_1948,244.30800431023286
+quarterly,1991,3,wage_actual_real,23.527527141133895
+quarterly,1991,3,wage_counter_real,27.140364666337927
 quarterly,1991,4,bls_prod_wage_nominal,10.613333333333332
 quarterly,1991,4,comp_private_nominal,13.060725579420714
 quarterly,1991,4,comp_private_real,28.890012149928214
@@ -2031,6 +2221,8 @@ quarterly,1991,4,comp_wage_ratio,1.2305960030861227
 quarterly,1991,4,productivity_nominal,24.07694152570751
 quarterly,1991,4,productivity_real,53.257617961654816
 quarterly,1991,4,productivity_real_index_1948,245.13534122053113
+quarterly,1991,4,wage_actual_real,23.47643912175648
+quarterly,1991,4,wage_counter_real,27.151649710011913
 quarterly,1992,1,bls_prod_wage_nominal,10.66
 quarterly,1992,1,comp_private_nominal,13.158852411516396
 quarterly,1992,1,comp_private_real,28.933810004846165
@@ -2039,6 +2231,8 @@ quarterly,1992,1,comp_wage_ratio,1.2344139222810877
 quarterly,1992,1,productivity_nominal,24.600919536052263
 quarterly,1992,1,productivity_real,54.09273617034349
 quarterly,1992,1,productivity_real_index_1948,248.97924177188085
+quarterly,1992,1,wage_actual_real,23.43930952380952
+quarterly,1992,1,wage_counter_real,27.492113165969187
 quarterly,1992,2,bls_prod_wage_nominal,10.743333333333334
 quarterly,1992,2,comp_private_nominal,13.290588831503715
 quarterly,1992,2,comp_private_real,29.05055333939333
@@ -2047,6 +2241,8 @@ quarterly,1992,2,comp_wage_ratio,1.237101039233979
 quarterly,1992,2,productivity_nominal,24.941810091436118
 quarterly,1992,2,productivity_real,54.51777898092604
 quarterly,1992,2,productivity_real_index_1948,250.93563821605724
+quarterly,1992,2,wage_actual_real,23.482765285996056
+quarterly,1992,2,wage_counter_real,27.647952024774405
 quarterly,1992,3,bls_prod_wage_nominal,10.806666666666668
 quarterly,1992,3,comp_private_nominal,13.391506182428854
 quarterly,1992,3,comp_private_real,29.09895519876011
@@ -2055,6 +2251,8 @@ quarterly,1992,3,comp_wage_ratio,1.2391893444567106
 quarterly,1992,3,productivity_nominal,25.341864609150278
 quarterly,1992,3,productivity_real,55.066381097765365
 quarterly,1992,3,productivity_real_index_1948,253.46075616636702
+quarterly,1992,3,wage_actual_real,23.48225098039216
+quarterly,1992,3,wage_counter_real,27.87910644148743
 quarterly,1992,4,bls_prod_wage_nominal,10.87
 quarterly,1992,4,comp_private_nominal,13.4469502487941
 quarterly,1992,4,comp_private_real,28.98076675556908
@@ -2063,6 +2261,8 @@ quarterly,1992,4,comp_wage_ratio,1.2370699400914535
 quarterly,1992,4,productivity_nominal,25.66668765629779
 quarterly,1992,4,productivity_real,55.31665356030573
 quarterly,1992,4,productivity_real_index_1948,254.6127157892534
+quarterly,1992,4,wage_actual_real,23.426942823803962
+quarterly,1992,4,wage_counter_real,28.053795666862854
 quarterly,1993,1,bls_prod_wage_nominal,10.956666666666669
 quarterly,1993,1,comp_private_nominal,13.607363486040992
 quarterly,1993,1,comp_private_real,29.19024431906819
@@ -2071,6 +2271,8 @@ quarterly,1993,1,comp_wage_ratio,1.2419254778863087
 quarterly,1993,1,productivity_nominal,25.664563438688372
 quarterly,1993,1,productivity_real,55.055108793562624
 quarterly,1993,1,productivity_real_index_1948,253.40887175540686
+quarterly,1993,1,wage_actual_real,23.504022454510263
+quarterly,1993,1,wage_counter_real,27.81199052861451
 quarterly,1993,2,bls_prod_wage_nominal,11.01
 quarterly,1993,2,comp_private_nominal,13.644579954018491
 quarterly,1993,2,comp_private_real,29.067519233070534
@@ -2079,6 +2281,8 @@ quarterly,1993,2,comp_wage_ratio,1.2392897324267476
 quarterly,1993,2,productivity_nominal,25.700639928533207
 quarterly,1993,2,productivity_real,54.750959570935215
 quarterly,1993,2,productivity_real_index_1948,252.008926990239
+quarterly,1993,2,wage_actual_real,23.454982698961935
+quarterly,1993,2,wage_counter_real,27.717168868085825
 quarterly,1993,3,bls_prod_wage_nominal,11.07
 quarterly,1993,3,comp_private_nominal,13.719723631125875
 quarterly,1993,3,comp_private_real,29.093374910091267
@@ -2087,6 +2291,8 @@ quarterly,1993,3,comp_wage_ratio,1.2393607616193203
 quarterly,1993,3,productivity_nominal,25.897523744014393
 quarterly,1993,3,productivity_real,54.91702222180779
 quarterly,1993,3,productivity_real_index_1948,252.77328383051193
+quarterly,1993,3,wage_actual_real,23.474500574052815
+quarterly,1993,3,wage_counter_real,27.79964323428813
 quarterly,1993,4,bls_prod_wage_nominal,11.153333333333334
 quarterly,1993,4,comp_private_nominal,13.808747207681439
 quarterly,1993,4,comp_private_real,29.11501837053381
@@ -2095,6 +2301,8 @@ quarterly,1993,4,comp_wage_ratio,1.2380825350581086
 quarterly,1993,4,productivity_nominal,26.22253633304305
 quarterly,1993,4,productivity_real,55.288840875719764
 quarterly,1993,4,productivity_real_index_1948,254.48469894983808
+quarterly,1993,4,wage_actual_real,23.51621765601218
+quarterly,1993,4,wage_counter_real,28.016757565202298
 quarterly,1994,1,bls_prod_wage_nominal,11.233333333333333
 quarterly,1994,1,comp_private_nominal,13.94366000541967
 quarterly,1994,1,comp_private_real,29.265840943193325
@@ -2103,6 +2311,8 @@ quarterly,1994,1,comp_wage_ratio,1.2412753714023446
 quarterly,1994,1,productivity_nominal,26.455195901040398
 quarterly,1994,1,productivity_real,55.52584866957002
 quarterly,1994,1,productivity_real_index_1948,255.57560366246034
+quarterly,1994,1,wage_actual_real,23.577234848484842
+quarterly,1994,1,wage_counter_real,28.064483311266237
 quarterly,1994,2,bls_prod_wage_nominal,11.29
 quarterly,1994,2,comp_private_nominal,13.98073486320475
 quarterly,1994,2,comp_private_real,29.17787264671093
@@ -2111,6 +2321,8 @@ quarterly,1994,2,comp_wage_ratio,1.2383290401421392
 quarterly,1994,2,productivity_nominal,26.55832373086825
 quarterly,1994,2,productivity_real,55.427371673348766
 quarterly,1994,2,productivity_real_index_1948,255.12233156740626
+quarterly,1994,2,wage_actual_real,23.562293785310732
+quarterly,1994,2,wage_counter_real,28.081364821306263
 quarterly,1994,3,bls_prod_wage_nominal,11.363333333333332
 quarterly,1994,3,comp_private_nominal,14.059006860805193
 quarterly,1994,3,comp_private_real,29.143642729413237
@@ -2119,6 +2331,8 @@ quarterly,1994,3,comp_wage_ratio,1.2372255964334287
 quarterly,1994,3,productivity_nominal,26.604100444335046
 quarterly,1994,3,productivity_real,55.14901629706715
 quarterly,1994,3,productivity_real_index_1948,253.84111128837517
+quarterly,1994,3,wage_actual_real,23.555641601197152
+quarterly,1994,3,wage_counter_real,27.96525979134416
 quarterly,1994,4,bls_prod_wage_nominal,11.45
 quarterly,1994,4,comp_private_nominal,14.134686543142026
 quarterly,1994,4,comp_private_real,29.16957100020483
@@ -2127,6 +2341,8 @@ quarterly,1994,4,comp_wage_ratio,1.2344704404490854
 quarterly,1994,4,productivity_nominal,26.981399817172264
 quarterly,1994,4,productivity_real,55.681168114320855
 quarterly,1994,4,productivity_real_index_1948,256.2905114361162
+quarterly,1994,4,wage_actual_real,23.629217877094966
+quarterly,1994,4,wage_counter_real,28.29812279030167
 quarterly,1995,1,bls_prod_wage_nominal,11.52
 quarterly,1995,1,comp_private_nominal,14.183241557284443
 quarterly,1995,1,comp_private_real,29.074858109105847
@@ -2135,6 +2351,8 @@ quarterly,1995,1,comp_wage_ratio,1.231184162958719
 quarterly,1995,1,productivity_nominal,27.021467785700764
 quarterly,1995,1,productivity_real,55.39250943417238
 quarterly,1995,1,productivity_real_index_1948,254.96186688229082
+quarterly,1995,1,wage_actual_real,23.615360710321863
+quarterly,1995,1,wage_counter_real,28.22656329857923
 quarterly,1995,2,bls_prod_wage_nominal,11.593333333333334
 quarterly,1995,2,comp_private_nominal,14.24881087979026
 quarterly,1995,2,comp_private_real,29.016045970201336
@@ -2143,6 +2361,8 @@ quarterly,1995,2,comp_wage_ratio,1.2290521172907067
 quarterly,1995,2,productivity_nominal,27.204897959183672
 quarterly,1995,2,productivity_real,55.39961028733433
 quarterly,1995,2,productivity_real_index_1948,254.99455084618995
+quarterly,1995,2,wage_actual_real,23.608474825431827
+quarterly,1995,2,wage_counter_real,28.279152808265877
 quarterly,1995,3,bls_prod_wage_nominal,11.696666666666667
 quarterly,1995,3,comp_private_nominal,14.352454762974455
 quarterly,1995,3,comp_private_real,29.066868363173043
@@ -2151,6 +2371,8 @@ quarterly,1995,3,comp_wage_ratio,1.2270551236512786
 quarterly,1995,3,productivity_nominal,27.352913182689136
 quarterly,1995,3,productivity_real,55.395647640818886
 quarterly,1995,3,productivity_real_index_1948,254.97631148921386
+quarterly,1995,3,wage_actual_real,23.68831505847953
+quarterly,1995,3,wage_counter_real,28.323150185400518
 quarterly,1995,4,bls_prod_wage_nominal,11.78
 quarterly,1995,4,comp_private_nominal,14.43878035905127
 quarterly,1995,4,comp_private_real,29.114003627912332
@@ -2159,6 +2381,8 @@ quarterly,1995,4,comp_wage_ratio,1.2257029167276121
 quarterly,1995,4,productivity_nominal,27.6678840647461
 quarterly,1995,4,productivity_real,55.78884483360922
 quarterly,1995,4,productivity_real_index_1948,256.7861282198647
+quarterly,1995,4,wage_actual_real,23.752903930131
+quarterly,1995,4,wage_counter_real,28.555655486057816
 quarterly,1996,1,bls_prod_wage_nominal,11.873333333333331
 quarterly,1996,1,comp_private_nominal,14.535068528183308
 quarterly,1996,1,comp_private_real,29.085884692908525
@@ -2167,6 +2391,8 @@ quarterly,1996,1,comp_wage_ratio,1.2241775851923058
 quarterly,1996,1,productivity_nominal,28.048807290382694
 quarterly,1996,1,productivity_real,56.12800332105833
 quarterly,1996,1,productivity_real_index_1948,258.34721440303827
+quarterly,1996,1,wage_actual_real,23.759530516431923
+quarterly,1996,1,wage_counter_real,28.76505137835114
 quarterly,1996,2,bls_prod_wage_nominal,11.99
 quarterly,1996,2,comp_private_nominal,14.65372748366969
 quarterly,1996,2,comp_private_real,29.071358391340407
@@ -2175,6 +2401,8 @@ quarterly,1996,2,comp_wage_ratio,1.2221624256605246
 quarterly,1996,2,productivity_nominal,28.37678200162855
 quarterly,1996,2,productivity_real,56.296365582178225
 quarterly,1996,2,productivity_real_index_1948,259.12215594019074
+quarterly,1996,2,wage_actual_real,23.78682062298604
+quarterly,1996,2,wage_counter_real,28.89890684033193
 quarterly,1996,3,bls_prod_wage_nominal,12.09
 quarterly,1996,3,comp_private_nominal,14.755106591647321
 quarterly,1996,3,comp_private_real,29.147253342002784
@@ -2183,6 +2411,8 @@ quarterly,1996,3,comp_wage_ratio,1.2204389240403077
 quarterly,1996,3,productivity_nominal,28.482022319946555
 quarterly,1996,3,productivity_real,56.263417352878385
 quarterly,1996,3,productivity_real_index_1948,258.9705011020445
+quarterly,1996,3,wage_actual_real,23.88259893048128
+quarterly,1996,3,wage_counter_real,28.922780452293768
 quarterly,1996,4,bls_prod_wage_nominal,12.2
 quarterly,1996,4,comp_private_nominal,14.868558564590098
 quarterly,1996,4,comp_private_real,29.122192649838716
@@ -2191,6 +2421,8 @@ quarterly,1996,4,comp_wage_ratio,1.218734308572959
 quarterly,1996,4,productivity_nominal,28.7164642078902
 quarterly,1996,4,productivity_real,56.24529097770223
 quarterly,1996,4,productivity_real_index_1948,258.88706862169784
+quarterly,1996,4,wage_actual_real,23.895440084835627
+quarterly,1996,4,wage_counter_real,28.953902995858254
 quarterly,1997,1,bls_prod_wage_nominal,12.316666666666666
 quarterly,1997,1,comp_private_nominal,14.978220879717322
 quarterly,1997,1,comp_private_real,29.18225101776149
@@ -2199,6 +2431,8 @@ quarterly,1997,1,comp_wage_ratio,1.2160937114790789
 quarterly,1997,1,productivity_nominal,28.917938429553168
 quarterly,1997,1,productivity_real,56.34117329049019
 quarterly,1997,1,productivity_real_index_1948,259.32839785048935
+quarterly,1997,1,wage_actual_real,23.996712376933896
+quarterly,1997,1,wage_counter_real,29.066238205926958
 quarterly,1997,2,bls_prod_wage_nominal,12.426666666666668
 quarterly,1997,2,comp_private_nominal,15.097322204392395
 quarterly,1997,2,comp_private_real,29.352372748960793
@@ -2207,6 +2441,8 @@ quarterly,1997,2,comp_wage_ratio,1.2149132675208472
 quarterly,1997,2,productivity_nominal,29.30218934078527
 quarterly,1997,2,productivity_real,56.96962496045304
 quarterly,1997,2,productivity_real_index_1948,262.2210490890009
+quarterly,1997,2,wage_actual_real,24.16005614035088
+quarterly,1997,2,wage_counter_real,29.419011085290464
 quarterly,1997,3,bls_prod_wage_nominal,12.556666666666668
 quarterly,1997,3,comp_private_nominal,15.245930677588975
 quarterly,1997,3,comp_private_real,29.517016731139236
@@ -2215,6 +2451,8 @@ quarterly,1997,3,comp_wage_ratio,1.2141702158950602
 quarterly,1997,3,productivity_nominal,29.675142972630095
 quarterly,1997,3,productivity_real,57.45281873212556
 quarterly,1997,3,productivity_real_index_1948,264.44510406231683
+quarterly,1997,3,wage_actual_real,24.310443745632423
+quarterly,1997,3,wage_counter_real,29.686688112512083
 quarterly,1997,4,bls_prod_wage_nominal,12.706666666666669
 quarterly,1997,4,comp_private_nominal,15.417133317620197
 quarterly,1997,4,comp_private_real,29.69285217689729
@@ -2223,6 +2461,8 @@ quarterly,1997,4,comp_wage_ratio,1.2133105968746218
 quarterly,1997,4,productivity_nominal,29.87967558696293
 quarterly,1997,4,productivity_real,57.54719583849898
 quarterly,1997,4,productivity_real_index_1948,264.8795050937507
+quarterly,1997,4,wage_actual_real,24.47258950295447
+quarterly,1997,4,wage_counter_real,29.756521391392926
 quarterly,1998,1,bls_prod_wage_nominal,12.83
 quarterly,1998,1,comp_private_nominal,15.560091035519214
 quarterly,1998,1,comp_private_real,29.90581492466596
@@ -2231,6 +2471,8 @@ quarterly,1998,1,comp_wage_ratio,1.2127896364395334
 quarterly,1998,1,productivity_nominal,30.03216572236278
 quarterly,1998,1,productivity_real,57.72050997836009
 quarterly,1998,1,productivity_real_index_1948,265.67723924783525
+quarterly,1998,1,wage_actual_real,24.658699271592095
+quarterly,1998,1,wage_counter_real,29.858959291597046
 quarterly,1998,2,bls_prod_wage_nominal,12.956666666666669
 quarterly,1998,2,comp_private_nominal,15.715912223044537
 quarterly,1998,2,comp_private_real,30.111296551829103
@@ -2239,6 +2481,8 @@ quarterly,1998,2,comp_wage_ratio,1.2129595232604478
 quarterly,1998,2,productivity_nominal,30.201952383577613
 quarterly,1998,2,productivity_real,57.86618885110772
 quarterly,1998,2,productivity_real_index_1948,266.3477731835686
+quarterly,1998,2,wage_actual_real,24.824650760719226
+quarterly,1998,2,wage_counter_real,29.93012673088791
 quarterly,1998,3,bls_prod_wage_nominal,13.06
 quarterly,1998,3,comp_private_nominal,15.839100145468256
 quarterly,1998,3,comp_private_real,30.221919389132097
@@ -2247,6 +2491,8 @@ quarterly,1998,3,comp_wage_ratio,1.2127948044003258
 quarterly,1998,3,productivity_nominal,30.684005820355512
 quarterly,1998,3,productivity_real,58.54685821301305
 quarterly,1998,3,productivity_real_index_1948,269.48077316883194
+quarterly,1998,3,wage_actual_real,24.91923553719008
+quarterly,1998,3,wage_counter_real,30.286302173697393
 quarterly,1998,4,bls_prod_wage_nominal,13.173333333333334
 quarterly,1998,4,comp_private_nominal,15.970789573007663
 quarterly,1998,4,comp_private_real,30.34778635940859
@@ -2255,6 +2501,8 @@ quarterly,1998,4,comp_wage_ratio,1.212357508072444
 quarterly,1998,4,productivity_nominal,30.968642824053344
 quarterly,1998,4,productivity_real,58.84679351443057
 quarterly,1998,4,productivity_real_index_1948,270.86132200430563
+quarterly,1998,4,wage_actual_real,25.032043895747595
+quarterly,1998,4,wage_counter_real,30.452438977182645
 quarterly,1999,1,bls_prod_wage_nominal,13.303333333333333
 quarterly,1999,1,comp_private_nominal,16.1145909260107
 quarterly,1999,1,comp_private_real,30.52681993881206
@@ -2263,6 +2511,8 @@ quarterly,1999,1,comp_wage_ratio,1.2113197889759983
 quarterly,1999,1,productivity_nominal,31.401813218951062
 quarterly,1999,1,productivity_real,59.48630668246422
 quarterly,1999,1,productivity_real_index_1948,273.8048873506533
+quarterly,1999,1,wage_actual_real,25.201288888888886
+quarterly,1999,1,wage_counter_real,30.80975024988275
 quarterly,1999,2,bls_prod_wage_nominal,13.423333333333334
 quarterly,1999,2,comp_private_nominal,16.268488600590597
 quarterly,1999,2,comp_private_real,30.567546739868597
@@ -2271,6 +2521,8 @@ quarterly,1999,2,comp_wage_ratio,1.211955942432873
 quarterly,1999,2,productivity_nominal,31.494030329869233
 quarterly,1999,2,productivity_real,59.17545678460679
 quarterly,1999,2,productivity_real_index_1948,272.3741005694174
+quarterly,1999,2,wage_actual_real,25.22166497117667
+quarterly,1999,2,wage_counter_real,30.63266424975346
 quarterly,1999,3,bls_prod_wage_nominal,13.55
 quarterly,1999,3,comp_private_nominal,16.42830472562056
 quarterly,1999,3,comp_private_real,30.64957457396078
@@ -2279,6 +2531,8 @@ quarterly,1999,3,comp_wage_ratio,1.2124210129609267
 quarterly,1999,3,productivity_nominal,31.879703389830507
 quarterly,1999,3,productivity_real,59.47657794042115
 quarterly,1999,3,productivity_real_index_1948,273.7601076817224
+quarterly,1999,3,wage_actual_real,25.279646464646465
+quarterly,1999,3,wage_counter_real,30.7767319797732
 quarterly,1999,4,bls_prod_wage_nominal,13.666666666666666
 quarterly,1999,4,comp_private_nominal,16.5639541352009
 quarterly,1999,4,comp_private_real,30.685680328702166
@@ -2287,6 +2541,8 @@ quarterly,1999,4,comp_wage_ratio,1.2119966440390901
 quarterly,1999,4,productivity_nominal,32.402944128983805
 quarterly,1999,4,productivity_real,60.02832277455675
 quarterly,1999,4,productivity_real_index_1948,276.2996910006736
+quarterly,1999,4,wage_actual_real,25.31828819792711
+quarterly,1999,4,wage_counter_real,31.073113836872768
 quarterly,2000,1,bls_prod_wage_nominal,13.796666666666669
 quarterly,2000,1,comp_private_nominal,16.69361608019148
 quarterly,2000,1,comp_private_real,30.52783059417194
@@ -2295,6 +2551,8 @@ quarterly,2000,1,comp_wage_ratio,1.2099745890450455
 quarterly,2000,1,productivity_nominal,32.45984606420212
 quarterly,2000,1,productivity_real,59.35973829760526
 quarterly,2000,1,productivity_real_index_1948,273.22231559101374
+quarterly,2000,1,wage_actual_real,25.23014191419142
+quarterly,2000,1,wage_counter_real,30.7783768025607
 quarterly,2000,2,bls_prod_wage_nominal,13.933333333333334
 quarterly,2000,2,comp_private_nominal,16.88582487541993
 quarterly,2000,2,comp_private_real,30.696967071752574
@@ -2303,6 +2561,8 @@ quarterly,2000,2,comp_wage_ratio,1.2119013068483204
 quarterly,2000,2,productivity_nominal,33.209309835237264
 quarterly,2000,2,productivity_real,60.371648883546484
 quarterly,2000,2,productivity_real_index_1948,277.8799600044002
+quarterly,2000,2,wage_actual_real,25.32959317585302
+quarterly,2000,2,wage_counter_real,31.253291889635726
 quarterly,2000,3,bls_prod_wage_nominal,14.073333333333334
 quarterly,2000,3,comp_private_nominal,17.056752454540174
 quarterly,2000,3,comp_private_real,30.76545096048408
@@ -2311,6 +2571,8 @@ quarterly,2000,3,comp_wage_ratio,1.2119909370824378
 quarterly,2000,3,productivity_nominal,33.46005471904169
 quarterly,2000,3,productivity_real,60.352266666083985
 quarterly,2000,3,productivity_real_index_1948,277.7907471054173
+quarterly,2000,3,wage_actual_real,25.384225260416667
+quarterly,2000,3,wage_counter_real,31.240947542985364
 quarterly,2000,4,bls_prod_wage_nominal,14.23
 quarterly,2000,4,comp_private_nominal,17.268214260849682
 quarterly,2000,4,comp_private_real,30.995521613012013
@@ -2319,6 +2581,8 @@ quarterly,2000,4,comp_wage_ratio,1.2135076782044751
 quarterly,2000,4,productivity_nominal,33.97679123563766
 quarterly,2000,4,productivity_real,60.98652421012901
 quarterly,2000,4,productivity_real_index_1948,280.7101217494939
+quarterly,2000,4,wage_actual_real,25.542089407191447
+quarterly,2000,4,wage_counter_real,31.529808871412943
 quarterly,2001,1,bls_prod_wage_nominal,14.356666666666666
 quarterly,2001,1,comp_private_nominal,17.443590211975504
 quarterly,2001,1,comp_private_real,31.068766751705645
@@ -2327,6 +2591,8 @@ quarterly,2001,1,comp_wage_ratio,1.2150167317373233
 quarterly,2001,1,productivity_nominal,33.960717677617204
 quarterly,2001,1,productivity_real,60.48741133130084
 quarterly,2001,1,productivity_real_index_1948,278.412793957868
+quarterly,2001,1,wage_actual_real,25.570649308903885
+quarterly,2001,1,wage_counter_real,31.232929739099664
 quarterly,2001,2,bls_prod_wage_nominal,14.493333333333332
 quarterly,2001,2,comp_private_nominal,17.646876189896474
 quarterly,2001,2,comp_private_real,31.250029072616286
@@ -2335,6 +2601,8 @@ quarterly,2001,2,comp_wage_ratio,1.21758575367271
 quarterly,2001,2,productivity_nominal,34.56394824416288
 quarterly,2001,2,productivity_real,61.207682077630714
 quarterly,2001,2,productivity_real_index_1948,281.7280720707544
+quarterly,2001,2,wage_actual_real,25.66556727388942
+quarterly,2001,2,wage_counter_real,31.538160532698992
 quarterly,2001,3,bls_prod_wage_nominal,14.59
 quarterly,2001,3,comp_private_nominal,17.80787302942444
 quarterly,2001,3,comp_private_real,31.44468593245405
@@ -2343,6 +2611,8 @@ quarterly,2001,3,comp_wage_ratio,1.2205533262114077
 quarterly,2001,3,productivity_nominal,34.72389942696399
 quarterly,2001,3,productivity_real,61.314571932698364
 quarterly,2001,3,productivity_real_index_1948,282.22006705847406
+quarterly,2001,3,wage_actual_real,25.762648183556404
+quarterly,2001,3,wage_counter_real,31.516423401563717
 quarterly,2001,4,bls_prod_wage_nominal,14.706666666666669
 quarterly,2001,4,comp_private_nominal,17.982988231435897
 quarterly,2001,4,comp_private_real,31.784286376518757
@@ -2351,6 +2621,8 @@ quarterly,2001,4,comp_wage_ratio,1.2227779849117788
 quarterly,2001,4,productivity_nominal,35.12735232822172
 quarterly,2001,4,productivity_real,62.08633468921101
 quarterly,2001,4,productivity_real_index_1948,285.77235373406734
+quarterly,2001,4,wage_actual_real,25.993505582137164
+quarterly,2001,4,wage_counter_real,31.85505762086607
 quarterly,2002,1,bls_prod_wage_nominal,14.786666666666669
 quarterly,2002,1,comp_private_nominal,18.119765727816194
 quarterly,2002,1,comp_private_real,31.96485892958597
@@ -2359,6 +2631,8 @@ quarterly,2002,1,comp_wage_ratio,1.2254124703212033
 quarterly,2002,1,productivity_nominal,35.80140450317853
 quarterly,2002,1,productivity_real,63.15682341678199
 quarterly,2002,1,productivity_real_index_1948,290.6996229126247
+quarterly,2002,1,wage_actual_real,26.08497930595352
+quarterly,2002,1,wage_counter_real,32.33463530381293
 quarterly,2002,2,bls_prod_wage_nominal,14.883333333333333
 quarterly,2002,2,comp_private_nominal,18.25054621708076
 quarterly,2002,2,comp_private_real,31.981744651753473
@@ -2367,6 +2641,8 @@ quarterly,2002,2,comp_wage_ratio,1.226240507306658
 quarterly,2002,2,productivity_nominal,36.01486485959666
 quarterly,2002,2,productivity_real,63.111437756807426
 quarterly,2002,2,productivity_real_index_1948,290.4907207936378
+quarterly,2002,2,wage_actual_real,26.08113535736875
+quarterly,2002,2,wage_counter_real,32.28958028889674
 quarterly,2002,3,bls_prod_wage_nominal,15.013333333333334
 quarterly,2002,3,comp_private_nominal,18.442410308929094
 quarterly,2002,3,comp_private_real,32.16537473143724
@@ -2375,6 +2651,8 @@ quarterly,2002,3,comp_wage_ratio,1.22840210761073
 quarterly,2002,3,productivity_nominal,36.3737154543574
 quarterly,2002,3,productivity_real,63.43933186420974
 quarterly,2002,3,productivity_real_index_1948,291.99995903933143
+quarterly,2002,3,wage_actual_real,26.18472773056342
+quarterly,2002,3,wage_counter_real,32.400225421253786
 quarterly,2002,4,bls_prod_wage_nominal,15.156666666666666
 quarterly,2002,4,comp_private_nominal,18.67405025662754
 quarterly,2002,4,comp_private_real,32.41632596239762
@@ -2383,6 +2661,8 @@ quarterly,2002,4,comp_wage_ratio,1.2320684136767677
 quarterly,2002,4,productivity_nominal,36.596585611348004
 quarterly,2002,4,productivity_real,63.52809551142835
 quarterly,2002,4,productivity_real_index_1948,292.4085223168813
+quarterly,2002,4,wage_actual_real,26.310491854636588
+quarterly,2002,4,wage_counter_real,32.349010169550105
 quarterly,2003,1,bls_prod_wage_nominal,15.253333333333334
 quarterly,2003,1,comp_private_nominal,18.85256649915808
 quarterly,2003,1,comp_private_real,32.42149937052604
@@ -2391,6 +2671,8 @@ quarterly,2003,1,comp_wage_ratio,1.2359637127944545
 quarterly,2003,1,productivity_nominal,37.16522056200084
 quarterly,2003,1,productivity_real,63.91449010988411
 quarterly,2003,1,productivity_real_index_1948,294.1870279159567
+quarterly,2003,1,wage_actual_real,26.231756672873992
+quarterly,2003,1,wage_counter_real,32.44319318521368
 quarterly,2003,2,bls_prod_wage_nominal,15.323333333333332
 quarterly,2003,2,comp_private_nominal,18.94568671752892
 quarterly,2003,2,comp_private_real,32.642428514249914
@@ -2399,6 +2681,8 @@ quarterly,2003,2,comp_wage_ratio,1.2363946084965578
 quarterly,2003,2,productivity_nominal,37.81925148851715
 quarterly,2003,2,productivity_real,65.1605946821746
 quarterly,2003,2,productivity_real_index_1948,299.9226255866003
+quarterly,2003,2,wage_actual_real,26.401302860696514
+quarterly,2003,2,wage_counter_real,33.06419251231917
 quarterly,2003,3,bls_prod_wage_nominal,15.413333333333334
 quarterly,2003,3,comp_private_nominal,19.066217184060243
 quarterly,2003,3,comp_private_real,32.606762165703024
@@ -2407,6 +2691,8 @@ quarterly,2003,3,comp_wage_ratio,1.2369950595194794
 quarterly,2003,3,productivity_nominal,38.617426382871855
 quarterly,2003,3,productivity_real,66.04295048996696
 quarterly,2003,3,productivity_real_index_1948,303.98395240329774
+quarterly,2003,3,wage_actual_real,26.35965432098765
+quarterly,2003,3,wage_counter_real,33.49565590457968
 quarterly,2003,4,bls_prod_wage_nominal,15.45
 quarterly,2003,4,comp_private_nominal,19.107506771809103
 quarterly,2003,4,comp_private_real,32.5567942873906
@@ -2415,6 +2701,8 @@ quarterly,2003,4,comp_wage_ratio,1.236731829890557
 quarterly,2003,4,productivity_nominal,39.180610920914816
 quarterly,2003,4,productivity_real,66.75884536063622
 quarterly,2003,4,productivity_real_index_1948,307.2790891389642
+quarterly,2003,4,wage_actual_real,26.324861623616233
+quarterly,2003,4,wage_counter_real,33.86594997556807
 quarterly,2004,1,bls_prod_wage_nominal,15.533333333333331
 quarterly,2004,1,comp_private_nominal,19.264208721990737
 quarterly,2004,1,comp_private_real,32.55351647714262
@@ -2423,6 +2711,8 @@ quarterly,2004,1,comp_wage_ratio,1.240185110857773
 quarterly,2004,1,productivity_nominal,39.50836142533496
 quarterly,2004,1,productivity_real,66.76298586696585
 quarterly,2004,1,productivity_real_index_1948,307.2981471530246
+quarterly,2004,1,wage_actual_real,26.248917352851475
+quarterly,2004,1,wage_counter_real,33.77374521296782
 quarterly,2004,2,bls_prod_wage_nominal,15.63
 quarterly,2004,2,comp_private_nominal,19.370608356567498
 quarterly,2004,2,comp_private_real,32.52501239507288
@@ -2431,6 +2721,8 @@ quarterly,2004,2,comp_wage_ratio,1.239322351667786
 quarterly,2004,2,productivity_nominal,40.0916462174449
 quarterly,2004,2,productivity_real,67.31751869420066
 quarterly,2004,2,productivity_real_index_1948,309.8505631082419
+quarterly,2004,2,wage_actual_real,26.244190909090907
+quarterly,2004,2,wage_counter_real,34.0779766863174
 quarterly,2004,3,bls_prod_wage_nominal,15.733333333333333
 quarterly,2004,3,comp_private_nominal,19.48832523905962
 quarterly,2004,3,comp_private_real,32.54515073828492
@@ -2439,6 +2731,8 @@ quarterly,2004,3,comp_wage_ratio,1.2386647397707387
 quarterly,2004,3,productivity_nominal,40.53127673494037
 quarterly,2004,3,productivity_real,67.68649921287057
 quarterly,2004,3,productivity_real_index_1948,311.5489147959385
+quarterly,2004,3,wage_actual_real,26.27438215792646
+quarterly,2004,3,wage_counter_real,34.28295605410608
 quarterly,2004,4,bls_prod_wage_nominal,15.836666666666666
 quarterly,2004,4,comp_private_nominal,19.636689150023617
 quarterly,2004,4,comp_private_real,32.44093457969018
@@ -2447,6 +2741,8 @@ quarterly,2004,4,comp_wage_ratio,1.2399509040216976
 quarterly,2004,4,productivity_nominal,41.14085274012281
 quarterly,2004,4,productivity_real,67.96704383810986
 quarterly,2004,4,productivity_real_index_1948,312.8402117984656
+quarterly,2004,4,wage_actual_real,26.16307990459153
+quarterly,2004,4,wage_counter_real,34.38934276361921
 quarterly,2005,1,bls_prod_wage_nominal,15.933333333333334
 quarterly,2005,1,comp_private_nominal,19.796582681331213
 quarterly,2005,1,comp_private_real,32.58849216793114
@@ -2455,6 +2751,8 @@ quarterly,2005,1,comp_wage_ratio,1.2424633482007037
 quarterly,2005,1,productivity_nominal,41.727915004189825
 quarterly,2005,1,productivity_real,68.69113994005222
 quarterly,2005,1,productivity_real_index_1948,316.17309734272516
+quarterly,2005,1,wage_actual_real,26.228936423054066
+quarterly,2005,1,wage_counter_real,34.68543310043025
 quarterly,2005,2,bls_prod_wage_nominal,16.043333333333333
 quarterly,2005,2,comp_private_nominal,19.935445355175265
 quarterly,2005,2,comp_private_real,32.64252444238361
@@ -2463,6 +2761,8 @@ quarterly,2005,2,comp_wage_ratio,1.2425999598073092
 quarterly,2005,2,productivity_nominal,42.022076196384326
 quarterly,2005,2,productivity_real,68.8074244102144
 quarterly,2005,2,productivity_real_index_1948,316.7083340724711
+quarterly,2005,2,wage_actual_real,26.269536052009453
+quarterly,2005,2,wage_counter_real,34.74033089955049
 quarterly,2005,3,bls_prod_wage_nominal,16.17
 quarterly,2005,3,comp_private_nominal,20.0710747373728
 quarterly,2005,3,comp_private_real,32.40496069923738
@@ -2471,6 +2771,8 @@ quarterly,2005,3,comp_wage_ratio,1.2412538489408038
 quarterly,2005,3,productivity_nominal,42.515513081001956
 quarterly,2005,3,productivity_real,68.64174183619808
 quarterly,2005,3,productivity_real_index_1948,315.94572665835375
+quarterly,2005,3,wage_actual_real,26.106634615384614
+quarterly,2005,3,wage_counter_real,34.6942634232539
 quarterly,2005,4,bls_prod_wage_nominal,16.313333333333333
 quarterly,2005,4,comp_private_nominal,20.227421909395087
 quarterly,2005,4,comp_private_real,32.40247030932587
@@ -2479,6 +2781,8 @@ quarterly,2005,4,comp_wage_ratio,1.239931870212204
 quarterly,2005,4,productivity_nominal,42.95007779540379
 quarterly,2005,4,productivity_real,68.80207605213425
 quarterly,2005,4,productivity_real_index_1948,316.68371653167367
+quarterly,2005,4,wage_actual_real,26.13246024862677
+quarterly,2005,4,wage_counter_real,34.812379106354804
 quarterly,2006,1,bls_prod_wage_nominal,16.48
 quarterly,2006,1,comp_private_nominal,20.366747514479055
 quarterly,2006,1,comp_private_real,32.48478640694543
@@ -2487,6 +2791,8 @@ quarterly,2006,1,comp_wage_ratio,1.2358463297620785
 quarterly,2006,1,productivity_nominal,43.47102053128712
 quarterly,2006,1,productivity_real,69.33590234998903
 quarterly,2006,1,productivity_real_index_1948,319.1408240157399
+quarterly,2006,1,wage_actual_real,26.285457685664937
+quarterly,2006,1,wage_counter_real,35.19846173293954
 quarterly,2006,2,bls_prod_wage_nominal,16.666666666666664
 quarterly,2006,2,comp_private_nominal,20.590073092830618
 quarterly,2006,2,comp_private_real,32.55981592676211
@@ -2495,6 +2801,8 @@ quarterly,2006,2,comp_wage_ratio,1.2354043855698373
 quarterly,2006,2,productivity_nominal,43.74126307487183
 quarterly,2006,2,productivity_real,69.16961720829475
 quarterly,2006,2,productivity_real_index_1948,318.3754430897946
+quarterly,2006,2,wage_actual_real,26.35559360730593
+quarterly,2006,2,wage_counter_real,35.12660829546984
 quarterly,2006,3,bls_prod_wage_nominal,16.823333333333334
 quarterly,2006,3,comp_private_nominal,20.77930761823835
 quarterly,2006,3,comp_private_real,32.552486150030724
@@ -2503,6 +2811,8 @@ quarterly,2006,3,comp_wage_ratio,1.2351480652806626
 quarterly,2006,3,productivity_nominal,43.905459227981915
 quarterly,2006,3,productivity_real,68.78149549964596
 quarterly,2006,3,productivity_real_index_1948,316.5889879097447
+quarterly,2006,3,wage_actual_real,26.35512864009047
+quarterly,2006,3,wage_counter_real,34.936755955194926
 quarterly,2006,4,bls_prod_wage_nominal,16.986666666666668
 quarterly,2006,4,comp_private_nominal,20.951144512092004
 quarterly,2006,4,comp_private_real,32.96146841042072
@@ -2511,6 +2821,8 @@ quarterly,2006,4,comp_wage_ratio,1.2333876282628728
 quarterly,2006,4,productivity_nominal,44.16731146600933
 quarterly,2006,4,productivity_real,69.48639205938605
 quarterly,2006,4,productivity_real_index_1948,319.8335013767472
+quarterly,2006,4,wage_actual_real,26.72433844406587
+quarterly,2006,4,wage_counter_real,35.34517683800637
 quarterly,2007,1,bls_prod_wage_nominal,17.156666666666666
 quarterly,2007,1,comp_private_nominal,21.111282104756842
 quarterly,2007,1,comp_private_real,32.93288686443064
@@ -2519,6 +2831,8 @@ quarterly,2007,1,comp_wage_ratio,1.2305002198226254
 quarterly,2007,1,productivity_nominal,44.76556316093776
 quarterly,2007,1,productivity_real,69.8327661809561
 quarterly,2007,1,productivity_real_index_1948,321.4277998401552
+quarterly,2007,1,wage_actual_real,26.76382038288288
+quarterly,2007,1,wage_counter_real,35.60471666589129
 quarterly,2007,2,bls_prod_wage_nominal,17.34
 quarterly,2007,2,comp_private_nominal,21.354466253878133
 quarterly,2007,2,comp_private_real,33.00560600076394
@@ -2527,6 +2841,8 @@ quarterly,2007,2,comp_wage_ratio,1.231514778193664
 quarterly,2007,2,productivity_nominal,45.161742424242426
 quarterly,2007,2,productivity_real,69.80229142893369
 quarterly,2007,2,productivity_real_index_1948,321.2875299778981
+quarterly,2007,2,wage_actual_real,26.80082008368201
+quarterly,2007,2,wage_counter_real,35.55985948345095
 quarterly,2007,3,bls_prod_wage_nominal,17.503333333333334
 quarterly,2007,3,comp_private_nominal,21.57343242889505
 quarterly,2007,3,comp_private_real,33.122302324330136
@@ -2535,6 +2851,8 @@ quarterly,2007,3,comp_wage_ratio,1.2325327992132002
 quarterly,2007,3,productivity_nominal,45.73333135007697
 quarterly,2007,3,productivity_real,70.2156799697358
 quarterly,2007,3,productivity_real_index_1948,323.1902838915099
+quarterly,2007,3,wage_actual_real,26.873363812690496
+quarterly,2007,3,wage_counter_real,35.740909926120025
 quarterly,2007,4,bls_prod_wage_nominal,17.63
 quarterly,2007,4,comp_private_nominal,21.724730479411164
 quarterly,2007,4,comp_private_real,32.970893340568956
@@ -2543,6 +2861,8 @@ quarterly,2007,4,comp_wage_ratio,1.2322592444362543
 quarterly,2007,4,productivity_nominal,46.197434562760264
 quarterly,2007,4,productivity_real,70.11229386805111
 quarterly,2007,4,productivity_real_index_1948,322.71441605731235
+quarterly,2007,4,wage_actual_real,26.756458504519305
+quarterly,2007,4,wage_counter_real,35.69620734126447
 quarterly,2008,1,bls_prod_wage_nominal,17.803333333333335
 quarterly,2008,1,comp_private_nominal,21.92917808082319
 quarterly,2008,1,comp_private_real,32.95621799453249
@@ -2551,6 +2871,8 @@ quarterly,2008,1,comp_wage_ratio,1.231745632699299
 quarterly,2008,1,productivity_nominal,46.148937438526424
 quarterly,2008,1,productivity_real,69.35483112201652
 quarterly,2008,1,productivity_real_index_1948,319.227949786051
+quarterly,2008,1,wage_actual_real,26.75570111201519
+quarterly,2008,1,wage_counter_real,35.32528478693958
 quarterly,2008,2,bls_prod_wage_nominal,17.98
 quarterly,2008,2,comp_private_nominal,22.169663081855692
 quarterly,2008,2,comp_private_real,32.88945197766061
@@ -2559,6 +2881,8 @@ quarterly,2008,2,comp_wage_ratio,1.2330179689574912
 quarterly,2008,2,productivity_nominal,46.758280792446065
 quarterly,2008,2,productivity_real,69.36750572180553
 quarterly,2008,2,productivity_real_index_1948,319.28628871413355
+quarterly,2008,2,wage_actual_real,26.6739437751004
+quarterly,2008,2,wage_counter_real,35.29528209133086
 quarterly,2008,3,bls_prod_wage_nominal,18.16
 quarterly,2008,3,comp_private_nominal,22.396119829147164
 quarterly,2008,3,comp_private_real,32.70010539481013
@@ -2567,6 +2891,8 @@ quarterly,2008,3,comp_wage_ratio,1.2332665104155927
 quarterly,2008,3,productivity_nominal,47.15040136146629
 quarterly,2008,3,productivity_real,68.84331329219623
 quarterly,2008,3,productivity_real_index_1948,316.8735242117855
+quarterly,2008,3,wage_actual_real,26.51503557312253
+quarterly,2008,3,wage_counter_real,35.0215053647672
 quarterly,2008,4,bls_prod_wage_nominal,18.316666666666663
 quarterly,2008,4,comp_private_nominal,22.605482608167723
 quarterly,2008,4,comp_private_real,33.725627122201765
@@ -2575,6 +2901,8 @@ quarterly,2008,4,comp_wage_ratio,1.2341482770610224
 quarterly,2008,4,productivity_nominal,46.87663573637878
 quarterly,2008,4,productivity_real,69.93630549684298
 quarterly,2008,4,productivity_real_index_1948,321.9043728920695
+quarterly,2008,4,wage_actual_real,27.327046311254705
+quarterly,2008,4,wage_counter_real,35.552105766451284
 quarterly,2009,1,bls_prod_wage_nominal,18.44
 quarterly,2009,1,comp_private_nominal,22.89716658597804
 quarterly,2009,1,comp_private_real,34.46704701247061
@@ -2583,6 +2911,8 @@ quarterly,2009,1,comp_wage_ratio,1.2417118539033645
 quarterly,2009,1,productivity_nominal,47.248158086764114
 quarterly,2009,1,productivity_real,71.12253299613147
 quarterly,2009,1,productivity_real_index_1948,327.36436704750895
+quarterly,2009,1,wage_actual_real,27.75768541157294
+quarterly,2009,1,wage_counter_real,35.93489437259675
 quarterly,2009,2,bls_prod_wage_nominal,18.536666666666665
 quarterly,2009,2,comp_private_nominal,23.00442084715941
 quarterly,2009,2,comp_private_real,34.48795885122031
@@ -2591,6 +2921,8 @@ quarterly,2009,2,comp_wage_ratio,1.2410225236734083
 quarterly,2009,2,productivity_nominal,47.97752535237707
 quarterly,2009,2,productivity_real,71.92734523201334
 quarterly,2009,2,productivity_real_index_1948,331.068774597306
+quarterly,2009,2,wage_actual_real,27.789954004328997
+quarterly,2009,2,wage_counter_real,36.361714436179
 quarterly,2009,3,bls_prod_wage_nominal,18.653333333333332
 quarterly,2009,3,comp_private_nominal,23.167155074742748
 quarterly,2009,3,comp_private_real,34.424565907522
@@ -2599,6 +2931,8 @@ quarterly,2009,3,comp_wage_ratio,1.2419847252363876
 quarterly,2009,3,productivity_nominal,48.79308173816183
 quarterly,2009,3,productivity_real,72.50267254254618
 quarterly,2009,3,productivity_real_index_1948,333.7169038599121
+quarterly,2009,3,wage_actual_real,27.717382676320728
+quarterly,2009,3,wage_counter_real,36.624166117902924
 quarterly,2009,4,bls_prod_wage_nominal,18.793333333333333
 quarterly,2009,4,comp_private_nominal,23.336838817136524
 quarterly,2009,4,comp_private_real,34.427429149561625
@@ -2607,6 +2941,8 @@ quarterly,2009,4,comp_wage_ratio,1.2417615546543024
 quarterly,2009,4,productivity_nominal,49.6403529335683
 quarterly,2009,4,productivity_real,73.23141523027208
 quarterly,2009,4,productivity_real_index_1948,337.07117681192955
+quarterly,2009,4,wage_actual_real,27.724669861554844
+quarterly,2009,4,wage_counter_real,36.99893315784223
 quarterly,2010,1,bls_prod_wage_nominal,18.903333333333332
 quarterly,2010,1,comp_private_nominal,23.556593529278324
 quarterly,2010,1,comp_private_real,34.72388527420356
@@ -2615,6 +2951,8 @@ quarterly,2010,1,comp_wage_ratio,1.2461608285634804
 quarterly,2010,1,productivity_nominal,49.91523313807801
 quarterly,2010,1,productivity_real,73.57816089866726
 quarterly,2010,1,productivity_real_index_1948,338.6671854392774
+quarterly,2010,1,wage_actual_real,27.864690077148175
+quarterly,2010,1,wage_counter_real,37.04288616250746
 quarterly,2010,2,bls_prod_wage_nominal,19
 quarterly,2010,2,comp_private_nominal,23.629811993815142
 quarterly,2010,2,comp_private_real,34.85963478640301
@@ -2623,6 +2961,8 @@ quarterly,2010,2,comp_wage_ratio,1.243674315463955
 quarterly,2010,2,productivity_nominal,50.15914393788572
 quarterly,2010,2,productivity_real,73.9967562725838
 quarterly,2010,2,productivity_real_index_1948,340.593905479446
+quarterly,2010,2,wage_actual_real,28.029552715654948
+quarterly,2010,2,wage_counter_real,37.32811000960851
 quarterly,2010,3,bls_prod_wage_nominal,19.086666666666662
 quarterly,2010,3,comp_private_nominal,23.72184164392121
 quarterly,2010,3,comp_private_real,34.9117462281454
@@ -2631,6 +2971,8 @@ quarterly,2010,3,comp_wage_ratio,1.2428488461712128
 quarterly,2010,3,productivity_nominal,50.871136735426724
 quarterly,2010,3,productivity_real,74.86772075723758
 quarterly,2010,3,productivity_real_index_1948,344.60280006219455
+quarterly,2010,3,wage_actual_real,28.09009827357237
+quarterly,2010,3,wage_counter_real,37.79255751352218
 quarterly,2010,4,bls_prod_wage_nominal,19.21666666666667
 quarterly,2010,4,comp_private_nominal,23.869497991654583
 quarterly,2010,4,comp_private_real,34.851353984652974
@@ -2639,6 +2981,8 @@ quarterly,2010,4,comp_wage_ratio,1.242124787076561
 quarterly,2010,4,productivity_nominal,51.291367893575135
 quarterly,2010,4,productivity_real,74.88945177820811
 quarterly,2010,4,productivity_real_index_1948,344.7028240858848
+quarterly,2010,4,wage_actual_real,28.057852437417658
+quarterly,2010,4,wage_counter_real,37.825563562365595
 quarterly,2011,1,bls_prod_wage_nominal,19.313333333333333
 quarterly,2011,1,comp_private_nominal,23.990406105625137
 quarterly,2011,1,comp_private_real,34.67158065499971
@@ -2647,6 +2991,8 @@ quarterly,2011,1,comp_wage_ratio,1.2421680758867002
 quarterly,2011,1,productivity_nominal,51.25563092114924
 quarterly,2011,1,productivity_real,74.07601745803024
 quarterly,2011,1,productivity_real_index_1948,340.95873061589776
+quarterly,2011,1,wage_actual_real,27.912149191444964
+quarterly,2011,1,wage_counter_real,37.41340593913875
 quarterly,2011,2,bls_prod_wage_nominal,19.393333333333334
 quarterly,2011,2,comp_private_nominal,24.083650127646365
 quarterly,2011,2,comp_private_real,34.42918094873285
@@ -2655,6 +3001,8 @@ quarterly,2011,2,comp_wage_ratio,1.2418520175823151
 quarterly,2011,2,productivity_nominal,51.53780331804853
 quarterly,2011,2,productivity_real,73.67672037804617
 quarterly,2011,2,productivity_real_index_1948,339.1208371896328
+quarterly,2011,2,wage_actual_real,27.724060887512902
+quarterly,2011,2,wage_counter_real,37.22120446460389
 quarterly,2011,3,bls_prod_wage_nominal,19.48
 quarterly,2011,3,comp_private_nominal,24.161286437678083
 quarterly,2011,3,comp_private_real,34.30122678738772
@@ -2663,6 +3011,8 @@ quarterly,2011,3,comp_wage_ratio,1.2403124454660206
 quarterly,2011,3,productivity_nominal,51.74847921229685
 quarterly,2011,3,productivity_real,73.46613459270736
 quarterly,2011,3,productivity_real_index_1948,338.15154828184893
+quarterly,2011,3,wage_actual_real,27.65531129900077
+quarterly,2011,3,wage_counter_real,37.16088710409834
 quarterly,2011,4,bls_prod_wage_nominal,19.563333333333333
 quarterly,2011,4,comp_private_nominal,24.28874743437754
 quarterly,2011,4,comp_private_real,34.3238840943346
@@ -2671,6 +3021,8 @@ quarterly,2011,4,comp_wage_ratio,1.241544424998
 quarterly,2011,4,productivity_nominal,52.05272732951262
 quarterly,2011,4,productivity_real,73.55882737384071
 quarterly,2011,4,productivity_real_index_1948,338.5781966638356
+quarterly,2011,4,wage_actual_real,27.646118337158885
+quarterly,2011,4,wage_counter_real,37.17085215462152
 quarterly,2012,1,bls_prod_wage_nominal,19.60333333333333
 quarterly,2012,1,comp_private_nominal,24.249081576579712
 quarterly,2012,1,comp_private_real,34.0852767670797
@@ -2679,6 +3031,8 @@ quarterly,2012,1,comp_wage_ratio,1.2369876675691063
 quarterly,2012,1,productivity_nominal,52.56679370777437
 quarterly,2012,1,productivity_real,73.88954945073003
 quarterly,2012,1,productivity_real_index_1948,340.1004515499966
+quarterly,2012,1,wage_actual_real,27.55506595636732
+quarterly,2012,1,wage_counter_real,37.47551699132562
 quarterly,2012,2,bls_prod_wage_nominal,19.69
 quarterly,2012,2,comp_private_nominal,24.35132844676072
 quarterly,2012,2,comp_private_real,34.176978450734836
@@ -2687,6 +3041,8 @@ quarterly,2012,2,comp_wage_ratio,1.2367358276668725
 quarterly,2012,2,productivity_nominal,52.928706656424815
 quarterly,2012,2,productivity_real,74.28519847600047
 quarterly,2012,2,productivity_real_index_1948,341.921553629385
+quarterly,2012,2,wage_actual_real,27.63482522796353
+quarterly,2012,2,wage_counter_real,37.683855521182835
 quarterly,2012,3,bls_prod_wage_nominal,19.76
 quarterly,2012,3,comp_private_nominal,24.452554824007287
 quarterly,2012,3,comp_private_real,34.189151218729336
@@ -2695,6 +3051,8 @@ quarterly,2012,3,comp_wage_ratio,1.2374774708505711
 quarterly,2012,3,productivity_nominal,52.81165831310656
 quarterly,2012,3,productivity_real,73.84037312968042
 quarterly,2012,3,productivity_real_index_1948,339.8741016924204
+quarterly,2012,3,wage_actual_real,27.628099924299775
+quarterly,2012,3,wage_counter_real,37.435752370189604
 quarterly,2012,4,bls_prod_wage_nominal,19.843333333333337
 quarterly,2012,4,comp_private_nominal,24.51178265570707
 quarterly,2012,4,comp_private_real,34.06566031985775
@@ -2703,6 +3061,8 @@ quarterly,2012,4,comp_wage_ratio,1.2352653782482983
 quarterly,2012,4,productivity_nominal,53.08263827497405
 quarterly,2012,4,productivity_real,73.77248524746206
 quarterly,2012,4,productivity_real_index_1948,339.5616258474753
+quarterly,2012,4,wage_actual_real,27.57760471532481
+quarterly,2012,4,wage_counter_real,37.46831210939786
 quarterly,2013,1,bls_prod_wage_nominal,19.976666666666667
 quarterly,2013,1,comp_private_nominal,24.76598243650646
 quarterly,2013,1,comp_private_real,34.315656084191616
@@ -2711,6 +3071,8 @@ quarterly,2013,1,comp_wage_ratio,1.2397454915654826
 quarterly,2013,1,productivity_nominal,53.682836020990536
 quarterly,2013,1,productivity_real,74.38274428414817
 quarterly,2013,1,productivity_real_index_1948,342.3705396313901
+quarterly,2013,1,wage_actual_real,27.679597399349834
+quarterly,2013,1,wage_counter_real,37.64173595118105
 quarterly,2013,2,bls_prod_wage_nominal,20.073333333333338
 quarterly,2013,2,comp_private_nominal,24.924535231398096
 quarterly,2013,2,comp_private_real,34.58724009946828
@@ -2719,6 +3081,8 @@ quarterly,2013,2,comp_wage_ratio,1.241673957060682
 quarterly,2013,2,productivity_nominal,53.77692893003124
 quarterly,2013,2,productivity_real,74.62508469854824
 quarterly,2013,2,productivity_real_index_1948,343.4859894477574
+quarterly,2013,2,wage_actual_real,27.855331830703737
+quarterly,2013,2,wage_counter_real,37.70572094479298
 quarterly,2013,3,bls_prod_wage_nominal,20.18
 quarterly,2013,3,comp_private_nominal,25.095858137574137
 quarterly,2013,3,comp_private_real,34.64278772802648
@@ -2727,6 +3091,8 @@ quarterly,2013,3,comp_wage_ratio,1.2436005023574894
 quarterly,2013,3,productivity_nominal,54.271868125176034
 quarterly,2013,3,productivity_real,74.91789269596421
 quarterly,2013,3,productivity_real_index_1948,344.8337325708228
+quarterly,2013,3,wage_actual_real,27.85684603886397
+quarterly,2013,3,wage_counter_real,37.79502600044531
 quarterly,2013,4,bls_prod_wage_nominal,20.3
 quarterly,2013,4,comp_private_nominal,25.225695884611945
 quarterly,2013,4,comp_private_real,34.718226750281865
@@ -2735,6 +3101,8 @@ quarterly,2013,4,comp_wage_ratio,1.2426451174685686
 quarterly,2013,4,productivity_nominal,54.776147393785095
 quarterly,2013,4,productivity_real,75.38863206879364
 quarterly,2013,4,productivity_real_index_1948,347.0004621618376
+quarterly,2013,4,wage_actual_real,27.93897168405365
+quarterly,2013,4,wage_counter_real,38.06174800623964
 quarterly,2014,1,bls_prod_wage_nominal,20.46666666666667
 quarterly,2014,1,comp_private_nominal,25.349585882723005
 quarterly,2014,1,comp_private_real,34.68198898176992
@@ -2743,6 +3111,8 @@ quarterly,2014,1,comp_wage_ratio,1.2385791147910261
 quarterly,2014,1,productivity_nominal,54.660776005821184
 quarterly,2014,1,productivity_real,74.78403946870498
 quarterly,2014,1,productivity_real_index_1948,344.2176299775508
+quarterly,2014,1,wage_actual_real,28.001432098765434
+quarterly,2014,1,wage_counter_real,37.880451926992805
 quarterly,2014,2,bls_prod_wage_nominal,20.546666666666667
 quarterly,2014,2,comp_private_nominal,25.435759945726456
 quarterly,2014,2,comp_private_real,34.64590606176752
@@ -2751,6 +3121,8 @@ quarterly,2014,2,comp_wage_ratio,1.2379506787342531
 quarterly,2014,2,productivity_nominal,55.174362934941946
 quarterly,2014,2,productivity_real,75.15269051684201
 quarterly,2014,2,productivity_real_index_1948,345.91446517099575
+quarterly,2014,2,wage_actual_real,27.986499508357912
+quarterly,2014,2,wage_counter_real,38.08650970917044
 quarterly,2014,3,bls_prod_wage_nominal,20.643333333333334
 quarterly,2014,3,comp_private_nominal,25.53410357870311
 quarterly,2014,3,comp_private_real,34.70308264154867
@@ -2759,6 +3131,8 @@ quarterly,2014,3,comp_wage_ratio,1.2369176608446524
 quarterly,2014,3,productivity_nominal,55.78470656205155
 quarterly,2014,3,productivity_real,75.81630097138277
 quarterly,2014,3,productivity_real_index_1948,348.968946040352
+quarterly,2014,3,wage_actual_real,28.056097620799605
+quarterly,2014,3,wage_counter_real,38.454908778919
 quarterly,2014,4,bls_prod_wage_nominal,20.726666666666667
 quarterly,2014,4,comp_private_nominal,25.611454952214835
 quarterly,2014,4,comp_private_real,34.91096479464266
@@ -2767,6 +3141,8 @@ quarterly,2014,4,comp_wage_ratio,1.2356765013934465
 quarterly,2014,4,productivity_nominal,55.5518606024808
 quarterly,2014,4,productivity_real,75.72272068840002
 quarterly,2014,4,productivity_real_index_1948,348.5382126452345
+quarterly,2014,4,wage_actual_real,28.25251168511685
+quarterly,2014,4,wage_counter_real,38.446021637529626
 quarterly,2015,1,bls_prod_wage_nominal,20.85
 quarterly,2015,1,comp_private_nominal,25.74251420441343
 quarterly,2015,1,comp_private_real,35.35050091862573
@@ -2775,6 +3151,8 @@ quarterly,2015,1,comp_wage_ratio,1.234652959444289
 quarterly,2015,1,productivity_nominal,55.71198340279435
 quarterly,2015,1,productivity_real,76.50560099997112
 quarterly,2015,1,productivity_real_index_1948,352.14167144900597
+quarterly,2015,1,wage_actual_real,28.631933085501856
+quarterly,2015,1,wage_counter_real,38.87570820359942
 quarterly,2015,2,bls_prod_wage_nominal,20.96666666666667
 quarterly,2015,2,comp_private_nominal,25.880801625583533
 quarterly,2015,2,comp_private_real,35.304165880688906
@@ -2783,6 +3161,8 @@ quarterly,2015,2,comp_wage_ratio,1.2343784559101842
 quarterly,2015,2,productivity_nominal,56.338620032262796
 quarterly,2015,2,productivity_real,76.85186942362583
 quarterly,2015,2,productivity_real_index_1948,353.73548340371275
+quarterly,2015,2,wage_actual_real,28.6007631708518
+quarterly,2015,2,wage_counter_real,39.06034611500256
 quarterly,2015,3,bls_prod_wage_nominal,21.076666666666668
 quarterly,2015,3,comp_private_nominal,26.00712158294422
 quarterly,2015,3,comp_private_real,35.371983478422656
@@ -2791,6 +3171,8 @@ quarterly,2015,3,comp_wage_ratio,1.2339295389661973
 quarterly,2015,3,productivity_nominal,56.663400800222774
 quarterly,2015,3,productivity_real,77.06723216348414
 quarterly,2015,3,productivity_real_index_1948,354.72675978335417
+quarterly,2015,3,wage_actual_real,28.666129111438387
+quarterly,2015,3,wage_counter_real,39.18405570199692
 quarterly,2015,4,bls_prod_wage_nominal,21.21
 quarterly,2015,4,comp_private_nominal,26.16196171414878
 quarterly,2015,4,comp_private_real,35.635061420378165
@@ -2799,6 +3181,8 @@ quarterly,2015,4,comp_wage_ratio,1.2334729709641103
 quarterly,2015,4,productivity_nominal,56.40162310225253
 quarterly,2015,4,productivity_real,76.82433471228644
 quarterly,2015,4,productivity_real_index_1948,353.6087460257014
+quarterly,2015,4,wage_actual_real,28.890022123893807
+quarterly,2015,4,wage_counter_real,39.07501514780006
 quarterly,2016,1,bls_prod_wage_nominal,21.343333333333337
 quarterly,2016,1,comp_private_nominal,26.30736982742191
 quarterly,2016,1,comp_private_real,35.8860502741863
@@ -2807,6 +3191,8 @@ quarterly,2016,1,comp_wage_ratio,1.23258018869695
 quarterly,2016,1,productivity_nominal,56.4718901366036
 quarterly,2016,1,productivity_real,77.03366401942898
 quarterly,2016,1,productivity_real_index_1948,354.5722515878689
+quarterly,2016,1,wage_actual_real,29.114576563269328
+quarterly,2016,1,wage_counter_real,39.20986584192295
 quarterly,2016,2,bls_prod_wage_nominal,21.486666666666668
 quarterly,2016,2,comp_private_nominal,26.474000303429445
 quarterly,2016,2,comp_private_real,35.8223286157027
@@ -2815,6 +3201,8 @@ quarterly,2016,2,comp_wage_ratio,1.232112952378038
 quarterly,2016,2,productivity_nominal,56.89950763883861
 quarterly,2016,2,productivity_real,76.99149495160066
 quarterly,2016,2,productivity_real_index_1948,354.3781548703159
+quarterly,2016,2,wage_actual_real,29.07389987789988
+quarterly,2016,2,wage_counter_real,39.20326278283402
 quarterly,2016,3,bls_prod_wage_nominal,21.6
 quarterly,2016,3,comp_private_nominal,26.599225673594386
 quarterly,2016,3,comp_private_real,35.88661053259958
@@ -2823,6 +3211,8 @@ quarterly,2016,3,comp_wage_ratio,1.2314456330367771
 quarterly,2016,3,productivity_nominal,57.22544940619975
 quarterly,2016,3,productivity_real,77.20628564883194
 quarterly,2016,3,productivity_real_index_1948,355.3667982395085
+quarterly,2016,3,wage_actual_real,29.141855368882396
+quarterly,2016,3,wage_counter_real,39.33393543786511
 quarterly,2016,4,bls_prod_wage_nominal,21.726666666666667
 quarterly,2016,4,comp_private_nominal,26.740173221595057
 quarterly,2016,4,comp_private_real,35.867174974790174
@@ -2831,6 +3221,8 @@ quarterly,2016,4,comp_wage_ratio,1.2307536002575203
 quarterly,2016,4,productivity_nominal,57.96505511429574
 quarterly,2016,4,productivity_real,77.74978707051868
 quarterly,2016,4,productivity_real_index_1948,357.86843859741845
+quarterly,2016,4,wage_actual_real,29.14244977003147
+quarterly,2016,4,wage_counter_real,39.63310316423706
 quarterly,2017,1,bls_prod_wage_nominal,21.85
 quarterly,2017,1,comp_private_nominal,26.88015520785505
 quarterly,2017,1,comp_private_real,35.846676295240634
@@ -2839,6 +3231,8 @@ quarterly,2017,1,comp_wage_ratio,1.2302130529910777
 quarterly,2017,1,productivity_nominal,58.2872227062288
 quarterly,2017,1,productivity_real,77.73032515408273
 quarterly,2017,1,productivity_real_index_1948,357.77885885823883
+quarterly,2017,1,wage_actual_real,29.138592057761734
+quarterly,2017,1,wage_counter_real,39.64059257242957
 quarterly,2017,2,bls_prod_wage_nominal,21.976666666666667
 quarterly,2017,2,comp_private_nominal,27.03471802889924
 quarterly,2017,2,comp_private_real,36.02678513663556
@@ -2847,6 +3241,8 @@ quarterly,2017,2,comp_wage_ratio,1.2301555299059261
 quarterly,2017,2,productivity_nominal,58.34591856446801
 quarterly,2017,2,productivity_real,77.75246146361646
 quarterly,2017,2,productivity_real_index_1948,357.8807483530867
+quarterly,2017,2,wage_actual_real,29.28636604136604
+quarterly,2017,2,wage_counter_real,39.65373571143953
 quarterly,2017,3,bls_prod_wage_nominal,22.116666666666667
 quarterly,2017,3,comp_private_nominal,27.205859230060106
 quarterly,2017,3,comp_private_real,36.150519422964756
@@ -2855,6 +3251,8 @@ quarterly,2017,3,comp_wage_ratio,1.230106672044918
 quarterly,2017,3,productivity_nominal,59.08654774591776
 quarterly,2017,3,productivity_real,78.51284437892812
 quarterly,2017,3,productivity_real_index_1948,361.38065564404724
+quarterly,2017,3,wage_actual_real,29.388117505995204
+quarterly,2017,3,wage_counter_real,40.04312119150941
 quarterly,2017,4,bls_prod_wage_nominal,22.23
 quarterly,2017,4,comp_private_nominal,27.341373526574195
 quarterly,2017,4,comp_private_real,36.071083502558956
@@ -2863,6 +3261,8 @@ quarterly,2017,4,comp_wage_ratio,1.2299313327293835
 quarterly,2017,4,productivity_nominal,59.72659039128985
 quarterly,2017,4,productivity_real,78.7964374662231
 quarterly,2017,4,productivity_real_index_1948,362.68598417511095
+quarterly,2017,4,wage_actual_real,29.327721428571426
+quarterly,2017,4,wage_counter_real,40.193488515908854
 quarterly,2018,1,bls_prod_wage_nominal,22.42
 quarterly,2018,1,comp_private_nominal,27.589686233707784
 quarterly,2018,1,comp_private_real,36.140532250821465
@@ -2871,6 +3271,8 @@ quarterly,2018,1,comp_wage_ratio,1.2305836857139956
 quarterly,2018,1,productivity_nominal,60.36845119011431
 quarterly,2018,1,productivity_real,79.07838960861072
 quarterly,2018,1,productivity_real_index_1948,363.9837597286817
+quarterly,2018,1,wage_actual_real,29.368609929078016
+quarterly,2018,1,wage_counter_real,40.3159267664716
 quarterly,2018,2,bls_prod_wage_nominal,22.603333333333335
 quarterly,2018,2,comp_private_nominal,27.836983863905804
 quarterly,2018,2,comp_private_real,36.284339588309116
@@ -2879,6 +3281,8 @@ quarterly,2018,2,comp_wage_ratio,1.2315433061748622
 quarterly,2018,2,productivity_nominal,60.75226691221953
 quarterly,2018,2,productivity_real,79.18802892510196
 quarterly,2018,2,productivity_real_index_1948,364.4884099982191
+quarterly,2018,2,wage_actual_real,29.462495883321576
+quarterly,2018,2,wage_counter_real,40.340365547810805
 quarterly,2018,3,bls_prod_wage_nominal,22.78
 quarterly,2018,3,comp_private_nominal,28.045139894882606
 quarterly,2018,3,comp_private_real,36.4527610034118
@@ -2887,6 +3291,8 @@ quarterly,2018,3,comp_wage_ratio,1.2311299339281214
 quarterly,2018,3,productivity_nominal,61.092154420921545
 quarterly,2018,3,productivity_real,79.40690303690506
 quarterly,2018,3,productivity_real_index_1948,365.49584859826734
+quarterly,2018,3,wage_actual_real,29.60919071076707
+quarterly,2018,3,wage_counter_real,40.465447886227516
 quarterly,2018,4,bls_prod_wage_nominal,23
 quarterly,2018,4,comp_private_nominal,28.32463662122285
 quarterly,2018,4,comp_private_real,36.68695921416452
@@ -2895,6 +3301,8 @@ quarterly,2018,4,comp_wage_ratio,1.2315059400531674
 quarterly,2018,4,productivity_nominal,61.26484174508126
 quarterly,2018,4,productivity_real,79.35214775818028
 quarterly,2018,4,productivity_real_index_1948,365.2438197909803
+quarterly,2018,4,wage_actual_real,29.79032258064516
+quarterly,2018,4,wage_counter_real,40.42519832901268
 quarterly,2019,1,bls_prod_wage_nominal,23.203333333333333
 quarterly,2019,1,comp_private_nominal,28.505192192332217
 quarterly,2019,1,comp_private_real,36.84330999246858
@@ -2903,6 +3311,8 @@ quarterly,2019,1,comp_wage_ratio,1.2284955692716082
 quarterly,2019,1,productivity_nominal,61.7458837899145
 quarterly,2019,1,productivity_real,79.80731095869284
 quarterly,2019,1,productivity_real_index_1948,367.33885503174173
+quarterly,2019,1,wage_actual_real,29.99059248891999
+quarterly,2019,1,wage_counter_real,40.75670516063513
 quarterly,2019,2,bls_prod_wage_nominal,23.403333333333332
 quarterly,2019,2,comp_private_nominal,28.742443046287626
 quarterly,2019,2,comp_private_real,36.94314008802592
@@ -2911,6 +3321,8 @@ quarterly,2019,2,comp_wage_ratio,1.2281345839462026
 quarterly,2019,2,productivity_nominal,62.3440941323693
 quarterly,2019,2,productivity_real,80.13190108732505
 quarterly,2019,2,productivity_real_index_1948,368.83288565091743
+quarterly,2019,2,wage_actual_real,30.080693574576664
+quarterly,2019,2,wage_counter_real,40.93449805789225
 quarterly,2019,3,bls_prod_wage_nominal,23.606666666666666
 quarterly,2019,3,comp_private_nominal,28.981443239398022
 quarterly,2019,3,comp_private_real,37.14692967603619
@@ -2919,6 +3331,8 @@ quarterly,2019,3,comp_wage_ratio,1.2276804535186963
 quarterly,2019,3,productivity_nominal,63.07780255394587
 quarterly,2019,3,productivity_real,80.84989681966553
 quarterly,2019,3,productivity_real_index_1948,372.13769227912394
+quarterly,2019,3,wage_actual_real,30.257816331251448
+quarterly,2019,3,wage_counter_real,41.316555987714175
 quarterly,2019,4,bls_prod_wage_nominal,23.81
 quarterly,2019,4,comp_private_nominal,29.18466694596036
 quarterly,2019,4,comp_private_real,37.200883263760375
@@ -2927,6 +3341,8 @@ quarterly,2019,4,comp_wage_ratio,1.2257314971003932
 quarterly,2019,4,productivity_nominal,63.75974113709825
 quarterly,2019,4,productivity_real,81.27276872340957
 quarterly,2019,4,productivity_real_index_1948,374.08409642531586
+quarterly,2019,4,wage_actual_real,30.34994478951
+quarterly,2019,4,wage_counter_real,41.598693734806666
 quarterly,2020,1,bls_prod_wage_nominal,24.02
 quarterly,2020,1,comp_private_nominal,29.38955660744033
 quarterly,2020,1,comp_private_real,37.35892020230027
@@ -2935,6 +3351,8 @@ quarterly,2020,1,comp_wage_ratio,1.2235452376120037
 quarterly,2020,1,productivity_nominal,63.779082330655626
 quarterly,2020,1,productivity_real,81.0736166997391
 quarterly,2020,1,productivity_real_index_1948,373.1674350884839
+quarterly,2020,1,wage_actual_real,30.533337921541634
+quarterly,2020,1,wage_counter_real,41.57090705439438
 quarterly,2020,2,bls_prod_wage_nominal,24.96666666666667
 quarterly,2020,2,comp_private_nominal,30.665479430954587
 quarterly,2020,2,comp_private_real,39.33273646456466
@@ -2943,6 +3361,8 @@ quarterly,2020,2,comp_wage_ratio,1.2282568530422397
 quarterly,2020,2,productivity_nominal,65.42964962802976
 quarterly,2020,2,productivity_real,83.9226130992854
 quarterly,2020,2,productivity_real_index_1948,386.2808586937544
+quarterly,2020,2,wage_actual_real,32.023217592592594
+quarterly,2020,2,wage_counter_real,42.866673822092345
 quarterly,2020,3,bls_prod_wage_nominal,24.77
 quarterly,2020,3,comp_private_nominal,30.377755736817864
 quarterly,2020,3,comp_private_real,38.48265764465198
@@ -2951,6 +3371,8 @@ quarterly,2020,3,comp_wage_ratio,1.226393045491234
 quarterly,2020,3,productivity_nominal,67.36416779754538
 quarterly,2020,3,productivity_real,85.33718650347483
 quarterly,2020,3,productivity_real_index_1948,392.791888427888
+quarterly,2020,3,wage_actual_real,31.378731138545945
+quarterly,2020,3,wage_counter_real,43.65546571490088
 quarterly,2020,4,bls_prod_wage_nominal,24.98
 quarterly,2020,4,comp_private_nominal,30.559586888180313
 quarterly,2020,4,comp_private_real,38.449289497594705
@@ -2959,6 +3381,8 @@ quarterly,2020,4,comp_wage_ratio,1.22336216525942
 quarterly,2020,4,productivity_nominal,67.31940277757452
 quarterly,2020,4,productivity_real,84.6995483175614
 quarterly,2020,4,productivity_real_index_1948,389.85695329069
+quarterly,2020,4,wage_actual_real,31.4291961852861
+quarterly,2020,4,wage_counter_real,43.436621015336726
 quarterly,2021,1,bls_prod_wage_nominal,25.246666666666663
 quarterly,2021,1,comp_private_nominal,30.89721836544141
 quarterly,2021,1,comp_private_real,38.50685716664662
@@ -2967,6 +3391,8 @@ quarterly,2021,1,comp_wage_ratio,1.2238137720665996
 quarterly,2021,1,productivity_nominal,68.77406299681314
 quarterly,2021,1,productivity_real,85.71234436917265
 quarterly,2021,1,productivity_real_index_1948,394.51867334503584
+quarterly,2021,1,wage_actual_real,31.464637876743137
+quarterly,2021,1,wage_counter_real,43.93979455702146
 quarterly,2021,2,bls_prod_wage_nominal,25.673333333333332
 quarterly,2021,2,comp_private_nominal,31.310550117086873
 quarterly,2021,2,comp_private_real,38.400123549973074
@@ -2975,6 +3401,8 @@ quarterly,2021,2,comp_wage_ratio,1.2195747903305716
 quarterly,2021,2,productivity_nominal,70.19687082768075
 quarterly,2021,2,productivity_real,86.09138142013703
 quarterly,2021,2,productivity_real_index_1948,396.2633134618783
+quarterly,2021,2,wage_actual_real,31.486485170429393
+quarterly,2021,2,wage_counter_real,44.28750580819621
 quarterly,2021,3,bls_prod_wage_nominal,26.13
 quarterly,2021,3,comp_private_nominal,31.763873247421927
 quarterly,2021,3,comp_private_real,38.37009410594395
@@ -2983,6 +3411,8 @@ quarterly,2021,3,comp_wage_ratio,1.215609385664827
 quarterly,2021,3,productivity_nominal,71.02376781435908
 quarterly,2021,3,productivity_real,85.79522508379412
 quarterly,2021,3,productivity_real_index_1948,394.9001585303846
+quarterly,2021,3,wage_actual_real,31.564493132766508
+quarterly,2021,3,wage_counter_real,44.279127798833095
 quarterly,2021,4,bls_prod_wage_nominal,26.59
 quarterly,2021,4,comp_private_nominal,32.2148023698187
 quarterly,2021,4,comp_private_real,38.14149998529175
@@ -2991,6 +3421,8 @@ quarterly,2021,4,comp_wage_ratio,1.211538261369639
 quarterly,2021,4,productivity_nominal,72.62223673686086
 quarterly,2021,4,productivity_real,85.98286618780897
 quarterly,2021,4,productivity_real_index_1948,395.7638371517753
+quarterly,2021,4,wage_actual_real,31.481878205128204
+quarterly,2021,4,wage_counter_real,44.52508612507811
 quarterly,2022,1,bls_prod_wage_nominal,26.993333333333332
 quarterly,2022,1,comp_private_nominal,32.661000312645704
 quarterly,2022,1,comp_private_real,37.8687178766206
@@ -2999,6 +3431,8 @@ quarterly,2022,1,comp_wage_ratio,1.2099654351437037
 quarterly,2022,1,productivity_nominal,73.37675101200496
 quarterly,2022,1,productivity_real,85.07649662220535
 quarterly,2022,1,productivity_real_index_1948,391.59197927979693
+quarterly,2022,1,wage_actual_real,31.2973550952082
+quarterly,2022,1,wage_counter_real,44.11300243843177
 quarterly,2022,2,bls_prod_wage_nominal,27.4
 quarterly,2022,2,comp_private_nominal,33.12932439504573
 quarterly,2022,2,comp_private_real,37.51677630757171
@@ -3007,6 +3441,8 @@ quarterly,2022,2,comp_wage_ratio,1.2090994304761216
 quarterly,2022,2,productivity_nominal,74.7080561996055
 quarterly,2022,2,productivity_real,84.6019496018831
 quarterly,2022,2,productivity_real_index_1948,389.4077237647336
+quarterly,2022,2,wage_actual_real,31.028694052728387
+quarterly,2022,2,wage_counter_real,43.89836436395799
 quarterly,2022,3,bls_prod_wage_nominal,27.76
 quarterly,2022,3,comp_private_nominal,33.503859502089945
 quarterly,2022,3,comp_private_real,37.504017272945525
@@ -3015,6 +3451,8 @@ quarterly,2022,3,comp_wage_ratio,1.2069113653490613
 quarterly,2022,3,productivity_nominal,75.4529696082776
 quarterly,2022,3,productivity_real,84.46159688878103
 quarterly,2022,3,productivity_real_index_1948,388.76170519435226
+quarterly,2022,3,wage_actual_real,31.07437575757576
+quarterly,2022,3,wage_counter_real,43.90499130798139
 quarterly,2022,4,bls_prod_wage_nominal,28.106666666666666
 quarterly,2022,4,comp_private_nominal,33.97042417769917
 quarterly,2022,4,comp_private_real,37.59339332307391
@@ -3023,6 +3461,8 @@ quarterly,2022,4,comp_wage_ratio,1.2086251486373045
 quarterly,2022,4,productivity_nominal,76.6462912064345
 quarterly,2022,4,productivity_real,84.82067097560486
 quarterly,2022,4,productivity_real_index_1948,390.4144593385647
+quarterly,2022,4,wage_actual_real,31.10426203315358
+quarterly,2022,4,wage_counter_real,44.02912566407926
 quarterly,2023,1,bls_prod_wage_nominal,28.43
 quarterly,2023,1,comp_private_nominal,34.39641679195814
 quarterly,2023,1,comp_private_real,37.74817695469202
@@ -3031,6 +3471,8 @@ quarterly,2023,1,comp_wage_ratio,1.2098634116059845
 quarterly,2023,1,productivity_nominal,77.57980071164656
 quarterly,2023,1,productivity_real,85.13956738824193
 quarterly,2023,1,productivity_real_index_1948,391.88228279589765
+quarterly,2023,1,wage_actual_real,31.200362448009503
+quarterly,2023,1,wage_counter_real,44.14942790503903
 quarterly,2023,2,bls_prod_wage_nominal,28.79
 quarterly,2023,2,comp_private_nominal,34.851253728561176
 quarterly,2023,2,comp_private_real,37.998976172758255
@@ -3039,6 +3481,8 @@ quarterly,2023,2,comp_wage_ratio,1.210533300748912
 quarterly,2023,2,productivity_nominal,78.36877220256237
 quarterly,2023,2,productivity_real,85.44694348177845
 quarterly,2023,2,productivity_real_index_1948,393.29708027381633
+quarterly,2023,2,wage_actual_real,31.390277449822904
+quarterly,2023,2,wage_counter_real,44.28429911148664
 quarterly,2023,3,bls_prod_wage_nominal,29.083333333333332
 quarterly,2023,3,comp_private_nominal,35.22210541216595
 quarterly,2023,3,comp_private_real,38.133193843065946
@@ -3047,6 +3491,8 @@ quarterly,2023,3,comp_wage_ratio,1.2110752577249038
 quarterly,2023,3,productivity_nominal,79.92785007028806
 quarterly,2023,3,productivity_real,86.53384471267411
 quarterly,2023,3,productivity_real_index_1948,398.2998932854771
+quarterly,2023,3,wage_actual_real,31.48705549042594
+quarterly,2023,3,wage_counter_real,44.82753441312742
 quarterly,2023,4,bls_prod_wage_nominal,29.366666666666667
 quarterly,2023,4,comp_private_nominal,35.60072376129021
 quarterly,2023,4,comp_private_real,38.318494631178915
@@ -3055,6 +3501,8 @@ quarterly,2023,4,comp_wage_ratio,1.2122834424956939
 quarterly,2023,4,productivity_nominal,80.82399374490073
 quarterly,2023,4,productivity_real,86.99412380351494
 quarterly,2023,4,productivity_real_index_1948,400.4184760593289
+quarterly,2023,4,wage_actual_real,31.608527583527586
+quarterly,2023,4,wage_counter_real,45.02106134547372
 quarterly,2024,1,bls_prod_wage_nominal,29.683333333333337
 quarterly,2024,1,comp_private_nominal,36.01151422191169
 quarterly,2024,1,comp_private_real,38.42476416399242
@@ -3063,6 +3511,8 @@ quarterly,2024,1,comp_wage_ratio,1.213189698660697
 quarterly,2024,1,productivity_nominal,81.66136957978107
 quarterly,2024,1,productivity_real,87.13376638582069
 quarterly,2024,1,productivity_real_index_1948,401.0612260239834
+quarterly,2024,1,wage_actual_real,31.672511072597732
+quarterly,2024,1,wage_counter_real,45.05964410844727
 quarterly,2024,2,bls_prod_wage_nominal,29.963333333333335
 quarterly,2024,2,comp_private_nominal,36.35274775010292
 quarterly,2024,2,comp_private_real,38.566068405766856
@@ -3071,6 +3521,8 @@ quarterly,2024,2,comp_wage_ratio,1.2132411085805848
 quarterly,2024,2,productivity_nominal,82.73452264222001
 quarterly,2024,2,productivity_real,87.77177674909842
 quarterly,2024,2,productivity_real_index_1948,403.9978742273808
+quarterly,2024,2,wage_actual_real,31.78763737315719
+quarterly,2024,2,wage_counter_real,45.387656235895115
 quarterly,2024,3,bls_prod_wage_nominal,30.273333333333333
 quarterly,2024,3,comp_private_nominal,36.73052268095678
 quarterly,2024,3,comp_private_real,38.87752171445683
@@ -3079,6 +3531,8 @@ quarterly,2024,3,comp_wage_ratio,1.213296278824822
 quarterly,2024,3,productivity_nominal,83.43739708751323
 quarterly,2024,3,productivity_real,88.3145400691329
 quarterly,2024,3,productivity_real_index_1948,406.4961172346899
+quarterly,2024,3,wage_actual_real,32.042892072588344
+quarterly,2024,3,wage_counter_real,45.666247930264184
 quarterly,2024,4,bls_prod_wage_nominal,30.566666666666663
 quarterly,2024,4,comp_private_nominal,37.06052947619436
 quarterly,2024,4,comp_private_real,38.93674513227018
@@ -3087,6 +3541,8 @@ quarterly,2024,4,comp_wage_ratio,1.2124491649790958
 quarterly,2024,4,productivity_nominal,84.27211141910621
 quarterly,2024,4,productivity_real,88.53844698014173
 quarterly,2024,4,productivity_real_index_1948,407.526720914173
+quarterly,2024,4,wage_actual_real,32.114125900644666
+quarterly,2024,4,wage_counter_real,45.81401413123152
 quarterly,2025,1,bls_prod_wage_nominal,30.9
 quarterly,2025,1,comp_private_nominal,37.47737230392551
 quarterly,2025,1,comp_private_real,39.04157171198557
@@ -3095,6 +3551,8 @@ quarterly,2025,1,comp_wage_ratio,1.2128599451108582
 quarterly,2025,1,productivity_nominal,84.8673713325421
 quarterly,2025,1,productivity_real,88.40949512194317
 quarterly,2025,1,productivity_real_index_1948,406.9331784507589
+quarterly,2025,1,wage_actual_real,32.189678510998306
+quarterly,2025,1,wage_counter_real,45.73179427044229
 quarterly,2025,2,bls_prod_wage_nominal,31.2
 quarterly,2025,2,comp_private_nominal,37.87259623661608
 quarterly,2025,2,comp_private_real,39.298137780353876
@@ -3103,6 +3561,8 @@ quarterly,2025,2,comp_wage_ratio,1.2138652639941052
 quarterly,2025,2,productivity_nominal,86.06943717564752
 quarterly,2025,2,productivity_real,89.309129473832
 quarterly,2025,2,productivity_real_index_1948,411.07403533216814
+quarterly,2025,2,wage_actual_real,32.374382022471906
+quarterly,2025,2,wage_counter_real,46.158890001510265
 quarterly,2025,3,bls_prod_wage_nominal,31.48
 quarterly,2025,3,comp_private_nominal,38.204617797355134
 quarterly,2025,3,comp_private_real,39.33329379694255
@@ -3111,6 +3571,8 @@ quarterly,2025,3,comp_wage_ratio,1.213615559001116
 quarterly,2025,3,productivity_nominal,87.5734077436618
 quarterly,2025,3,productivity_real,90.16058199695838
 quarterly,2025,3,productivity_real_index_1948,414.99311982708383
+quarterly,2025,3,wage_actual_real,32.41001114827201
+quarterly,2025,3,wage_counter_real,46.6085460247341
 quarterly,2025,4,bls_prod_wage_nominal,31.773333333333333
 quarterly,2025,4,comp_private_nominal,38.57702816653704
 quarterly,2025,4,comp_private_real,39.47466538703264
@@ -3119,6 +3581,8 @@ quarterly,2025,4,comp_wage_ratio,1.2141322335250853
 quarterly,2025,4,productivity_nominal,88.46798608134516
 quarterly,2025,4,productivity_real,90.52652093753157
 quarterly,2025,4,productivity_real_index_1948,416.6774716718823
+quarterly,2025,4,wage_actual_real,32.512657433056326
+quarterly,2025,4,wage_counter_real,46.77780350436077
 quarterly,2026,1,bls_prod_wage_nominal,32.03333333333333
 quarterly,2026,1,comp_private_nominal,38.89234041342086
 quarterly,2026,1,comp_private_real,39.469314694279305
@@ -3127,6 +3591,8 @@ quarterly,2026,1,comp_wage_ratio,1.2141209286187575
 quarterly,2026,1,productivity_nominal,89.55671012876954
 quarterly,2026,1,productivity_real,90.8852986856249
 quarterly,2026,1,productivity_real_index_1948,418.3288618216355
+quarterly,2026,1,wage_actual_real,32.50855311355311
+quarterly,2026,1,wage_counter_real,46.963632149294945
 quarterly,2026,2,bls_prod_wage_nominal,32.306666666666665
 quarterly,2026,2,comp_private_nominal,39.217625059485805
 quarterly,2026,2,comp_private_real,39.217625059485805
@@ -3135,3 +3601,5 @@ quarterly,2026,2,comp_wage_ratio,1.2139174079494162
 quarterly,2026,2,productivity_nominal,91.21774991418822
 quarterly,2026,2,productivity_real,91.21774991418822
 quarterly,2026,2,productivity_real_index_1948,419.8590756853447
+quarterly,2026,2,wage_actual_real,32.306666666666665
+quarterly,2026,2,wage_counter_real,47.143323939639984

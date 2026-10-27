@@ -19,12 +19,16 @@ snapshot_files = list(
     "data_final/epi_productivity_pay_gap_sources.csv",
     "release/epi_productivity_pay_gap_sources.csv"
   ),
+  counter_web = "data_final/epi_productivity_pay_counter_web.csv",
   bls_api = c("data_raw/bls_api_output.csv", "data_outputs/bls_api_output.csv"),
   bea_api = c("data_raw/bea_api_output.csv", "data_outputs/bea_api_output.csv"),
   bls_pay = "data_outputs/bls_pay.csv",
   bls_hours = "data_outputs/bls_hours.csv",
   prices = "data_outputs/prices.csv"
 )
+
+# Files that older refs don't have; reading one there gives NULL
+optional_files = "counter_web"
 
 # system2() runs git through the shell, so every argument is quoted: a ref
 # can come from PPG_BASELINE and contain shell characters
@@ -70,7 +74,10 @@ same_contents = function(a, b) {
   identical(names(a), names(b)) && all(map2_lgl(a, b, identical))
 }
 
-read_snapshot_csv = function(ref, paths) {
+read_snapshot_csv = function(ref, paths, optional = FALSE) {
+  if (optional && !any(map_lgl(paths, \(path) snapshot_has_file(ref, path)))) {
+    return(NULL)
+  }
   path = locate_file(ref, paths)
   if (is.null(ref)) {
     return(read_csv(path, show_col_types = FALSE))
@@ -99,7 +106,9 @@ read_snapshot_packages = function(ref) {
 
 read_snapshot = function(ref = NULL) {
   has_fetch_log = snapshot_has_file(ref, "data_raw/fetch_log.csv")
-  files = map(snapshot_files, \(paths) read_snapshot_csv(ref, paths))
+  files = imap(snapshot_files, \(paths, file) {
+    read_snapshot_csv(ref, paths, optional = file %in% optional_files)
+  })
   # the BLS API results took their current form in v2026.3.11, the first
   # release with renv.lock too
   if (!"date" %in% names(files$bls_api)) {
@@ -145,10 +154,11 @@ unreleased_changes = function(ref) {
     return(NULL)
   }
 
-  final_files = c("data", "web", "web_stats", "sources")
+  final_files = c("data", "web", "web_stats", "sources", "counter_web")
   differs = map_lgl(final_files, \(file) {
-    current = read_snapshot_csv(ref, snapshot_files[[file]])
-    released = read_snapshot_csv(tag, snapshot_files[[file]])
+    optional = file %in% optional_files
+    current = read_snapshot_csv(ref, snapshot_files[[file]], optional)
+    released = read_snapshot_csv(tag, snapshot_files[[file]], optional)
     if (file == "sources") {
       current = select(current, -date_accessed)
       released = select(released, -date_accessed)

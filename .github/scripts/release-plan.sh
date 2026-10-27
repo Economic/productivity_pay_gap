@@ -56,18 +56,25 @@ if git rev-parse --quiet --verify "refs/tags/$tag" >/dev/null; then
   fail "The tag $tag exists without a release. Delete the stray tag, then run this again."
 fi
 
-# The no-change guard: the four final files must differ from the previous
+# The no-change guard: the final files must differ from the previous
 # release, ignoring the access dates in the sources CSV, which change with
-# every data pull
+# every data pull. A file the previous release didn't have counts as changed.
 python3 -I - "$previous" "$SHA" <<'PYTHON'
 import csv, io, subprocess, sys
 
 previous, sha = sys.argv[1], sys.argv[2]
+
+# without the tag, every file would look new
+tag_found = subprocess.run(["git", "rev-parse", "--verify", "--quiet", f"{previous}^{{commit}}"], capture_output=True)
+if tag_found.returncode != 0:
+    print(f"::error::{previous} is not in this checkout.")
+    sys.exit(1)
 files = [
     "epi_productivity_pay_gap.csv",
     "epi_productivity_pay_gap_web.csv",
     "epi_productivity_pay_gap_web_stats.csv",
     "epi_productivity_pay_gap_sources.csv",
+    "epi_productivity_pay_counter_web.csv",
 ]
 
 def rows(ref, name):
@@ -80,11 +87,17 @@ def rows(ref, name):
                 i = table[0].index("date_accessed")
                 table = [row[:i] + row[i + 1:] for row in table]
             return table
-    # workflow commands are read from standard output
-    print(f"::error::{name} is not in {ref}")
-    sys.exit(1)
+    return None
 
-changed = [name for name in files if rows(previous, name) != rows(sha, name)]
+def current_rows(name):
+    table = rows(sha, name)
+    if table is None:
+        # workflow commands are read from standard output
+        print(f"::error::{name} is not in {sha}")
+        sys.exit(1)
+    return table
+
+changed = [name for name in files if rows(previous, name) != current_rows(name)]
 if not changed:
     print(f"::error::Nothing changed since {previous}, apart from access dates.")
     sys.exit(1)

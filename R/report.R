@@ -159,12 +159,34 @@ latest_input_quarters = function(snapshot) {
     list_rbind()
 }
 
-web_changes = function(old, new) {
+web_changes = function(old, new, file = "web") {
   longer = function(web) pivot_longer(web, -Year, names_to = "Series")
-  inner_join(longer(old$web), longer(new$web), by = c("Year", "Series"), suffix = c("_old", "_new")) |>
+  inner_join(longer(old[[file]]), longer(new[[file]]), by = c("Year", "Series"), suffix = c("_old", "_new")) |>
     filter(value_old != value_new) |>
     mutate(change = value_new - value_old) |>
     arrange(desc(abs(change)), Year)
+}
+
+counter_web_lines = function(old, new) {
+  if (is.null(old$counter_web)) {
+    return(c(
+      paste0("New file: ", first(new$counter_web$Year), " to ", last(new$counter_web$Year), "."),
+      ""
+    ))
+  }
+  revisions = web_changes(old, new, "counter_web")
+  if (nrow(revisions) == 0) {
+    return(c("No quarter changed after rounding.", ""))
+  }
+  c(
+    paste0(n_distinct(revisions$Year), " quarters changed after rounding. Largest changes:"),
+    "",
+    md_table(
+      revisions |>
+        slice_head(n = 5) |>
+        transmute(Quarter = Year, Series, Before = value_old, After = value_new, Change = signed(change, 2))
+    )
+  )
 }
 
 full_data_changes = function(old, new) {
@@ -259,7 +281,13 @@ change_label = function(
     ))
   }
   if (web_visible) {
-    return("Web stats changed, web data unchanged")
+    if (!same_contents(old$web_stats, new$web_stats)) {
+      return("Web stats changed, web data unchanged")
+    }
+    if (is.null(old$counter_web)) {
+      return("Counterfactual wage file added, web data unchanged")
+    }
+    return("Counterfactual wages changed, web data unchanged")
   }
   if (final_files_differ) "No web-visible changes" else "No changes"
 }
@@ -294,9 +322,10 @@ compare_snapshots = function(old, new) {
     select(old$sources, -date_accessed),
     select(new$sources, -date_accessed)
   )
-  # the rule for notifying me: the web data or web stats file changed
+  # the rule for notifying me: a web file changed
   web_visible = !same_contents(old$web, new$web) ||
-    !same_contents(old$web_stats, new$web_stats)
+    !same_contents(old$web_stats, new$web_stats) ||
+    !same_contents(old$counter_web, new$counter_web)
   final_files_differ = web_visible || nrow(data_changes) > 0 || sources_differ
   label = change_label(
     old,
@@ -451,6 +480,9 @@ build_change_report = function(
     } else {
       c("No quarter changed after rounding.", "")
     },
+    "### Counterfactual wage data",
+    "",
+    counter_web_lines(old, new),
     "### Full data file",
     "",
     if (nrow(data_changes) > 0) md_table(data_changes) else c("No values changed.", "")

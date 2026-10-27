@@ -37,7 +37,7 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 - **`R/bea.R`**: BEA NIPA API fetching (`bea_grab_all`, `bea_grab_series`)
 - **`R/prices.R`**: Extracts Extended Chained CPI-U from the `realtalk` package
 - **`R/combine.R`**: Merges all sources, calculates productivity and real compensation, creates 1948q1=100 indices
-- **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_stats_csv`)
+- **`R/web.R`**: Formats final outputs for web (`create_web_data_csv`, `create_web_counter_csv`, `create_web_stats_csv`)
 - **`R/document_data.R`**: Generates `epi_productivity_pay_gap_sources.csv` tracking data provenance, and reads and writes the fetch log
 - **`R/checks.R`**: Sanity checks on the final files and on installed packages; a failure stops the pipeline
 - **`R/report_snapshot.R`**: Reads the committed files at a git ref or in the working tree, for the change report. Releases through v2026.9.14 use the pre-Phase 1 paths
@@ -51,6 +51,7 @@ This repository produces data for the [EPI Productivity-Pay Gap](https://www.epi
 - **Private-sector compensation** = BLS production/nonsupervisory wages × compensation ratio
 - **Real values**: deflated by Extended Chained CPI-U (from `realtalk` package)
 - **Indices**: all series indexed to 1948q1 = 100
+- **Counterfactual wage** = real compensation per unit of real productivity in 1979q4 (1979 for annual data) × real productivity / compensation ratio. It and the actual real wage start at that base
 
 ### Wage Series Construction (`R/bls.R`)
 
@@ -68,6 +69,7 @@ The early series is ratio-adjusted at the 1964 crossover. Pre-1964 annual values
 | `data_final/epi_productivity_pay_gap.csv` | All series, long format, annual + quarterly |
 | `data_final/epi_productivity_pay_gap_web.csv` | Quarterly only, wide format, rounded to 1 decimal |
 | `data_final/epi_productivity_pay_gap_web_stats.csv` | Key statistics for website display |
+| `data_final/epi_productivity_pay_counter_web.csv` | Quarterly real actual wage and counterfactual wage (grown with productivity since 1979q4), from 1979q4, rounded to 2 decimals |
 | `data_final/epi_productivity_pay_gap_sources.csv` | Data provenance documentation |
 
 On `main`, `data_final/` can be ahead of the latest GitHub release. Intermediate files (cleaned hours, spliced wages, prices) are written to `data_outputs/`. Everything in `data_raw/`, `data_outputs/` and `data_final/` is committed to git. The targets stores (`_targets/`, `_targets_offline/`) are not.

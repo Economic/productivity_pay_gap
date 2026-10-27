@@ -10,7 +10,7 @@ You can download the data from
 * the [State of Working America Data Library](https://data.epi.org/productivity/productivity_growth/line/year/national/real_index_1948/productivity_pay)
 * the [latest release](https://github.com/Economic/productivity_pay_gap/releases/latest) of this repository
 
-Official data comes from the [GitHub releases](https://github.com/Economic/productivity_pay_gap/releases). Each release has the four final files and a change report explaining what changed since the previous release, and why. The files on `main` may include updates that haven't been released yet.
+Official data comes from the [GitHub releases](https://github.com/Economic/productivity_pay_gap/releases). Each release has the five final files and a change report explaining what changed since the previous release, and why. The files on `main` may include updates that haven't been released yet.
 
 ## How updates work
 
@@ -99,6 +99,7 @@ If BLS refuses the hours download, download the [total economy hours file](https
 * `epi_productivity_pay_gap.csv`: all series, annual and quarterly, in long format
 * `epi_productivity_pay_gap_web.csv`: quarterly real pay and productivity indexed to 1948q1 = 100, in wide format and rounded to one decimal place, for the web page
 * `epi_productivity_pay_gap_web_stats.csv`: summary statistics for the web page
+* `epi_productivity_pay_counter_web.csv`: quarterly real actual wage and the wage had it grown with productivity since 1979q4, from 1979q4, rounded to two decimal places, for the web page
 * `epi_productivity_pay_gap_sources.csv`: underlying data sources, with access and publication dates
 
 ### Fetched files (`data_raw/`)
