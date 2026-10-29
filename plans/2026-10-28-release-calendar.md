@@ -41,4 +41,11 @@ Prepare the rolling data refresh PR when an input is released, with one next-day
 
 ## Validation and results
 
-- Pending implementation.
+- Implemented the generalized calendar reader, isolated writer, weekly calendar workflow, and daily reusable refresh call. Updated maintainer instructions and removed the obsolete weekly PR wording.
+- All 19 new offline tests passed: 13 calendar cases and 6 writer cases. They cover all five releases, preliminary and revised Productivity and Costs dates, timezone and calendar-day boundaries, overlapping releases, saved-file preservation, branch isolation, and symlink replacement. All 5 existing refresh PR lifecycle cases passed.
+- Independently exercised the daily workflow's actual shell step with local Git fixtures. Due and non-due schedules emit the correct output. A missing calendar fails before calling refresh.
+- actionlint 1.7.12 passed every workflow. Bash syntax checks and `git diff --check` passed.
+- A forced offline rebuild completed all 25 targets with none skipped. All committed files in `data_final/` and `data_outputs/` stayed unchanged.
+- A calendar-only live download validated 36 events across all five release types. The resulting schedule has 7 build dates in November 2026 and 8 in December 2026, including next-day runs and overlapping dates. No live data pipeline or remote calendar initialization was run.
+- Plan commit review 600, script commit review 602, and workflow commit review 604 passed. Phase checkpoint 609 passed all four reviewers with no findings. No additional risks needed to be accepted.
+- Delivery and final GitHub check results are recorded on the implementation PR. The remote calendar bootstrap remains a maintainer step after merge.
