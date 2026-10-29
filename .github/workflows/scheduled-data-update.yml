@@ -1,0 +1,70 @@
+# Adapted from Economic/realtalk's scheduled-data-update.yml at 577c812073f10b31d5380ac0fc7719befaee93f0.
+# Reads the saved calendar as data. No agency calendar download is needed here.
+name: Scheduled data update
+
+on:
+  schedule:
+    - cron: "27 14 * * *"
+      timezone: America/New_York
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Follow the saved schedule and build if due, without changing the refresh PR
+        type: boolean
+        default: true
+
+permissions: {}
+
+concurrency:
+  group: scheduled-data-update
+  cancel-in-progress: false
+
+jobs:
+  schedule:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      due: ${{ steps.schedule.outputs.due }}
+    steps:
+      - name: Real runs only from main
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" != "true" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::A real scheduled update runs only from main. Use a dry run to test another branch."
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Decide whether a release or next-day follow-up is due
+        id: schedule
+        run: |
+          if ! git show origin/calendar:schedule.json > "$RUNNER_TEMP/schedule.json"; then
+            echo "::error::No saved calendar. Run Calendar refresh from main first."
+            exit 1
+          fi
+          due=$(python3 .github/scripts/release-calendar.py due "$RUNNER_TEMP/schedule.json")
+          echo "due=$due" >> "$GITHUB_OUTPUT"
+          if [ "$due" = "true" ]; then
+            echo 'Starting refresh for a release day or next-day follow-up.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No release or next-day follow-up is due today.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  refresh:
+    needs: schedule
+    if: ${{ needs.schedule.outputs.due == 'true' }}
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/refresh.yml
+    with:
+      dry_run: ${{ inputs.dry_run || false }}
+    secrets: inherit

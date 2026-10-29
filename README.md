@@ -14,21 +14,24 @@ Official data comes from the [GitHub releases](https://github.com/Economic/produ
 
 ## How updates work
 
-1. **Every Monday at 12:07 UTC** (8:07 a.m. Eastern in daylight saving time, 7:07 a.m. otherwise), the `refresh` workflow:
+1. **Every Monday at 5:17 a.m. Eastern**, `Calendar refresh` downloads the BLS and BEA release calendars. It saves dates for Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays in `schedule.json` on the separate `calendar` branch. A failed refresh keeps the previous schedule.
+2. **Every day at 2:27 p.m. Eastern**, `Scheduled data update` reads the saved calendar. On a release day and the following calendar day, including weekends and holidays, it runs `refresh`. Overlapping dates produce one scheduled build per day. Each refresh:
    * updates every R package and fetches the latest BLS and BEA data
    * rebuilds the numbers and writes a change report against both `main` and the last published release
    * if the published numbers changed since the maintainer last saw them, opens or updates a pull request from the `data-refresh` branch, assigned to the maintainer, which emails them
    * if the numbers match an existing refresh PR, updates its description with the latest report without rewriting the branch or posting another comment; if no PR exists and the numbers match `main`, does nothing
-2. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
-3. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything.
+3. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
+4. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything.
+
+Times follow Eastern daylight saving changes. The next-day build runs even if the release-day build succeeded: agency APIs or the published `realtalk` package can still have old data when a build succeeds. If the web numbers are unchanged, the existing PR's description gets the latest report while its branch stays unchanged. There are no further automatic retries. If inputs are still late, run `refresh` manually from Actions once they are available. Manual refresh does not depend on the calendar.
 
 Every pull request into `main` must pass the `check` workflow, which rebuilds everything from the committed raw data and fails if the result differs from the committed files. `main` accepts changes only through pull requests, merged with merge commits.
 
-If the BLS hours download fails, the weekly run still finishes with the committed spreadsheet, then fails, so GitHub emails a failure notice.
+If the BLS hours download fails, the refresh still finishes with the committed spreadsheet, then fails, so GitHub emails a failure notice. A missing, invalid, or exhausted saved calendar fails the daily check. Run `Calendar refresh` to repair it. Calendar changes announced after Monday can be missed until the next calendar refresh; run it manually when needed. GitHub can delay or drop scheduled runs.
 
 ## Maintainer setup
 
-The weekly emails depend on GitHub settings that aren't stored in the repository.
+The refresh emails depend on GitHub settings that aren't stored in the repository.
 
 * **Repository secrets:** `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL` (see [Setup](#setup)).
 * **The assignee:** refresh pull requests are assigned to `benzipperer`, set in `.github/scripts/update-refresh-pr.sh`. A new maintainer changes that name.
@@ -37,6 +40,12 @@ The weekly emails depend on GitHub settings that aren't stored in the repository
   * **"Actions"**: tick **Email** for failed workflows. GitHub sends scheduled run failures to whoever last changed the workflow's schedule.
   * **"Custom routing"**: if the account has several email addresses, route the Economic organization to the one the maintainer reads.
 * **The "protect main" ruleset,** in the repository settings: pull requests required, the `check` status check required, merge commits only, no bypass list.
+
+### Start the release calendar
+
+After merging the calendar workflows, run **Actions → Calendar refresh → Run workflow** on `main` with `dry_run` checked. Inspect the five release types and their dates in the run summary. Then run it without `dry_run` to create the `calendar` branch. Keep that branch: the daily job reads its saved schedule even if a later calendar download fails. The calendar download uses the existing `BLS_DOWNLOAD_EMAIL` secret.
+
+Both new workflows have a dry-run option. A calendar dry run downloads and validates without saving. A scheduled data dry run follows the saved dates and, if due, builds and reports without changing the refresh PR. Real calendar and scheduled updates run only from `main`. Branch dry runs use the branch's code. The existing `refresh` dry run can build on any date without changing the PR.
 
 ## Reproduce the data
 
@@ -72,7 +81,7 @@ To use newer package versions, such as the latest price indices in `realtalk`, r
 
 Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why: each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag from v2026.3.11 on.
 
-Weekly refreshes and PR checks compare the proposed data with both `main` and the last published GitHub release. The overview shows both summaries and the headline stats for the release, `main`, and the proposed data. Expand each comparison for its inputs, outputs, and revision explanations. The `main` comparison shows what merging changes. The release comparison includes changes already merged into `main`. Both baselines are recorded by commit. PR checks use the proposed merge result and the PR's base commit as `main`.
+Data refreshes and PR checks compare the proposed data with both `main` and the last published GitHub release. The overview shows both summaries and the headline stats for the release, `main`, and the proposed data. Expand each comparison for its inputs, outputs, and revision explanations. The `main` comparison shows what merging changes. The release comparison includes changes already merged into `main`. Both baselines are recorded by commit. PR checks use the proposed merge result and the PR's base commit as `main`.
 
 To generate both views locally, set `PPG_RELEASE_BASELINE` to the published release tag as well as setting `PPG_BASELINE` for `main`. No release lookup happens inside the R pipeline. Post-merge checks keep their comparison with the commit before the push. Release notes keep their single comparison with the previous release.
 

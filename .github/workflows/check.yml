@@ -46,6 +46,12 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: python3 tests/refresh-pr.py
 
+      - name: Check release calendar and isolated calendar writer
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          python3 tests/release-calendar.py
+          python3 tests/calendar-writer.py
+
       - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           r-version: renv
@@ -133,7 +139,7 @@ jobs:
           cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
           # PRs from forks get a read-only token, so comment only on PRs from
           # this repo. Refresh PRs carry the report already, and --edit-last
-          # would overwrite the refresh workflow's latest weekly comment.
+          # would overwrite the refresh workflow's latest report comment.
           if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ] && [ "$HEAD_REF" != "data-refresh" ]; then
             # Keep both comparisons even when the PR introduces no data changes:
             # main can still contain changes since the last release.
