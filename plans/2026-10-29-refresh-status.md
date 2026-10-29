@@ -32,4 +32,12 @@ Make each refresh's result clear without reopening the PR or posting duplicate r
 
 ## Validation and results
 
-- Pending implementation.
+- Implemented a trusted Python helper behind the existing shell entry point. Publishing still runs no R or artifact code. The artifact allowlist and workflow permissions are unchanged.
+- The description has a prominent check time and run link, proposal-change status, pending changes against main, latest output quarter, and a single report with its own update time. The title includes the check date. Check-only runs preserve the report for the committed files.
+- Meaningful file changes and new main or release baselines synchronize the branch and report. New comments are short notifications for changed web files only. Older full bot reports are replaced with superseded notices, preserving human and unrelated bot comments.
+- All 18 local Git and stub GitHub lifecycle fixtures passed. They cover new, stale, unchanged, access-only, input-only, package-only, publication-date, spreadsheet, below-rounding, added and removed file, new main, code, release-baseline, and legacy-report cases. Repeating an input-only update is quiet and preserves the report and branch. The comment tests evaluate the actual jq selector, including human and unrelated bot comments.
+- All 19 existing calendar and isolated writer tests passed. Workflow lint (actionlint 1.7.12), shell syntax, and git diff whitespace checks passed.
+- The offline pipeline passed with 2 targets completed and 23 cached. Committed data_final and data_outputs files remain unchanged. The sandboxed R startup stalled; the check completed using the existing local renv cache outside the sandbox. No live data fetch ran.
+- Plan review 656, implementation review 658, and documentation review 660 passed. Checkpoint 670 passed code, design, and security reviews with no findings. Its Claude reviewer could not authenticate because its OAuth session expired, so that fourth review is unavailable. No code findings needed fixes or accepted risks.
+- The earlier checkpoint 665 was canceled because local main was behind origin/main. Updated the local reference and ran checkpoint 670 against the correct base, 7206a21.
+- Delivery and GitHub check results are recorded on the implementation PR. The live refresh PR is left for the next refresh after merge. No release or merge ran.
