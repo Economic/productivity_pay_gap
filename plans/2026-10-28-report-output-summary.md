@@ -31,4 +31,9 @@ Explain each comparison with concrete output changes. A new output file must not
 
 ## Validation and results
 
-- Pending implementation.
+- Added comparison facts and one shared output-description builder. The dual-baseline overview now has Comparison and Result columns. Single-baseline and expanded comparisons render the same description.
+- Kept the short labels and the web-file comparison boolean used by existing report and refresh behavior. No workflow, notification, or calculation changes were needed.
+- Extended report regression checks passed for added and removed wage files and series, simultaneous file additions and revisions, simultaneous period changes and revisions, stats-only changes, full-data revisions below web rounding, access dates, source documentation, and reordered statistics. Existing attribution and baseline checks also passed.
+- Inspected the actual main-versus-v2026.9.14 report. It identifies the added wage file, 468 values in the two new full-data series, and changed source documentation. It explicitly states that existing published productivity, pay, and headline values are unchanged. Against main, it says no output changes.
+- A forced offline rebuild completed all 25 targets with none skipped. All committed files in `data_final/` and `data_outputs/` stayed unchanged. Workflow lint and `git diff --check` passed.
+- Plan commit review 626 passed. Implementation reviews and delivery are pending.

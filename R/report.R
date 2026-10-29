@@ -168,6 +168,9 @@ web_changes = function(old, new, file = "web") {
 }
 
 counter_web_lines = function(old, new) {
+  if (is.null(new$counter_web)) {
+    return(c(if (is.null(old$counter_web)) "No file in either snapshot." else "File removed.", ""))
+  }
   if (is.null(old$counter_web)) {
     return(c(
       paste0("New file: ", first(new$counter_web$Year), " to ", last(new$counter_web$Year), "."),
@@ -375,6 +378,108 @@ change_label = function(
   if (final_files_differ) "No web-visible changes" else "No changes"
 }
 
+# Keep file additions separate from revisions to values present in both files.
+# These facts also retain simultaneous additions, removals, and revisions.
+output_change_facts = function(old, new, web_revisions, data_changes, sources_differ) {
+  quarterly = function(file, revisions) {
+    before = old[[file]]
+    after = new[[file]]
+    list(
+      file_added = is.null(before) && !is.null(after),
+      file_removed = !is.null(before) && is.null(after),
+      revised_quarters = n_distinct(revisions$Year),
+      added_quarters = setdiff(after$Year, before$Year),
+      removed_quarters = setdiff(before$Year, after$Year),
+      added_series = setdiff(names(after), c("Year", names(before))),
+      removed_series = setdiff(names(before), c("Year", names(after)))
+    )
+  }
+  counter_revisions = if (!is.null(old$counter_web) && !is.null(new$counter_web)) {
+    web_changes(old, new, "counter_web")
+  } else {
+    tibble(Year = character())
+  }
+  stats = function(snapshot) {
+    published_stats(snapshot$web_stats) |>
+      select(stat, index, name, text) |>
+      arrange(stat, index)
+  }
+  list(
+    web = quarterly("web", web_revisions),
+    counter_web = quarterly("counter_web", counter_revisions),
+    stats_changed = !same_contents(stats(old), stats(new)),
+    data_revised = sum(data_changes$`Revised values`),
+    data_added = sum(data_changes$`New values`),
+    data_removed = sum(data_changes$`Removed values`),
+    data_series_added = setdiff(unique(new$data$name), unique(old$data$name)),
+    data_series_removed = setdiff(unique(old$data$name), unique(new$data$name)),
+    sources_changed = sources_differ
+  )
+}
+
+describe_output_changes = function(facts) {
+  quarterly = function(change, name) {
+    if (change$file_added) return(paste0(name, " file added."))
+    if (change$file_removed) return(paste0(name, " file removed."))
+    parts = c(
+      if (change$revised_quarters > 0) {
+        paste("existing values revised in", change$revised_quarters,
+              ngettext(change$revised_quarters, "quarter", "quarters"))
+      },
+      if (length(change$added_quarters) > 0) {
+        paste0("quarters added: ", paste(change$added_quarters, collapse = ", "))
+      },
+      if (length(change$removed_quarters) > 0) {
+        paste0("quarters removed: ", paste(change$removed_quarters, collapse = ", "))
+      },
+      if (length(change$added_series) > 0) {
+        paste0("series added: ", paste(change$added_series, collapse = ", "))
+      },
+      if (length(change$removed_series) > 0) {
+        paste0("series removed: ", paste(change$removed_series, collapse = ", "))
+      }
+    )
+    if (length(parts) > 0) paste0(name, ": ", paste(parts, collapse = "; "), ".")
+  }
+  counts = c(facts$data_revised, facts$data_added, facts$data_removed)
+  changes = c(
+    quarterly(facts$web, "Productivity and pay"),
+    quarterly(facts$counter_web, "Actual and counterfactual wage"),
+    if (facts$stats_changed) "Published headline statistics changed.",
+    if (any(counts > 0)) {
+      parts = c(
+        paste(counts, c(
+          ngettext(counts[1], "existing value revised", "existing values revised"),
+          ngettext(counts[2], "value added", "values added"),
+          ngettext(counts[3], "value removed", "values removed")
+        ))[counts > 0],
+        if (length(facts$data_series_added) > 0) {
+          paste0("series added: ", paste(facts$data_series_added, collapse = ", "))
+        },
+        if (length(facts$data_series_removed) > 0) {
+          paste0("series removed: ", paste(facts$data_series_removed, collapse = ", "))
+        }
+      )
+      paste0("Full data: ", paste(parts, collapse = "; "), ".")
+    },
+    if (facts$sources_changed) "Source documentation changed."
+  )
+  if (length(changes) == 0) return("No output changes.")
+  web = facts$web
+  web_unchanged = !web$file_added && !web$file_removed && web$revised_quarters == 0 &&
+    length(c(web$added_quarters, web$removed_quarters, web$added_series, web$removed_series)) == 0
+  unchanged = if (web_unchanged) {
+    if (facts$stats_changed) {
+      "Existing published productivity and pay values unchanged."
+    } else {
+      "Existing published productivity, pay, and headline values unchanged."
+    }
+  } else if (!facts$stats_changed) {
+    "Published headline values unchanged."
+  }
+  paste(c(changes, unchanged), collapse = " ")
+}
+
 # Calculate each comparison independently, including its revision attribution.
 compare_snapshots = function(old, new) {
   old_inputs = index_inputs(old)
@@ -418,6 +523,7 @@ compare_snapshots = function(old, new) {
     web_visible,
     final_files_differ
   )
+  output_facts = output_change_facts(old, new, web_revisions, data_changes, sources_differ)
 
   list(
     old_inputs = old_inputs,
@@ -429,7 +535,9 @@ compare_snapshots = function(old, new) {
     web_revisions = web_revisions,
     data_changes = data_changes,
     web_visible = web_visible,
-    label = label
+    label = label,
+    output_facts = output_facts,
+    output_description = describe_output_changes(output_facts)
   )
 }
 
@@ -447,7 +555,6 @@ build_change_report = function(
   stat_revisions = comparison$stat_revisions
   web_revisions = comparison$web_revisions
   data_changes = comparison$data_changes
-  web_visible = comparison$web_visible
   label = comparison$label
   latest_old = last(old$web$Year)
   latest_new = last(new$web$Year)
@@ -471,7 +578,7 @@ build_change_report = function(
     paste0("**", label, "**"),
     "",
     paste0("- Latest quarter: ", before_after(latest_old, latest_new)),
-    paste0("- Web-visible changes: ", if_else(web_visible, "yes", "no")),
+    paste0("- Output changes: ", comparison$output_description),
     if (length(unreleased$files) > 0) {
       paste0(
         "- `", baseline, "` has unreleased changes since ", unreleased$tag,
@@ -689,10 +796,7 @@ build_dual_change_report = function(main, released, new, release_tag, packages_o
   against_release = if (same_baseline) against_main else compare_snapshots(released, new)
   overview = tibble(
     Comparison = c("Proposed vs main", paste0("Proposed vs ", release_tag)),
-    Summary = c(against_main$label, against_release$label),
-    `Web-visible changes` = if_else(
-      c(against_main$web_visible, against_release$web_visible), "yes", "no"
-    )
+    Result = c(against_main$output_description, against_release$output_description)
   )
   stats_column = function(snapshot, label) {
     published_stats(snapshot$web_stats) |>
