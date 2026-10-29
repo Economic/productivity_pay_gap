@@ -36,4 +36,5 @@ Explain each comparison with concrete output changes. A new output file must not
 - Extended report regression checks passed for added and removed wage files and series, simultaneous file additions and revisions, simultaneous period changes and revisions, stats-only changes, full-data revisions below web rounding, access dates, source documentation, and reordered statistics. Existing attribution and baseline checks also passed.
 - Inspected the actual main-versus-v2026.9.14 report. It identifies the added wage file, 468 values in the two new full-data series, and changed source documentation. It explicitly states that existing published productivity, pay, and headline values are unchanged. Against main, it says no output changes.
 - A forced offline rebuild completed all 25 targets with none skipped. All committed files in `data_final/` and `data_outputs/` stayed unchanged. Workflow lint and `git diff --check` passed.
-- Plan commit review 626 passed. Implementation reviews and delivery are pending.
+- Plan commit review 626, implementation commit review 628, and all four reviewers in checkpoint 638 passed with no findings. No new accepted risks were needed.
+- Delivery and final GitHub check results are recorded on the implementation PR. No live refresh or merge was run.
