@@ -1,8 +1,7 @@
 # The manual and release-calendar data refresh. Updates every package, fetches
-# fresh data, rebuilds, and writes the change report. If the web files changed
-# since I last saw them,
-# opens or updates the rolling PR from the data-refresh branch, which
-# emails me. Never publishes a release.
+# fresh data, rebuilds, and writes the change report. Maintains one rolling
+# data-refresh PR with current files and one report in its description. Posts
+# short notification comments only for changed web numbers. Never releases.
 #
 # The build job runs package code (renv::update() installs whatever is new), so
 # it gets the API secrets but only a read-only token. The publish job, which

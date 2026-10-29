@@ -12,8 +12,8 @@ Make each refresh's result clear without reopening the PR or posting duplicate r
 - Separate three comparisons: latest build versus the existing proposal controls updates and notifications; proposal versus main describes merging; proposal versus the last release describes publishing.
 - Put the last check time and workflow link, changes since the previous proposal, pending changes against main, and output coverage at the top. Put the check date in the title.
 - Keep exactly one full report in the PR description. Replace older bot report comments with short superseded notices linking to the description. Preserve human comments and short notification history.
-- Update the branch and full report for meaningful input, package, calculation code, or output changes, including changes below web rounding. Incorporate a newer main before refreshing comparisons. Notify by a short comment only when web files change against the existing proposal.
-- Ignore access dates alone when deciding whether to rewrite the branch. If the proposal and main are unchanged, retain the report for the committed files and update only the check status and title. Label the report's build time separately from the last check.
+- Update the branch and full report for meaningful input, package, calculation code, or output changes, including changes below web rounding. Incorporate a newer main or published-release baseline before refreshing comparisons. Notify by a short comment only when web files change against the existing proposal.
+- Ignore access dates alone when deciding whether to rewrite the branch. If the proposal and main are unchanged, retain the report for the committed files and update only the check status and title. Label the report's update time separately from the last check.
 - This intentionally replaces the October 27 policy of retaining older inputs when web numbers match. The user's difficulty finding the current report and distinguishing it from historical comments is the new argument. Keeping the report and branch consistent also makes the proposal easier to review.
 - Keep the R build read-only and the publish job free of R and package execution. Do not change calculations, fetch live data, run a release, or merge.
 
@@ -27,7 +27,7 @@ Make each refresh's result clear without reopening the PR or posting duplicate r
 ## Risks
 
 - Updating input or package files without changed web numbers can require another check approval. It does not get a notification comment. GitHub may independently notify subscribers of other PR activity.
-- Access-only checks retain the report's earlier access dates and baselines. The status distinguishes the report build from the latest check. A newer main causes a branch and report update even if web numbers match the proposal.
+- Access-only checks retain the report's earlier access dates and baselines. The status distinguishes the report update from the latest check. New main or release baselines cause a branch and report update even if web numbers match the proposal.
 - Historical reports remain available in workflow run summaries and retained artifacts. The PR conversation keeps only short notices and notifications.
 
 ## Validation and results
