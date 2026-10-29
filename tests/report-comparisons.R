@@ -67,8 +67,9 @@ stopifnot(
 report = build_dual_change_report(main, released, main, "release-fixture")
 stopifnot(
   any(grepl("No data changes introduced", report, fixed = TRUE)),
-  any(grepl("Proposed vs main.*No changes.*no", report)),
-  any(grepl("Proposed vs release-fixture.*Revisions only.*yes", report)),
+  any(grepl("Proposed vs main.*No output changes", report)),
+  any(grepl("Proposed vs release-fixture.*existing values revised", report)),
+  !any(grepl("Web-visible changes", report, fixed = TRUE)),
   sum(grepl("^Compared with", report)) == 2
 )
 
@@ -98,8 +99,8 @@ earlier$data = earlier$data |>
 earlier = update_stats(earlier)
 report = build_dual_change_report(main, earlier, main, "release-fixture")
 stopifnot(
-  any(grepl("Proposed vs main.*No changes", report)),
-  any(grepl("Proposed vs release-fixture.*New quarter:", report)),
+  any(grepl("Proposed vs main.*No output changes", report)),
+  any(grepl("Proposed vs release-fixture.*quarters added:", report)),
   any(grepl("Added quarters", report, fixed = TRUE))
 )
 
@@ -113,6 +114,98 @@ problem = tryCatch(
   error = identity
 )
 stopifnot(inherits(problem, "error"), !file.exists(file))
+
+# Output descriptions distinguish new files from existing value revisions.
+# The real release has no counterfactual file or its two full-data series.
+before_counter = base
+before_counter$commit = "before-counter-fixture"
+before_counter$counter_web = NULL
+before_counter$data = filter(before_counter$data, !name %in% c("wage_actual_real", "wage_counter_real"))
+report = build_dual_change_report(base, before_counter, base, "release-fixture")
+description = compare_snapshots(before_counter, base)$output_description
+stopifnot(
+  compare_snapshots(base, base)$output_description == "No output changes.",
+  compare_snapshots(main, access_only)$output_description == "No output changes.",
+  grepl("wage file added", description, fixed = TRUE),
+  grepl("series added: wage_actual_real, wage_counter_real", description, fixed = TRUE),
+  grepl("Existing published productivity, pay, and headline values unchanged", description, fixed = TRUE),
+  !grepl("existing values revised", description, fixed = TRUE),
+  sum(grepl(description, report, fixed = TRUE)) == 2,
+  any(grepl("Proposed vs main.*No output changes", report))
+)
+
+# A file addition must not hide a simultaneous revision or headline change.
+report = build_change_report(before_counter, proposed, "HEAD")
+description = compare_snapshots(before_counter, proposed)$output_description
+stopifnot(
+  grepl("wage file added", description, fixed = TRUE),
+  grepl("Productivity and pay: existing values revised", description, fixed = TRUE),
+  grepl("Published headline statistics changed", description, fixed = TRUE),
+  !grepl("productivity, pay, and headline values unchanged", description, fixed = TRUE),
+  any(grepl(paste0("- Output changes: ", description), report, fixed = TRUE))
+)
+
+# Added or removed periods and revisions can appear in the same comparison.
+period_revision = main
+period_revision$web$Productivity[nrow(earlier$web)] = period_revision$web$Productivity[nrow(earlier$web)] + 1
+for (pair in list(list(earlier, period_revision), list(period_revision, earlier))) {
+  description = compare_snapshots(pair[[1]], pair[[2]])$output_description
+  direction = if (nrow(pair[[1]]$web) < nrow(pair[[2]]$web)) "added" else "removed"
+  stopifnot(
+    grepl(paste0("quarters ", direction, ":"), description, fixed = TRUE),
+    grepl("existing values revised", description, fixed = TRUE)
+  )
+}
+
+# Counterfactual revisions and removals also get their own descriptions.
+wages_changed = base
+wages_changed$counter_web$`Counterfactual wage`[1] = wages_changed$counter_web$`Counterfactual wage`[1] + 1
+description = compare_snapshots(base, wages_changed)$output_description
+stopifnot(
+  grepl("Actual and counterfactual wage: existing values revised", description, fixed = TRUE),
+  grepl("Existing published productivity, pay, and headline values unchanged", description, fixed = TRUE)
+)
+report = build_change_report(base, before_counter, "HEAD")
+stopifnot(
+  any(grepl("wage file removed", report, fixed = TRUE)),
+  any(grepl("series removed: wage_actual_real, wage_counter_real", report, fixed = TRUE))
+)
+
+# Changes below web rounding and stats-only edits must still be reported.
+unrounded = base
+unrounded$data$value[1] = unrounded$data$value[1] * 1.001
+description = compare_snapshots(base, unrounded)$output_description
+stopifnot(
+  grepl("Full data: 1 existing value revised", description, fixed = TRUE),
+  grepl("Existing published productivity, pay, and headline values unchanged", description, fixed = TRUE)
+)
+stats_only = base
+stats_only$web_stats$value[1] = "99.9%"
+description = compare_snapshots(base, stats_only)$output_description
+stopifnot(
+  grepl("Published headline statistics changed", description, fixed = TRUE),
+  grepl("Existing published productivity and pay values unchanged", description, fixed = TRUE)
+)
+
+# A web series addition/removal is distinct from revisions to common values.
+extra_series = base
+extra_series$counter_web$`Extra wage series` = extra_series$counter_web$`Actual wage`
+for (pair in list(list(base, extra_series), list(extra_series, base))) {
+  description = compare_snapshots(pair[[1]], pair[[2]])$output_description
+  direction = if (ncol(pair[[1]]$counter_web) < ncol(pair[[2]]$counter_web)) "added" else "removed"
+  stopifnot(
+    grepl(paste0("series ", direction, ": Extra wage series"), description, fixed = TRUE),
+    !grepl("existing values revised", description, fixed = TRUE)
+  )
+}
+
+# Reordering headline rows does not create a change; source documentation does.
+reordered = base
+reordered$web_stats = slice(reordered$web_stats, n():1)
+stopifnot(compare_snapshots(base, reordered)$output_description == "No output changes.")
+source_only = base
+source_only$sources$date_published[1] = as.Date("2026-10-28")
+stopifnot(grepl("Source documentation changed", compare_snapshots(base, source_only)$output_description, fixed = TRUE))
 
 # The Why section uses the same complete input layout for index levels and
 # growth stats. Unchanged inputs remain visible, and unused inputs get a dash.
