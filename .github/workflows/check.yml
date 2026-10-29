@@ -138,8 +138,8 @@ jobs:
           fi
           cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
           # PRs from forks get a read-only token, so comment only on PRs from
-          # this repo. Refresh PRs carry the report already, and --edit-last
-          # would overwrite the refresh workflow's latest report comment.
+          # this repo. Refresh PRs keep their authoritative report in the
+          # description and only short notifications in the comments.
           if [ -n "$PR_NUMBER" ] && [ "$SAME_REPO" = "true" ] && [ "$HEAD_REF" != "data-refresh" ]; then
             # Keep both comparisons even when the PR introduces no data changes:
             # main can still contain changes since the last release.
