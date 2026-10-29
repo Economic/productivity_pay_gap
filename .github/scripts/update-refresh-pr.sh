@@ -25,7 +25,7 @@ fi
 body=$(mktemp)
 trap 'rm -f "$body"' EXIT
 {
-  echo "Weekly data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
+  echo "Data refresh, $(date -u +%Y-%m-%d). Merging it updates the numbers on \`main\`; it doesn't publish a release."
   echo
   echo "To merge: approve the held check run (\"Approve and run workflows\"), then merge once it passes."
   echo
