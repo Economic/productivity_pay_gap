@@ -68,6 +68,10 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     write("data_raw/fetch_log.csv", "source,date_accessed,status\nbls_hours,2026-10-27,ok\n")
     write("data_raw/hours.xlsx", "fixture spreadsheet\n")
     write("data_outputs/output.csv", "value\n1\n")
+    for file in ("bls_pay", "bls_hours", "prices"):
+        write(f"data_outputs/{file}.csv", "year,quarter,frequency\n2026,2,quarterly\n")
+    write("data_raw/bea_api_output.csv", "name,year,quarter,frequency\n"
+          "nipa_ndp,2026,2,quarterly\nnipa_comp,2026,2,quarterly\nnipa_wage,2026,2,quarterly\n")
     write("data_final/epi_productivity_pay_gap.csv", "value\n1.0001\n")
     write("data_final/epi_productivity_pay_gap_sources.csv",
           "source,date_accessed,date_published\nBLS,2026-10-27,2026-09-03\n")
@@ -82,11 +86,11 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     git("push", "--quiet", "-u", "origin", "main")
     initial_main = git("rev-parse", "HEAD")
 
-    def save_calendar(day):
+    def save_calendar(day, month=1):
         saved = json.dumps({
             "refreshed_at": "2026-10-30T12:00:00Z",
             "events": [
-                {"source": source, "release": release, "at": f"2099-01-{day:02d}T13:30:00Z"}
+                {"source": source, "release": release, "at": f"2099-{month:02d}-{day:02d}T13:30:00Z"}
                 for source, release in [
                     ("bls", "Employment Situation"), ("bls", "Productivity and Costs"),
                     ("bls", "Consumer Price Index"), ("bea", "Gross Domestic Product"),
@@ -162,6 +166,11 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     final = json.loads(state_file.read_text())
     summary = (capture / "summary.md").read_text()
     next_line = next(line for line in summary.splitlines() if line.startswith("**Next scheduled update:**"))
+    coverage_line = next(line for line in summary.splitlines() if line.startswith("**Expected latest output quarter:**"))
+    if calendar_state == "valid" and name != "missing_coverage":
+        assert "2098q4 (subject to source availability)" in coverage_line
+    else:
+        assert coverage_line.endswith("unavailable.")
     if calendar_state == "valid":
         assert "January 1, 2099, 2:27 PM EST" in next_line
         assert " and " in next_line and ";" not in next_line
@@ -181,7 +190,7 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
         build_env = dict(env, GITHUB_STEP_SUMMARY=str(capture / "build-summary.md"))
         run(["bash", "-e", "-c", textwrap.dedent(step)], repo, build_env)
         build_summary = (capture / "build-summary.md").read_text()
-        assert build_summary == next_line + "\n\n" + fresh_report
+        assert build_summary == next_line + "\n\n" + coverage_line + "\n\n" + fresh_report
     if fresh_value == 1:
         expected_actions = [["pr", "list"], ["pr", "close"]] if open_pr else [["pr", "list"]]
         assert actions == expected_actions
@@ -197,6 +206,7 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     assert "**Pending against main:** Fixture revisions pending" in body
     assert "**Latest output:** 2026q2" in body
     assert body.count(next_line) == 1
+    assert next_line + "\n\n" + coverage_line + "\n\n## Latest refresh report" in body
     assert body.index(next_line) < body.index("## Latest refresh report")
     assert body.count("# Change report") == 1
     title_call = next(call for call in calls if call[:2] in (["pr", "edit"], ["pr", "create"]))
@@ -261,7 +271,7 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
         env["GITHUB_RUN_ID"] = "201"
         # A calendar change alone must update the status without rewriting data,
         # replacing the retained report, or sending a notification comment.
-        save_calendar(2)
+        save_calendar(2, month=4)
         (capture / "calls.jsonl").write_text("")
         run(["bash", str(SCRIPT)], repo, env)
         again = [json.loads(line) for line in (capture / "calls.jsonl").read_text().splitlines()]
@@ -269,7 +279,9 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
         assert git("rev-parse", "origin/data-refresh") == first_commit
         second_body = (capture / "edit.md").read_text()
         assert "actions/runs/201" in second_body
-        assert "January 2, 2099, 2:27 PM EST" in second_body
+        assert "April 2, 2099, 2:27 PM EDT" in second_body
+        assert "2099q1 (subject to source availability)" in second_body
+        assert coverage_line not in second_body
         assert next_line not in second_body
         assert first_body.split("<!-- refresh-report-start -->")[1] == second_body.split("<!-- refresh-report-start -->")[1]
     print(f"Passed: {name}")
@@ -342,6 +354,7 @@ state_file.write_text(json.dumps(state))
         ("missing_calendar", {"calendar_state": "missing"}),
         ("invalid_calendar", {"calendar_state": "invalid"}),
         ("exhausted_calendar", {"calendar_state": "exhausted"}),
+        ("missing_coverage", {"mutations": {"data_outputs/prices.csv": None}, "update": True}),
     ]
     for name, options in cases:
         check_case(root, name, **options)
