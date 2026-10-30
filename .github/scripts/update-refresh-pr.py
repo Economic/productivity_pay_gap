@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 from zoneinfo import ZoneInfo
 
@@ -118,6 +119,7 @@ def maintain(temp):
         f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}"
         f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
     )
+    next_update = run(sys.executable, str(Path(__file__).with_name("release-calendar.py")), "next")
     current = json.loads(run(
         "gh", "pr", "list", "--head", BRANCH, "--base", "main", "--state", "open",
         "--json", "number,body,url",
@@ -129,6 +131,7 @@ def maintain(temp):
             run("gh", "pr", "close", str(proposal["number"]), "--delete-branch",
                 "--comment", "`main` already has the latest build's web numbers.")
         summary(f"Last checked: [{checked}]({run_url}). No web changes against main.")
+        summary(next_update)
         return
 
     old_ref = f"origin/{BRANCH}"
@@ -191,6 +194,7 @@ def maintain(temp):
         f"**Latest output:** {latest}. Input coverage is shown in the report below.\n\n"
         "Merging this PR updates `main`; publishing remains a separate manual step.\n\n"
         'To merge: approve the held check run ("Approve and run workflows"), then merge once it passes.\n\n'
+        f"{next_update}\n\n"
         "## Latest refresh report\n\n"
         "This report describes the files in this PR. Its main comparison describes merging; "
         "its release comparison describes publishing. The report update time can precede "
@@ -223,6 +227,7 @@ def maintain(temp):
         run("gh", "pr", "create", "--base", "main", "--head", BRANCH,
             "--title", title, "--body-file", str(body), "--assignee", "benzipperer")
     summary(f"Last checked: [{checked}]({run_url}). {result}")
+    summary(next_update)
 
 
 if __name__ == "__main__":

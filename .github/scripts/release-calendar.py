@@ -23,10 +23,11 @@
 # SOFTWARE.
 
 import argparse
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 from urllib.request import Request, urlopen
@@ -34,6 +35,9 @@ from zoneinfo import ZoneInfo
 
 
 EASTERN = ZoneInfo("America/New_York")
+# Keep this in sync with scheduled-data-update.yml. The tests check both.
+BUILD_TIME = time(14, 27)
+UNAVAILABLE = "**Next scheduled update:** unavailable. Run Calendar refresh."
 BLS_URL = "https://www.bls.gov/schedule/news_release/bls.ics"
 BEA_URL = "https://apps.bea.gov/API/signup/release_dates.json"
 RELEASES = {
@@ -187,6 +191,35 @@ def due(schedule, now):
     )
 
 
+def next_update(schedule, now):
+    """Describe the next future daily slot that the saved calendar makes due."""
+    events = validate_schedule(schedule, now)
+    builds = {}
+    for release, stamp in events:
+        release_day = stamp.astimezone(EASTERN).date()
+        for offset in (0, 1):
+            at = datetime.combine(release_day + timedelta(days=offset), BUILD_TIME, EASTERN)
+            # Match due(): a release after the daily check only gets a follow-up.
+            if at <= now or stamp > at:
+                continue
+            reason = f"next-day follow-up for {release}" if offset else f"{release} release"
+            builds.setdefault(at, set()).add(reason)
+    if not builds:
+        return UNAVAILABLE
+    at = min(builds)
+    # The daily gate validates all five release types before starting any build.
+    validate_schedule(schedule, at)
+    reasons = sorted(builds[at])
+    if len(reasons) == 1:
+        reason = reasons[0]
+    elif len(reasons) == 2:
+        reason = " and ".join(reasons)
+    else:
+        reason = ", ".join(reasons[:-1]) + ", and " + reasons[-1]
+    stamp = f"{at:%B} {at.day}, {at.year}, {at:%-I:%M %p %Z}"
+    return f"**Next scheduled update:** {stamp}, {reason}."
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -194,16 +227,26 @@ def main():
     refresh_parser.add_argument("--output", required=True)
     due_parser = commands.add_parser("due", help="Print true on a release day or its next day, otherwise false")
     due_parser.add_argument("schedule")
+    next_parser = commands.add_parser("next", help="Describe the next scheduled data build")
+    next_parser.add_argument("schedule", nargs="?", help="Saved JSON file; defaults to origin/calendar:schedule.json")
     args = parser.parse_args()
     now = datetime.now(timezone.utc)
     try:
         if args.command == "refresh":
             refresh(args.output, now)
-        else:
+        elif args.command == "due":
             schedule = json.loads(Path(args.schedule).read_text(encoding="utf-8"))
             print("true" if due(schedule, now) else "false")
-    except (OSError, ValueError, KeyError, TypeError) as error:
+        else:
+            saved = Path(args.schedule).read_text(encoding="utf-8") if args.schedule else subprocess.check_output(
+                ["git", "show", "origin/calendar:schedule.json"], text=True, stderr=subprocess.PIPE,
+            )
+            print(next_update(json.loads(saved), now))
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as error:
         print(f"Calendar error: {error}", file=sys.stderr)
+        if args.command == "next":
+            print(UNAVAILABLE)
+            return 0
         return 1
     return 0
 

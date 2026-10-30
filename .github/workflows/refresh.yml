@@ -80,7 +80,10 @@ jobs:
         run: Rscript -e 'targets::tar_make()'
 
       - name: Write the change report to the run summary
-        run: cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          python3 .github/scripts/release-calendar.py next >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          cat reports/change_report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Read the hours download status
         id: hours
