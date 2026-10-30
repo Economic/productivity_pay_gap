@@ -27,4 +27,9 @@ Show when the next scheduled data build is expected and why, in the refresh PR a
 
 ## Validation and results
 
-- Pending implementation.
+- Added the shared calendar forecast command and connected it to PR status and build and publish summaries. It uses only trusted checkout code and reads the calendar as JSON. No permissions or artifact allowlist changes were needed.
+- All 48 offline checks passed: 21 calendar cases, 21 refresh PR lifecycle fixtures, and 6 isolated calendar writer cases. These include release-day and next-day slots, two and three overlapping reasons, duplicate events, late releases, month and year boundaries, daylight saving changes, unavailable calendars, and validation at the future daily gate.
+- The lifecycle fixtures run the workflow's actual summary step for a retained report, a build without a PR, and a missing calendar. A calendar-only change updates PR status while preserving the proposal commit and detailed report and sending no notification comment.
+- Workflow lint (actionlint 1.7.12) and whitespace checks passed. All committed data_raw, data_outputs, and data_final files remain unchanged. No live pipeline ran.
+- Plan review 674 and implementation review 676 passed. Branch checkpoint 681 passed all four reviewers, including code, design, and security, with no findings. No additional accepted risks were needed.
+- Delivery and GitHub offline rebuild results are recorded on [PR #33](https://github.com/Economic/productivity_pay_gap/pull/33). The maintainer merges after checks pass. No merge or release ran.
