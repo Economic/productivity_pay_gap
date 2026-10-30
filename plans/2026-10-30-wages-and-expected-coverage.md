@@ -30,4 +30,10 @@ Show the anticipated latest quarter of the combined final output directly under 
 
 ## Validation and results
 
-- Pending implementation.
+- Added the shared next-build timestamp and an optional coverage estimate to the trusted calendar helper. The build and publish jobs use it to show the forecast immediately below Next scheduled update, including dry runs, builds without a PR, and retained reports.
+- All 55 offline checks passed: 27 calendar cases, 22 PR lifecycle fixtures, and 6 calendar writer cases. Added coverage includes source-specific projection, a different source remaining limiting, complete monthly quarters, delayed follow-ups, year boundaries, preserving observed coverage, both NIPA income series, and missing coverage without losing the next scheduled date.
+- The lifecycle fixtures execute the actual workflow summary step. A calendar-only change updates both scheduled time and forecast quarter without rewriting the proposal or retained report or sending a notification.
+- A read-only preview using the latest saved data-refresh input files and calendar produces November 5, 2026, 2:27 PM EST for Productivity and Costs and an expected combined quarter of 2026q3, subject to source availability. No live data fetch ran.
+- Workflow lint and whitespace checks passed. All committed data_raw, data_outputs, and data_final files remain unchanged. No permissions or artifact allowlist changes were needed.
+- Plan review 696 and implementation review 698 passed. Branch checkpoint 703 passed all four reviewers, including code, design, and security, with no findings. No additional accepted risks were needed.
+- Delivery and GitHub offline check results are recorded on [PR #35](https://github.com/Economic/productivity_pay_gap/pull/35). The maintainer merges after checks pass. PR #34 remains the separate completed wage headline change. No merge or release ran.
