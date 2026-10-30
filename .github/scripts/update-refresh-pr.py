@@ -119,7 +119,7 @@ def maintain(temp):
         f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}"
         f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
     )
-    next_update = run(sys.executable, str(Path(__file__).with_name("release-calendar.py")), "next")
+    next_update = run(sys.executable, str(Path(__file__).with_name("release-calendar.py")), "next", "--with-coverage")
     current = json.loads(run(
         "gh", "pr", "list", "--head", BRANCH, "--base", "main", "--state", "open",
         "--json", "number,body,url",

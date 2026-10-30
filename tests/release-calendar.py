@@ -78,6 +78,86 @@ def single_release_schedule(stamp, release="Employment Situation"):
 
 
 class ReleaseCalendarTests(unittest.TestCase):
+    def test_expected_quarter_advances_only_sources_with_a_release_by_next_build(self):
+        stamp = datetime(2026, 11, 5, 8, 30, tzinfo=EASTERN)
+        for release in RELEASES:
+            with self.subTest(release=release):
+                schedule = single_release_schedule(stamp, release)
+                coverage = dict.fromkeys(RELEASES, 2026 * 4 + 2)  # 2026q3
+                coverage[release] -= 1
+                original = coverage.copy()
+                text = calendar.expected_output_quarter(schedule, stamp, coverage)
+                self.assertIn("2026q3 (subject to source availability)", text)
+                self.assertEqual(coverage, original)
+                # A different lagging source still limits the combined output.
+                other = next(name for name in RELEASES if name != release)
+                coverage[other] -= 1
+                text = calendar.expected_output_quarter(schedule, stamp, coverage)
+                self.assertIn("2026q2 (no new quarter expected, subject to source availability)", text)
+
+    def test_follow_up_can_still_catch_delayed_release_data(self):
+        stamp = datetime(2026, 11, 5, 8, 30, tzinfo=EASTERN)
+        coverage = dict.fromkeys(RELEASES, 2026 * 4 + 2)
+        coverage["Productivity and Costs"] -= 1
+        schedule = single_release_schedule(stamp, "Productivity and Costs")
+        text = calendar.expected_output_quarter(schedule, stamp.replace(hour=15), coverage)
+        self.assertIn("2026q3 (subject to source availability)", text)
+
+    def test_monthly_releases_require_three_months_before_advancing_a_quarter(self):
+        stamp = datetime(2026, 11, 6, 8, 30, tzinfo=EASTERN)
+        for release in ("Employment Situation", "Consumer Price Index"):
+            coverage = dict.fromkeys(RELEASES, 2026 * 4 + 3)  # Other inputs through 2026q4
+            coverage[release] -= 1
+            text = calendar.expected_output_quarter(single_release_schedule(stamp, release), stamp, coverage)
+            self.assertIn("2026q3 (no new quarter expected, subject to source availability)", text)
+
+    def test_expected_quarter_handles_year_boundary_and_does_not_reduce_observed_coverage(self):
+        stamp = datetime(2027, 1, 8, 8, 30, tzinfo=EASTERN)
+        schedule = single_release_schedule(stamp)
+        coverage = dict.fromkeys(RELEASES, 2026 * 4 + 3)
+        coverage["Employment Situation"] -= 1
+        text = calendar.expected_output_quarter(schedule, stamp, coverage)
+        self.assertIn("2026q4 (subject to source availability)", text)
+        coverage = dict.fromkeys(RELEASES, 2027 * 4)
+        text = calendar.expected_output_quarter(schedule, stamp, coverage)
+        self.assertIn("2027q1 (no new quarter expected, subject to source availability)", text)
+
+    def test_input_coverage_uses_quarterly_rows_and_both_income_series(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data_outputs").mkdir()
+            (root / "data_raw").mkdir()
+            for file in ("bls_pay", "bls_hours", "prices"):
+                (root / f"data_outputs/{file}.csv").write_text(
+                    "year,quarter,frequency\n2099,NA,annual\n2026,1,quarterly\n2026,3,quarterly\n"
+                )
+            bea = root / "data_raw/bea_api_output.csv"
+            bea.write_text(
+                "name,year,quarter,frequency\n"
+                "nipa_ndp,2026,4,quarterly\nnipa_comp,2026,3,quarterly\n"
+                "nipa_wage,2026,2,quarterly\nother_series,2099,1,quarterly\n"
+            )
+            coverage = calendar.read_input_coverage(root)
+            self.assertEqual(coverage["Employment Situation"], 2026 * 4 + 2)
+            self.assertEqual(coverage["Productivity and Costs"], 2026 * 4 + 2)
+            self.assertEqual(coverage["Consumer Price Index"], 2026 * 4 + 2)
+            self.assertEqual(coverage["Gross Domestic Product"], 2026 * 4 + 3)
+            self.assertEqual(coverage["Personal Income and Outlays"], 2026 * 4 + 1)
+
+    def test_coverage_cli_keeps_schedule_when_coverage_is_unavailable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            schedule = Path(directory) / "schedule.json"
+            schedule.write_text(json.dumps(saved_schedule(datetime(2099, 1, 1, 8, 30, tzinfo=EASTERN))))
+            command = [sys.executable, str(SCRIPT), "next", str(schedule), "--with-coverage"]
+            result = subprocess.run(command, cwd=directory, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("January 1, 2099, 2:27 PM EST", result.stdout)
+            self.assertTrue(result.stdout.endswith("\n\n" + calendar.COVERAGE_UNAVAILABLE + "\n"))
+            schedule.write_text("{}")
+            result = subprocess.run(command, cwd=directory, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.stdout, calendar.UNAVAILABLE + "\n\n" + calendar.COVERAGE_UNAVAILABLE + "\n")
+
     def test_next_build_uses_daily_slot_then_unconditional_follow_up(self):
         stamp = datetime(2026, 11, 6, 8, 30, tzinfo=EASTERN)
         schedule = single_release_schedule(stamp)
@@ -136,6 +216,7 @@ class ReleaseCalendarTests(unittest.TestCase):
         stamp = datetime(2026, 12, 31, 8, 30, tzinfo=EASTERN)
         schedule = saved_schedule(stamp, future=False)
         self.assertEqual(calendar.next_update(schedule, stamp + timedelta(days=1, hours=7)), calendar.UNAVAILABLE)
+        self.assertEqual(calendar.expected_output_quarter(schedule, stamp + timedelta(days=1, hours=7)), calendar.COVERAGE_UNAVAILABLE)
 
     def test_forecast_daily_time_matches_scheduler_workflow(self):
         workflow = SCRIPT.parents[1] / "workflows/scheduled-data-update.yml"

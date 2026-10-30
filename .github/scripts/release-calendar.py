@@ -23,6 +23,7 @@
 # SOFTWARE.
 
 import argparse
+import csv
 from datetime import datetime, time, timedelta, timezone
 import json
 import os
@@ -38,6 +39,7 @@ EASTERN = ZoneInfo("America/New_York")
 # Keep this in sync with scheduled-data-update.yml. The tests check both.
 BUILD_TIME = time(14, 27)
 UNAVAILABLE = "**Next scheduled update:** unavailable. Run Calendar refresh."
+COVERAGE_UNAVAILABLE = "**Expected latest output quarter:** unavailable."
 BLS_URL = "https://www.bls.gov/schedule/news_release/bls.ics"
 BEA_URL = "https://apps.bea.gov/API/signup/release_dates.json"
 RELEASES = {
@@ -191,8 +193,8 @@ def due(schedule, now):
     )
 
 
-def next_update(schedule, now):
-    """Describe the next future daily slot that the saved calendar makes due."""
+def next_build(schedule, now):
+    """Return the next future daily slot and the reasons the calendar makes it due."""
     events = validate_schedule(schedule, now)
     builds = {}
     for release, stamp in events:
@@ -205,11 +207,17 @@ def next_update(schedule, now):
             reason = f"next-day follow-up for {release}" if offset else f"{release} release"
             builds.setdefault(at, set()).add(reason)
     if not builds:
-        return UNAVAILABLE
+        return None, []
     at = min(builds)
     # The daily gate validates all five release types before starting any build.
     validate_schedule(schedule, at)
-    reasons = sorted(builds[at])
+    return at, sorted(builds[at])
+
+
+def next_update(schedule, now):
+    at, reasons = next_build(schedule, now)
+    if at is None:
+        return UNAVAILABLE
     if len(reasons) == 1:
         reason = reasons[0]
     elif len(reasons) == 2:
@@ -218,6 +226,52 @@ def next_update(schedule, now):
         reason = ", ".join(reasons[:-1]) + ", and " + reasons[-1]
     stamp = f"{at:%B} {at.day}, {at.year}, {at:%-I:%M %p %Z}"
     return f"**Next scheduled update:** {stamp}, {reason}."
+
+
+def read_input_coverage(root=Path(".")):
+    """Latest complete input quarters, grouped by the releases that update them."""
+    def latest(path, name=None):
+        with open(root / path, newline="") as file:
+            rows = csv.DictReader(file)
+            return max(
+                int(row["year"]) * 4 + int(row["quarter"]) - 1
+                for row in rows
+                if row["frequency"] == "quarterly" and (name is None or row["name"] == name)
+            )
+
+    return {
+        "Employment Situation": latest("data_outputs/bls_pay.csv"),
+        "Productivity and Costs": latest("data_outputs/bls_hours.csv"),
+        "Consumer Price Index": latest("data_outputs/prices.csv"),
+        "Gross Domestic Product": latest("data_raw/bea_api_output.csv", "nipa_ndp"),
+        "Personal Income and Outlays": min(
+            latest("data_raw/bea_api_output.csv", "nipa_comp"),
+            latest("data_raw/bea_api_output.csv", "nipa_wage"),
+        ),
+    }
+
+
+def expected_output_quarter(schedule, now, coverage=None):
+    at, _ = next_build(schedule, now)
+    if at is None:
+        return COVERAGE_UNAVAILABLE
+    coverage = read_input_coverage() if coverage is None else coverage
+    projected = coverage.copy()
+    for event in schedule["events"]:
+        stamp = parse_timestamp(event["at"])
+        if stamp > at:
+            continue
+        date = stamp.astimezone(EASTERN)
+        # Normal release timing supplies the previous completed quarter. For
+        # monthly releases this requires all three months, as the R pipeline does.
+        quarter = date.year * 4 + (date.month - 1) // 3 - 1
+        release = event["release"]
+        projected[release] = max(projected[release], quarter)
+    quarter = min(projected.values())
+    qualification = "subject to source availability"
+    if quarter == min(coverage.values()):
+        qualification = "no new quarter expected, " + qualification
+    return f"**Expected latest output quarter:** {quarter // 4}q{quarter % 4 + 1} ({qualification})."
 
 
 def main():
@@ -229,6 +283,7 @@ def main():
     due_parser.add_argument("schedule")
     next_parser = commands.add_parser("next", help="Describe the next scheduled data build")
     next_parser.add_argument("schedule", nargs="?", help="Saved JSON file; defaults to origin/calendar:schedule.json")
+    next_parser.add_argument("--with-coverage", action="store_true", help="Also estimate the combined output quarter from current inputs")
     args = parser.parse_args()
     now = datetime.now(timezone.utc)
     try:
@@ -241,11 +296,21 @@ def main():
             saved = Path(args.schedule).read_text(encoding="utf-8") if args.schedule else subprocess.check_output(
                 ["git", "show", "origin/calendar:schedule.json"], text=True, stderr=subprocess.PIPE,
             )
-            print(next_update(json.loads(saved), now))
+            schedule = json.loads(saved)
+            print(next_update(schedule, now))
+            if args.with_coverage:
+                try:
+                    coverage = expected_output_quarter(schedule, now)
+                except (OSError, ValueError, KeyError, TypeError, csv.Error) as error:
+                    print(f"Coverage forecast error: {error}", file=sys.stderr)
+                    coverage = COVERAGE_UNAVAILABLE
+                print("\n" + coverage)
     except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as error:
         print(f"Calendar error: {error}", file=sys.stderr)
         if args.command == "next":
             print(UNAVAILABLE)
+            if args.with_coverage:
+                print("\n" + COVERAGE_UNAVAILABLE)
             return 0
         return 1
     return 0
