@@ -25,4 +25,9 @@ Show the latest typical and counterfactual wages in the refresh report's three-c
 
 ## Validation and results
 
-- Pending implementation.
+- Added both rows to the shared three-column headline table. The report reads each snapshot's saved final wage row and does not reconstruct missing historical values.
+- The full offline report comparison checks passed. New fixtures cover three distinct snapshots and final quarters, selecting the final rather than an earlier row, two decimal places including trailing zeros, a missing release file, and all snapshots lacking the file.
+- The offline pipeline passed with 2 targets completed and 23 cached. The rendered report shows “Not available” for v2026.9.14 and `$32.31 (2026q2)` and `$47.14 (2026q2)` for the current main and working tree. Committed data_raw, data_outputs, and data_final files remain unchanged. No live data fetch ran.
+- R startup stalled in the sandbox. The fixtures and offline rebuild completed with access to the existing local renv package cache outside the sandbox.
+- Plan review 685 and implementation review 687 passed. Branch checkpoint 692 passed all four reviewers, including code, design, and security, with no findings. No additional accepted risks were needed.
+- Delivery and GitHub check results are recorded on [PR #34](https://github.com/Economic/productivity_pay_gap/pull/34). The maintainer merges after checks pass. No merge or release ran.
