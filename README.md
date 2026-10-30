@@ -17,7 +17,7 @@ Official data comes from the [GitHub releases](https://github.com/Economic/produ
 1. **Every Monday at 5:17 a.m. Eastern**, `Calendar refresh` downloads the BLS and BEA release calendars. It saves dates for Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays in `schedule.json` on the separate `calendar` branch. A failed refresh keeps the previous schedule.
 2. **Every day at 2:27 p.m. Eastern**, `Scheduled data update` reads the saved calendar. On a release day and the following calendar day, including weekends and holidays, it runs `refresh`. Overlapping dates produce one scheduled build per day. Each refresh:
    * updates every R package and fetches the latest BLS and BEA data
-   * rebuilds the numbers and writes a change report against both `main` and the last published release
+   * rebuilds the numbers and writes a change report against both `main` and the last published release; its headline table includes the last quarter's typical and counterfactual wages for each snapshot, with dollar amounts and quarters, or “Not available” for snapshots without the wage file
    * opens an assigned pull request from `data-refresh` when the web files differ from `main`; closes an existing refresh PR when the latest build's web files match `main`
    * updates the proposal's files and report when inputs, packages, calculation code, or outputs change, even if the web numbers stay the same; refreshes them when the comparison baselines change too
    * puts the last check time and run link, changes since the previous proposal, pending changes against `main`, latest output quarter, and next scheduled update with its reasons first in the description; includes the check date in the title
