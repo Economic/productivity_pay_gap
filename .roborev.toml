@@ -59,8 +59,8 @@ Project artifacts:
 - The current plan is the newest dated file in plans/. Its "Decisions made" and
   "Resolved questions" sections are settled. Challenge them only with a genuinely new
   argument, and do not report a risk the plan accepts as a defect.
-- README.md documents the methodology and data sources. AGENTS.md describes how work
-  is done here, including the core calculations.
+- README.md documents the methodology and data sources. MAINTAINING.md covers setup,
+  updates, reports, and releases. AGENTS.md describes agent rules and core calculations.
 - R/ and _targets.R are the pipeline. data_inputs/ holds static inputs. The other data
   folders hold pipeline outputs, committed so that changes can be reviewed.
 
