@@ -813,6 +813,22 @@ build_dual_change_report = function(main, released, new, release_tag, packages_o
     main = last(main$web$Year),
     Proposed = last(new$web$Year)
   )
+  last_wages = function(snapshot) {
+    if (is.null(snapshot$counter_web)) {
+      return(rep("Not available", 2))
+    }
+    wages = slice_tail(snapshot$counter_web, n = 1)
+    sprintf(
+      "$%.2f (%s)",
+      c(wages$`Actual wage`, wages$`Counterfactual wage`), wages$Year
+    )
+  }
+  wages = tibble(
+    Statistic = c("Typical wage, last quarter", "Counterfactual wage, last quarter"),
+    `Last release` = last_wages(released),
+    main = last_wages(main),
+    Proposed = last_wages(new)
+  )
   details = function(old, baseline, comparison, title) {
     report = build_change_report(
       old, new, baseline, packages_ok,
@@ -840,7 +856,7 @@ build_dual_change_report = function(main, released, new, release_tag, packages_o
       c("No data changes introduced by this PR or refresh, ignoring access dates.", "")
     },
     "## Headline stats", "",
-    md_table(bind_rows(quarters, stats)),
+    md_table(bind_rows(quarters, stats, wages)),
     details(main, "main", against_main, "Changes introduced by this PR or refresh"),
     if (same_baseline) {
       c("## Changes since the last release", "",

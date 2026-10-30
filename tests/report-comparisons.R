@@ -63,6 +63,39 @@ stopifnot(
   any(grepl("Statistic.*Last release.*main.*Proposed", report))
 )
 
+# Each headline wage comes from its own snapshot's final wage row, including
+# that row's quarter. These differ from the index file's latest quarter.
+released_wages = released
+released_wages$counter_web = tibble(
+  Year = c("2025q3", "2025q4"),
+  `Actual wage` = c(999, 21.2),
+  `Counterfactual wage` = c(999, 37)
+)
+main_wages = main
+main_wages$counter_web = tibble(
+  Year = c("2025q4", "2026q1"),
+  `Actual wage` = c(999, 24.56),
+  `Counterfactual wage` = c(999, 48.9)
+)
+proposed_wages = proposed
+proposed_wages$counter_web = tibble(
+  Year = c("2026q1", "2026q2"),
+  `Actual wage` = c(999, 26.78),
+  `Counterfactual wage` = c(999, 55.01)
+)
+headline_cells = function(report, label) {
+  rows = report[grepl(paste0("^\\|", label, "\\s*\\|"), report)]
+  stopifnot(length(rows) == 1)
+  str_trim(str_split(rows, fixed("|"))[[1]])[3:5]
+}
+report = build_dual_change_report(main_wages, released_wages, proposed_wages, "release-fixture")
+stopifnot(
+  identical(headline_cells(report, "Typical wage, last quarter"),
+            c("$21.20 (2025q4)", "$24.56 (2026q1)", "$26.78 (2026q2)")),
+  identical(headline_cells(report, "Counterfactual wage, last quarter"),
+            c("$37.00 (2025q4)", "$48.90 (2026q1)", "$55.01 (2026q2)"))
+)
+
 # A PR with no new data must still show all changes since the release.
 report = build_dual_change_report(main, released, main, "release-fixture")
 stopifnot(
@@ -122,6 +155,14 @@ before_counter$commit = "before-counter-fixture"
 before_counter$counter_web = NULL
 before_counter$data = filter(before_counter$data, !name %in% c("wage_actual_real", "wage_counter_real"))
 report = build_dual_change_report(base, before_counter, base, "release-fixture")
+for (label in c("Typical wage, last quarter", "Counterfactual wage, last quarter")) {
+  cells = headline_cells(report, label)
+  stopifnot(cells[1] == "Not available", cells[2] == cells[3], cells[2] != "Not available")
+}
+unavailable = build_dual_change_report(before_counter, before_counter, before_counter, "release-fixture")
+for (label in c("Typical wage, last quarter", "Counterfactual wage, last quarter")) {
+  stopifnot(all(headline_cells(unavailable, label) == "Not available"))
+}
 description = compare_snapshots(before_counter, base)$output_description
 stopifnot(
   compare_snapshots(base, base)$output_description == "No output changes.",
