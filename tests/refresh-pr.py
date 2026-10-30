@@ -3,8 +3,11 @@
 import json
 import os
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import tempfile
+import textwrap
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / ".github/scripts/update-refresh-pr.sh"
@@ -18,8 +21,8 @@ OLD_RUN = "https://github.com/Economic/productivity_pay_gap/actions/runs/100"
 NEW_RUN = "https://github.com/Economic/productivity_pay_gap/actions/runs/200"
 
 
-def run(args, cwd, env=None):
-    result = subprocess.run(args, cwd=cwd, env=env, text=True, capture_output=True)
+def run(args, cwd, env=None, *, input=None):
+    result = subprocess.run(args, cwd=cwd, env=env, input=input, text=True, capture_output=True)
     if result.returncode:
         raise RuntimeError(f"{args}:\n{result.stdout}\n{result.stderr}")
     return result.stdout.strip()
@@ -36,7 +39,7 @@ def report(name, main, release="v2026.9.14"):
 
 def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
                update=False, notify=False, advance_main=False, legacy=False,
-               release="v2026.9.14", repeat=False):
+               release="v2026.9.14", repeat=False, calendar_state="valid"):
     case = root / name
     case.mkdir()
     remote = case / "origin.git"
@@ -78,6 +81,30 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     git("remote", "add", "origin", str(remote))
     git("push", "--quiet", "-u", "origin", "main")
     initial_main = git("rev-parse", "HEAD")
+
+    def save_calendar(day):
+        saved = json.dumps({
+            "refreshed_at": "2026-10-30T12:00:00Z",
+            "events": [
+                {"source": source, "release": release, "at": f"2099-01-{day:02d}T13:30:00Z"}
+                for source, release in [
+                    ("bls", "Employment Situation"), ("bls", "Productivity and Costs"),
+                    ("bls", "Consumer Price Index"), ("bea", "Gross Domestic Product"),
+                    ("bea", "Personal Income and Outlays"),
+                ]
+            ],
+        })
+        if calendar_state == "invalid":
+            saved = "{"
+        elif calendar_state == "exhausted":
+            saved = saved.replace("2099-01-", "2020-01-")
+        blob = run(["git", "hash-object", "-w", "--stdin"], repo, input=saved)
+        tree = run(["git", "mktree"], repo, input=f"100644 blob {blob}\tschedule.json\n")
+        commit = git("commit-tree", tree, "-m", "calendar fixture")
+        git("update-ref", "refs/remotes/origin/calendar", commit)
+
+    if calendar_state != "missing":
+        save_calendar(1)
     old_report = report("earlier proposal", initial_main)
     old_section = f"**Report updated:** [earlier build]({OLD_RUN})\n\n{old_report.strip()}"
     old_body = ("Earlier status\n\n<!-- refresh-report-start -->\n" + old_section
@@ -133,6 +160,28 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     calls = [json.loads(line) for line in (capture / "calls.jsonl").read_text().splitlines()]
     actions = [call[:2] for call in calls]
     final = json.loads(state_file.read_text())
+    summary = (capture / "summary.md").read_text()
+    next_line = next(line for line in summary.splitlines() if line.startswith("**Next scheduled update:**"))
+    if calendar_state == "valid":
+        assert "January 1, 2099, 2:27 PM EST" in next_line
+        assert " and " in next_line and ";" not in next_line
+    else:
+        assert "unavailable. Run Calendar refresh." in next_line
+    if name in ("unchanged", "no_changes_no_pr", "missing_calendar"):
+        # Run the build job's actual summary step too. It must show the next
+        # update even without a PR, and without depending on package execution.
+        scripts = repo / ".github/scripts"
+        scripts.mkdir(parents=True)
+        shutil.copyfile(SCRIPT.with_name("release-calendar.py"), scripts / "release-calendar.py")
+        workflow = (SCRIPT.parents[1] / "workflows/refresh.yml").read_text()
+        step = re.search(
+            r"      - name: Write the change report to the run summary\n        run: \|\n((?:          .*\n)+)",
+            workflow,
+        ).group(1)
+        build_env = dict(env, GITHUB_STEP_SUMMARY=str(capture / "build-summary.md"))
+        run(["bash", "-e", "-c", textwrap.dedent(step)], repo, build_env)
+        build_summary = (capture / "build-summary.md").read_text()
+        assert build_summary == next_line + "\n\n" + fresh_report
     if fresh_value == 1:
         expected_actions = [["pr", "list"], ["pr", "close"]] if open_pr else [["pr", "list"]]
         assert actions == expected_actions
@@ -147,6 +196,8 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
     assert NEW_RUN in body.split("## Latest refresh report")[0]
     assert "**Pending against main:** Fixture revisions pending" in body
     assert "**Latest output:** 2026q2" in body
+    assert body.count(next_line) == 1
+    assert body.index(next_line) < body.index("## Latest refresh report")
     assert body.count("# Change report") == 1
     title_call = next(call for call in calls if call[:2] in (["pr", "edit"], ["pr", "create"]))
     title = title_call[title_call.index("--title") + 1]
@@ -208,6 +259,9 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
                 write(path, text)
         write_web(fresh_value)
         env["GITHUB_RUN_ID"] = "201"
+        # A calendar change alone must update the status without rewriting data,
+        # replacing the retained report, or sending a notification comment.
+        save_calendar(2)
         (capture / "calls.jsonl").write_text("")
         run(["bash", str(SCRIPT)], repo, env)
         again = [json.loads(line) for line in (capture / "calls.jsonl").read_text().splitlines()]
@@ -215,6 +269,8 @@ def check_case(root, name, *, open_pr=True, fresh_value=2, mutations=None,
         assert git("rev-parse", "origin/data-refresh") == first_commit
         second_body = (capture / "edit.md").read_text()
         assert "actions/runs/201" in second_body
+        assert "January 2, 2099, 2:27 PM EST" in second_body
+        assert next_line not in second_body
         assert first_body.split("<!-- refresh-report-start -->")[1] == second_body.split("<!-- refresh-report-start -->")[1]
     print(f"Passed: {name}")
 
@@ -283,6 +339,9 @@ state_file.write_text(json.dumps(state))
         ("code_changed", {"advance_main": True, "mutations": {"R/combine.R": "# new calculation\n"}, "update": True}),
         ("new_release", {"release": "v2026.10.29", "update": True}),
         ("legacy_report", {"legacy": True, "update": True}),
+        ("missing_calendar", {"calendar_state": "missing"}),
+        ("invalid_calendar", {"calendar_state": "invalid"}),
+        ("exhausted_calendar", {"calendar_state": "exhausted"}),
     ]
     for name, options in cases:
         check_case(root, name, **options)

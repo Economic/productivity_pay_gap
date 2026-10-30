@@ -8,6 +8,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -68,7 +69,94 @@ def saved_schedule(stamp, future=True):
     return {"refreshed_at": NOW.isoformat(), "events": events}
 
 
+def single_release_schedule(stamp, release="Employment Situation"):
+    schedule = saved_schedule(datetime(2099, 1, 1, 8, 30, tzinfo=EASTERN), future=False)
+    schedule["events"].append({
+        "source": RELEASES[release], "release": release, "at": stamp.isoformat(),
+    })
+    return schedule
+
+
 class ReleaseCalendarTests(unittest.TestCase):
+    def test_next_build_uses_daily_slot_then_unconditional_follow_up(self):
+        stamp = datetime(2026, 11, 6, 8, 30, tzinfo=EASTERN)
+        schedule = single_release_schedule(stamp)
+        slot = stamp.replace(hour=14, minute=27)
+        self.assertEqual(calendar.next_update(schedule, stamp),
+                         "**Next scheduled update:** November 6, 2026, 2:27 PM EST, Employment Situation release.")
+        for now in (slot, slot + timedelta(minutes=30)):
+            self.assertEqual(calendar.next_update(schedule, now),
+                             "**Next scheduled update:** November 7, 2026, 2:27 PM EST, next-day follow-up for Employment Situation.")
+
+    def test_next_build_combines_and_deduplicates_overlapping_reasons(self):
+        stamp = datetime(2026, 11, 5, 8, 30, tzinfo=EASTERN)
+        schedule = single_release_schedule(stamp, "Productivity and Costs")
+        event = {"source": "bls", "release": "Employment Situation", "at": (stamp + timedelta(days=1)).isoformat()}
+        schedule["events"].extend([event, event])
+        now = stamp.replace(hour=15)
+        self.assertEqual(calendar.next_update(schedule, now),
+                         "**Next scheduled update:** November 6, 2026, 2:27 PM EST, Employment Situation release and next-day follow-up for Productivity and Costs.")
+        schedule["events"].append({**event, "release": "Consumer Price Index"})
+        text = calendar.next_update(schedule, now)
+        self.assertIn("Consumer Price Index release, Employment Situation release, and next-day follow-up for Productivity and Costs", text)
+        self.assertNotIn(";", text)
+
+    def test_next_build_time_follows_eastern_dst_and_calendar_boundaries(self):
+        for stamp, date, zone in [
+            (datetime(2026, 10, 31, 8, 30, tzinfo=EASTERN), "November 1, 2026", "EST"),
+            (datetime(2026, 3, 7, 8, 30, tzinfo=EASTERN), "March 8, 2026", "EDT"),
+            (datetime(2026, 12, 31, 8, 30, tzinfo=EASTERN), "January 1, 2027", "EST"),
+        ]:
+            with self.subTest(stamp=stamp):
+                schedule = single_release_schedule(stamp)
+                # At UTC midnight it is still the release date in Eastern time.
+                now = (stamp + timedelta(days=1)).replace(hour=0, minute=0, tzinfo=timezone.utc)
+                text = calendar.next_update(schedule, now)
+                self.assertIn(f"{date}, 2:27 PM {zone}", text)
+                self.assertIn("next-day follow-up", text)
+
+    def test_release_after_daily_slot_only_gets_follow_up(self):
+        stamp = datetime(2026, 11, 6, 16, 0, tzinfo=EASTERN)
+        schedule = single_release_schedule(stamp)
+        text = calendar.next_update(schedule, stamp.replace(hour=10))
+        self.assertIn("November 7, 2026, 2:27 PM EST", text)
+        self.assertIn("next-day follow-up for Employment Situation", text)
+        self.assertFalse(calendar.due(schedule, stamp.replace(hour=14, minute=27)))
+
+    def test_forecast_does_not_promise_a_build_that_calendar_gate_would_reject(self):
+        stamp = datetime(2026, 11, 6, 8, 30, tzinfo=EASTERN)
+        schedule = saved_schedule(stamp, future=False)
+        schedule["events"].append({
+            "source": "bls", "release": "Employment Situation", "at": "2026-11-09T13:30:00Z",
+        })
+        with self.assertRaises(ValueError):
+            calendar.next_update(schedule, stamp + timedelta(days=1, hours=7))
+
+    def test_last_follow_up_has_no_more_scheduled_builds(self):
+        stamp = datetime(2026, 12, 31, 8, 30, tzinfo=EASTERN)
+        schedule = saved_schedule(stamp, future=False)
+        self.assertEqual(calendar.next_update(schedule, stamp + timedelta(days=1, hours=7)), calendar.UNAVAILABLE)
+
+    def test_forecast_daily_time_matches_scheduler_workflow(self):
+        workflow = SCRIPT.parents[1] / "workflows/scheduled-data-update.yml"
+        text = workflow.read_text()
+        minute, hour = re.search(r'cron:\s*"(\d+) (\d+) \* \* \*"', text).groups()
+        self.assertEqual((calendar.BUILD_TIME.hour, calendar.BUILD_TIME.minute), (int(hour), int(minute)))
+        self.assertIn("timezone: America/New_York", text)
+
+    def test_next_cli_falls_back_without_blocking_manual_refresh(self):
+        with tempfile.TemporaryDirectory() as directory:
+            schedule = Path(directory) / "schedule.json"
+            for contents in (None, "{", "{}", json.dumps(saved_schedule(NOW - timedelta(days=10), future=False))):
+                if contents is not None:
+                    schedule.write_text(contents)
+                result = subprocess.run([sys.executable, str(SCRIPT), "next", str(schedule)], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0)
+                self.assertEqual(result.stdout.strip(), calendar.UNAVAILABLE)
+            result = subprocess.run([sys.executable, str(SCRIPT), "next"], cwd=directory, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.stdout.strip(), calendar.UNAVAILABLE)
+
     def test_agency_formats_select_all_five_releases_and_remove_duplicates(self):
         schedule = calendar.build_schedule(BLS, BEA, NOW)
         self.assertEqual(calendar.RELEASES, RELEASES)
