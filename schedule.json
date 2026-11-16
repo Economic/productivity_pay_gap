@@ -1,11 +1,6 @@
 {
-  "refreshed_at": "2026-11-09T10:19:13.977947+00:00",
+  "refreshed_at": "2026-11-16T10:24:39.744301+00:00",
   "events": [
-    {
-      "source": "bls",
-      "release": "Consumer Price Index",
-      "at": "2026-11-10T13:30:00+00:00"
-    },
     {
       "source": "bea",
       "release": "Gross Domestic Product",
