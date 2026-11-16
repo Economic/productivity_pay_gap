@@ -1,29 +1,62 @@
 # Maintaining the Productivity-Pay Gap data
 
-This guide covers setup, automated and manual data updates, change reports, development, and releases. See [README.md](README.md) for downloads, final files, methodology, and data sources.
+Use the checklist below for routine updates. [Reference](#reference) covers setup, local development, and automation details. See [README.md](README.md) for downloads, final files, methodology, and sources.
 
 ## How updates work
 
-1. **Every Monday at 5:17 a.m. Eastern**, `Calendar refresh` downloads the BLS and BEA release calendars. It saves dates for Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays in `schedule.json` on the separate `calendar` branch. A failed refresh keeps the previous schedule. Calendar refresh retains yesterday’s releases so their next-day follow-ups remain scheduled.
-2. **Every day at 2:27 p.m. Eastern**, `Scheduled data update` reads the saved calendar. On a release day and the following calendar day, including weekends and holidays, it runs `refresh`. Overlapping dates produce one scheduled build per day. Each refresh:
-   * updates every R package and fetches the latest BLS and BEA data
-   * rebuilds the numbers and writes a change report against both `main` and the last published release; its headline table includes the last quarter's typical and counterfactual wages for each snapshot, with dollar amounts and quarters, or “Not available” for snapshots without the wage file
-   * opens an assigned pull request from `data-refresh` when the web files differ from `main`; closes an existing refresh PR when the latest build's web files match `main`
-   * updates the proposal's files and report when inputs, packages, calculation code, or outputs change, even if the web numbers stay the same; refreshes them when the comparison baselines change too
-   * puts the last check time and run link, changes since the previous proposal, pending changes against `main`, latest output quarter, and next scheduled update with its reasons first in the description; includes the check date in the title
-   * posts a short notification comment only when the web files change against the existing proposal; the description holds the single current report, and earlier bot report comments become short superseded notices
-3. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
-4. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything. The offline check must pass on the commit being released. The workflow refuses a release when only access dates changed. A second release on the same day requires `correction` and a reason.
+1. **Wait for an update PR, or request one.** Refreshes run automatically on agency release days and the following day. To fetch data manually, run **Actions → refresh → Run workflow** on `main`, using the defaults. It opens or updates the `data-refresh` PR when web files differ from `main`.
+2. **Review the PR description.** Check the latest output quarter, headline numbers, and explanations of revisions. The comparison with `main` shows what merging changes. The comparison with the last release shows what publishing changes. The opening status also shows the next scheduled update and expected coverage.
+3. **Merge the update.** If prompted, click **Approve and run workflows**. Wait for `check` to pass, then merge using a merge commit. This updates `main`. Publishing is a separate step.
+4. **Publish when ready.** Run **Actions → release → Run workflow** on `main`, leaving the defaults unchanged. It publishes the checked commit's five final files and a change report as a dated GitHub release. Select `dry_run` for a preview. A same-day correction requires `correction` and a reason. See [release details](#release-details) for the safeguards.
 
-Times follow Eastern daylight saving changes. The next-day build runs even if the release-day build succeeded: agency APIs or the published `realtalk` package can still have old data when a build succeeds. If only access dates change, the branch and its report stay unchanged. The title and top status record the latest check. The report has its own update time and run link, so its dates describe the committed files. Input or package changes without changed web numbers update the branch and report without a notification comment. GitHub can still notify subscribers of other PR activity. There are no further automatic retries. If inputs are still late, run `refresh` manually from Actions once they are available. Manual refresh does not depend on the calendar.
+## Troubleshooting
 
-The refresh PR's opening status and workflow run summary show the next scheduled data update at 2:27 p.m. Eastern, including the release or next-day follow-up reasons. Overlapping reasons are joined with “and”. The line uses the saved calendar at the time of the check and updates even when the detailed report stays unchanged. Dry runs and builds with no web changes include it in the run summary too. If the saved calendar is missing, invalid, or exhausted, the line says the next update is unavailable and asks you to run Calendar refresh. This does not block a manual data refresh.
+| Problem | Action |
+|---|---|
+| Expected data is still missing | Read the source coverage and failure details in the PR or workflow run. Rerun `refresh` once inputs are available. See [refresh details](#refresh-details). |
+| Saved calendar is unavailable or outdated | Run **Actions → Calendar refresh → Run workflow** on `main`, using the defaults. Manual `refresh` still works without the calendar. See [calendar setup](#start-the-release-calendar). |
+| BLS hours download failed | Check the error and retry `refresh`. If needed, follow the [manual replacement procedure](#hours-download-failures). |
 
-Directly below it, **Expected latest output quarter** estimates the latest quarter of the combined final output after that build. It starts with each input's latest complete quarter and projects inputs affected by saved releases due by that build through the previous completed quarter, following normal release timing. Inputs without a release keep their observed coverage. The earliest input quarter sets the estimate. An unchanged estimate says “no new quarter expected”. Every estimate is qualified with “subject to source availability”: rescheduled releases, agency delays, and publication of the realtalk package can affect actual coverage. Missing calendars or input coverage produce an unavailable estimate and leave manual refreshes working. The forecast never controls the build, calculations, or schedule.
+## Reference
 
-Every pull request into `main` must pass the `check` workflow, which rebuilds everything from the committed raw data and fails if the result differs from the committed files. `main` accepts changes only through pull requests, merged with merge commits.
+- [Refresh details](#refresh-details) and [release details](#release-details)
+- [Maintainer setup](#maintainer-setup): secrets, notifications, protection rules, and calendar initialization
+- [Reproduce the data](#reproduce-the-data): packages, live and offline runs, [reports](#the-change-report), and [code changes](#making-changes)
+- [Repository files](#repository-files) and [workflow implementation](#workflow-implementation)
 
-If the BLS hours download fails, the refresh still finishes with the committed spreadsheet, then fails, so GitHub emails a failure notice. A missing, invalid, or exhausted saved calendar fails the daily check. Run `Calendar refresh` to repair it. Calendar changes announced after Monday can be missed until the next calendar refresh; run it manually when needed. GitHub can delay or drop scheduled runs.
+## Refresh details
+
+### Schedule
+
+`Calendar refresh` runs every Monday at 5:17 a.m. Eastern. It saves BLS and BEA dates for Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays in `schedule.json` on the separate `calendar` branch. It retains yesterday's releases for next-day follow-ups. Failed downloads keep the previous schedule.
+
+`Scheduled data update` checks the saved dates every day at 2:27 p.m. Eastern. It calls `refresh` on release days and the following calendar day, including weekends and holidays. Overlaps produce one build per day. A successful daily check can mean no refresh was due. Times follow Eastern daylight saving changes.
+
+Each refresh updates every R package, fetches the latest BLS and BEA data, rebuilds, and writes a report against `main` and the last published release. The next-day build runs even after a successful release-day build because agency APIs or the published `realtalk` package can still contain old data. There are no further automatic retries. Manual `refresh` can run on any date without a calendar.
+
+A missing, invalid, or exhausted schedule fails the daily check. Run `Calendar refresh` to repair it, or to pick up changes announced after Monday. GitHub can delay or drop scheduled runs. If the hours download fails, the refresh builds with the committed spreadsheet and updates the PR as usual, then marks the run as failed so GitHub sends a failure notification.
+
+### Proposal updates and notifications
+
+The assigned `data-refresh` PR opens when web files differ from `main`. It closes when they match. Inputs alone do not open a PR. For an existing proposal, meaningful input, package, calculation code, or output changes update its files and report, even when web numbers match. New `main` or release baselines also update the proposal.
+
+The title and opening status record the latest check. The description starts with the check time and run link, changes since the previous proposal, pending changes against `main`, output coverage, and the next update. Access dates alone update the title and opening status, leaving the committed files and report intact. The single full report stays in the description with its own update time and run link. Older bot report comments become superseded notices.
+
+A short notification comment is posted only when web files change against the existing proposal. Changes limited to inputs, packages, or release baselines do not trigger that comment. GitHub can still notify subscribers of other PR activity.
+
+### Next update and coverage forecast
+
+The PR's opening status and workflow run summary show the next scheduled build at 2:27 p.m. Eastern and its release or follow-up reasons. Overlapping reasons are joined with “and”. This line uses the saved calendar and updates on every check, including dry runs and builds with no web changes, even when the detailed report stays unchanged. An unavailable calendar produces a message asking for `Calendar refresh` without blocking manual refreshes.
+
+**Expected latest output quarter**, directly below the next update, estimates combined coverage after that build. It starts from each input's latest complete quarter. Inputs affected by saved releases due by the build are projected through the previous completed quarter; other inputs keep their observed coverage. The earliest input quarter sets the estimate. An unchanged estimate says “no new quarter expected”. Missing calendar or input coverage makes the estimate unavailable.
+
+Estimates are subject to source availability, including rescheduled releases, agency delays, and publication of `realtalk`. The forecast never controls the build, calculations, or schedule.
+
+## Release details
+
+Publishing is manual. A release uses the final files of the commit the workflow starts from, after the offline check passes on that commit. Its tag uses the day's date, such as `v2026.11.6`. The change report against the previous release becomes the release notes.
+
+The workflow refuses a release when only access dates changed. A second release on the same day requires `correction` and a reason. A `dry_run` runs the checks and previews the tag and notes without creating anything. See [workflow implementation](#workflow-implementation) for the scripts.
 
 ## Maintainer setup
 
@@ -79,17 +112,15 @@ To use newer package versions, such as the latest price indices in `realtalk`, r
 
 ### The change report
 
-Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why: each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. If the inputs do not explain a revision, it says the calculation itself changed. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag from v2026.3.11 on.
+Each run writes `reports/change_report.md`, comparing the working tree with `origin/main`. Run `git fetch` first, or set `PPG_BASELINE` to another ref. Baselines must be v2026.3.11 or later because earlier releases use an unsupported BLS API format.
 
-Baselines must be v2026.3.11 or later. Older releases store the BLS API results in a format the report does not read.
+Refreshes and PR checks include two comparisons: proposed data against `main` for merging, and against the last published release for publishing. The overview shows both summaries and headline stats for the release, `main`, and proposal. Last-quarter typical and counterfactual wages retain each snapshot's dollar amounts and quarter; missing wage files show “Not available”. Expand either comparison for its inputs, outputs, and revision explanations. Release differences include changes already merged into `main`.
 
-A refresh compares the latest build with the existing proposal to decide whether to update the branch or post a notification. The report's comparisons serve different purposes: proposed data versus `main` describes merging, and proposed data versus the last published GitHub release describes publishing. Release differences do not trigger repeated notifications. Data refreshes and PR checks retain both report comparisons. The overview shows both summaries and the headline stats for the release, `main`, and the proposed data. Expand each comparison for its inputs, outputs, and revision explanations. The `main` comparison shows what merging changes. The release comparison includes changes already merged into `main`. Both baselines are recorded by commit. PR checks use the proposed merge result and the PR's base commit as `main`.
+Both baselines are recorded by commit. PR checks compare the proposed merge result with the PR's base commit. Post-merge checks compare with the commit before the push. Release notes compare only with the previous release. To generate both views locally, set `PPG_RELEASE_BASELINE` to the published tag alongside `PPG_BASELINE`. The R pipeline never looks up releases on GitHub.
 
-To generate both views locally, set `PPG_RELEASE_BASELINE` to the published release tag as well as setting `PPG_BASELINE` for `main`. No release lookup happens inside the R pipeline. Post-merge checks keep their comparison with the commit before the push. Release notes keep their single comparison with the previous release.
+Each comparison lists added or removed files, periods, and series, revisions to existing values, and changed headline statistics. Concurrent changes appear together. A new counterfactual wage file can leave existing productivity, pay, and headline values unchanged. The overview and details describe the same snapshot differences; they do not indicate that data was fetched or published.
 
-Each comparison describes output changes explicitly: files added or removed, revisions to existing values, periods or series added or removed, and changed headline statistics. Simultaneous changes appear together. Adding a counterfactual wage file can leave existing productivity, pay, and headline values unchanged. The overview and detailed comparisons use the same description. These descriptions compare snapshots; they do not indicate that fresh data was fetched or a release was published.
-
-The report's Why section uses paired productivity and pay tables. It shows input contributions to the latest common quarter's index revision and average signed contributions across revised quarters, in index points. Three headline-growth tables use percentage points and include rounding and added or removed quarters when applicable. Zero effects stay visible; a dash marks an input outside an index's formula. The productivity-to-pay growth multiple is shown as previous → revised without a decomposition.
+The Why section splits revisions exactly by input. Unexplained revisions are flagged as calculation changes. Paired productivity and pay tables show contributions to the latest common quarter's index revision and average signed contributions across revised quarters, in index points. Three headline-growth tables use percentage points, including rounding and added or removed quarters when applicable. Zero effects stay visible; a dash marks an input outside the formula. The productivity-to-pay growth multiple shows previous → revised without a decomposition.
 
 ### Offline mode
 
@@ -109,6 +140,8 @@ Offline mode uses its own targets store, `_targets_offline/`, so it does not dis
 Make each change on a branch and open a pull request. Commit each self-contained change separately. The maintainer merges with merge commits only (`gh pr merge N --merge`). If a change to the code changes the outputs, rebuild in offline mode and commit the new outputs in the same pull request, or the `check` workflow fails.
 
 When intentionally changing how the indexes are calculated in `R/combine.R`, update `index_terms` in `R/report_why.R` in the same PR. Otherwise later reports will flag a calculation change. Changes to `R/bls.R`, `R/bea.R`, `R/prices.R`, `R/web.R`, and the series code files are not measured by the report; it names them in a warning.
+
+#### Hours download failures
 
 If BLS refuses the hours download, download the [total economy hours file](https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx) by hand, save it as `data_raw/total-economy-hours-employment.xlsx`, and set its `date_accessed` in `data_raw/fetch_log.csv` to the day you downloaded it.
 
@@ -136,7 +169,7 @@ The five final files are documented in [README.md](README.md#final-files-data_fi
 
 ## Workflow implementation
 
-The [check workflow](.github/workflows/check.yml) runs on every PR and every push to `main`. It rebuilds offline and fails if `data_final/` or `data_outputs/` differs from the committed files. It posts the change report as a PR comment except on refresh PRs, which keep their authoritative report in the description. Post-merge reports compare with the commit before the push.
+The [check workflow](.github/workflows/check.yml) runs on every PR and every push to `main`. It rebuilds offline and fails if `data_final/` or `data_outputs/` differs from the committed files. It posts the change report as a PR comment except on refresh PRs, which keep their authoritative report in the description. Post-merge reports compare with the commit before the push. GitHub holds the required check on PRs opened by a workflow until a maintainer approves the run.
 
 The refresh entry point is [update-refresh-pr.sh](.github/scripts/update-refresh-pr.sh), which calls [update-refresh-pr.py](.github/scripts/update-refresh-pr.py). The build job runs R and package code with read-only repository access. The publish job can write but runs no R or package code. It copies only allowlisted files from the build artifact using [copy-refresh-files.sh](.github/scripts/copy-refresh-files.sh). Keep that split. The calendar branch contains data only; never execute code from it.
 
