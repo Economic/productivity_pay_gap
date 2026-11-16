@@ -1,143 +1,255 @@
 # Maintaining the Productivity-Pay Gap data
 
-This guide covers setup, automated and manual data updates, change reports, development, and releases. See [README.md](README.md) for downloads, final files, methodology, and data sources.
-
 ## How updates work
 
-1. **Every Monday at 5:17 a.m. Eastern**, `Calendar refresh` downloads the BLS and BEA release calendars. It saves dates for Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays in `schedule.json` on the separate `calendar` branch. A failed refresh keeps the previous schedule. Calendar refresh retains yesterday’s releases so their next-day follow-ups remain scheduled.
-2. **Every day at 2:27 p.m. Eastern**, `Scheduled data update` reads the saved calendar. On a release day and the following calendar day, including weekends and holidays, it runs `refresh`. Overlapping dates produce one scheduled build per day. Each refresh:
-   * updates every R package and fetches the latest BLS and BEA data
-   * rebuilds the numbers and writes a change report against both `main` and the last published release; its headline table includes the last quarter's typical and counterfactual wages for each snapshot, with dollar amounts and quarters, or “Not available” for snapshots without the wage file
-   * opens an assigned pull request from `data-refresh` when the web files differ from `main`; closes an existing refresh PR when the latest build's web files match `main`
-   * updates the proposal's files and report when inputs, packages, calculation code, or outputs change, even if the web numbers stay the same; refreshes them when the comparison baselines change too
-   * puts the last check time and run link, changes since the previous proposal, pending changes against `main`, latest output quarter, and next scheduled update with its reasons first in the description; includes the check date in the title
-   * posts a short notification comment only when the web files change against the existing proposal; the description holds the single current report, and earlier bot report comments become short superseded notices
-3. **When the maintainer wants the new numbers in `main`,** they open that pull request, click "Approve and run workflows" (GitHub holds the required check on pull requests opened by a workflow), and merge once the check passes. This changes `main` but publishes nothing.
-4. **When the maintainer wants to publish,** they run the `release` workflow from the Actions tab, on `main`, with every box unticked. It publishes `main`'s final files as a release named for the day (for example `v2026.10.22`), with a change report covering everything since the previous release as notes. Ticking `dry_run` previews the tag and notes without creating anything. The offline check must pass on the commit being released. The workflow refuses a release when only access dates changed. A second release on the same day requires `correction` and a reason.
+1. Open the automatic `data-refresh` PR. If needed, create one with **Actions → refresh**.
+2. Click **Approve and run workflows** if GitHub asks. Wait for `check` to pass.
+3. Read the change report. Check data coverage, headline numbers, and unexpected revisions.
+4. If the changes are correct, merge the PR with a merge commit.
+5. To publish, run **Actions → release**. It publishes the final files and change report. Wait for it to finish.
 
-Times follow Eastern daylight saving changes. The next-day build runs even if the release-day build succeeded: agency APIs or the published `realtalk` package can still have old data when a build succeeds. If only access dates change, the branch and its report stay unchanged. The title and top status record the latest check. The report has its own update time and run link, so its dates describe the committed files. Input or package changes without changed web numbers update the branch and report without a notification comment. GitHub can still notify subscribers of other PR activity. There are no further automatic retries. If inputs are still late, run `refresh` manually from Actions once they are available. Manual refresh does not depend on the calendar.
+For manual workflows, select `main`, then **Run workflow**. Keep the default settings. Select `dry_run` for a preview. Merging alone publishes nothing.
 
-The refresh PR's opening status and workflow run summary show the next scheduled data update at 2:27 p.m. Eastern, including the release or next-day follow-up reasons. Overlapping reasons are joined with “and”. The line uses the saved calendar at the time of the check and updates even when the detailed report stays unchanged. Dry runs and builds with no web changes include it in the run summary too. If the saved calendar is missing, invalid, or exhausted, the line says the next update is unavailable and asks you to run Calendar refresh. This does not block a manual data refresh.
+See [README.md](README.md) for downloads and [Reference](#reference) for setup and technical details.
 
-Directly below it, **Expected latest output quarter** estimates the latest quarter of the combined final output after that build. It starts with each input's latest complete quarter and projects inputs affected by saved releases due by that build through the previous completed quarter, following normal release timing. Inputs without a release keep their observed coverage. The earliest input quarter sets the estimate. An unchanged estimate says “no new quarter expected”. Every estimate is qualified with “subject to source availability”: rescheduled releases, agency delays, and publication of the realtalk package can affect actual coverage. Missing calendars or input coverage produce an unavailable estimate and leave manual refreshes working. The forecast never controls the build, calculations, or schedule.
+## Troubleshooting
 
-Every pull request into `main` must pass the `check` workflow, which rebuilds everything from the committed raw data and fails if the result differs from the committed files. `main` accepts changes only through pull requests, merged with merge commits.
+| Problem | Action |
+|---|---|
+| Expected data is still missing | Read the source coverage and failure details in the PR or workflow run. Rerun `refresh` once inputs are available. See [refresh details](#refresh-details). |
+| Saved calendar is unavailable or outdated | Run **Actions → Calendar refresh → Run workflow** on `main`, using the defaults. Manual `refresh` still works without the calendar. See [calendar setup](#start-the-release-calendar). |
+| BLS hours download failed | Check the error and retry `refresh`. If needed, follow the [manual replacement procedure](#hours-download-failures). |
 
-If the BLS hours download fails, the refresh still finishes with the committed spreadsheet, then fails, so GitHub emails a failure notice. A missing, invalid, or exhausted saved calendar fails the daily check. Run `Calendar refresh` to repair it. Calendar changes announced after Monday can be missed until the next calendar refresh; run it manually when needed. GitHub can delay or drop scheduled runs.
+## Reference
+
+- [Refresh details](#refresh-details) and [release details](#release-details)
+- [Maintainer setup](#maintainer-setup): secrets, notifications, protection rules, and calendar initialization
+- [Reproduce the data](#reproduce-the-data): packages, live and offline runs, [reports](#the-change-report), and [code changes](#making-changes)
+- [Repository files](#repository-files) and [workflow implementation](#workflow-implementation)
+
+## Refresh details
+
+### Schedule
+
+All times use Eastern time, with daylight saving changes.
+
+| Workflow | Time | Action |
+|---|---|---|
+| `Calendar refresh` | Monday, 5:17 a.m. | Save BLS and BEA release dates in `schedule.json` on the `calendar` branch. |
+| `Scheduled data update` | Daily, 2:27 p.m. | Run `refresh` if a release or its next-day check is due. |
+
+The five releases are Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays. The calendar keeps yesterday's dates for next-day checks. Failed downloads keep the old schedule.
+
+Builds include weekends and holidays. Overlapping dates cause one build. If none is due, the daily check passes without a refresh.
+
+Each refresh updates all R packages, downloads data, rebuilds outputs, and reports changes from `main` and the last release. Even successful builds can use old API or `realtalk` data. The next-day build always runs. After that, run `refresh` manually for late data. Manual runs need no calendar.
+
+Run `Calendar refresh` if dates change after Monday. Also run it if a missing, invalid, or expired schedule fails the daily check. GitHub can delay or skip scheduled runs.
+
+If the hours download fails, the build uses the saved spreadsheet and updates the PR. The run then reports failure. GitHub sends a failure notice.
+
+### Proposal updates and notifications
+
+| Change | Result |
+|---|---|
+| Web files differ from `main` | Open the assigned `data-refresh` PR. |
+| Web files match `main` | Close the refresh PR, if open. Input changes alone do not open a PR. |
+| Inputs, packages, calculation code, or outputs change | Update an open PR's files and report, even if web numbers stay the same. |
+| `main` or the last release changes | Update the open PR to use the new comparison commits. |
+| Only access dates change | Update the title and check status. Keep the saved files and report. |
+
+The description starts with the latest check and run link. It lists changes from the previous proposal and `main`, output coverage, and the next update. The title shows the check date.
+
+The full report stays in the description with its own date and run link. Old bot reports become short notices.
+
+Only web changes from the existing proposal cause a notification comment. GitHub can send other PR notifications.
+
+### Next update and coverage forecast
+
+The PR and run summary show the next build time and reasons from the saved calendar. Multiple reasons use “and”. Every check updates this line, including dry runs and builds with no web changes. The report can stay unchanged.
+
+A missing, invalid, or expired calendar gives a `Calendar refresh` prompt. Manual refreshes still work.
+
+**Expected latest output quarter**, below the next update, estimates coverage after that build:
+
+1. Start with each input's latest complete quarter.
+2. For inputs with a saved release due by the build, assume data through the previous completed quarter.
+3. Keep the observed quarter for other inputs.
+4. Use the earliest input quarter as the combined estimate.
+
+Unchanged coverage says “no new quarter expected”. Missing calendar or coverage data gives no estimate.
+
+Estimates are subject to source availability, including agency delays, changed dates, and `realtalk` publication. They never control builds, calculations, or schedules.
+
+## Release details
+
+Run releases manually. The starting commit must pass the offline check. The workflow publishes that commit's final files. Tags use today's date, for example `v2026.11.6`. Notes show changes from the last release.
+
+Access-date changes alone cannot be released. A second same-day release needs `correction` and a reason. Use `dry_run` to check and preview without publishing. See [workflow implementation](#workflow-implementation).
 
 ## Maintainer setup
 
-The refresh emails depend on GitHub settings that aren't stored in the repository.
+Set these GitHub options:
 
-* **Repository secrets:** `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL` (see [Setup](#setup)).
-* **The assignee:** refresh pull requests are assigned to `benzipperer`, set in `.github/scripts/update-refresh-pr.py`. A new maintainer changes that name.
-* **Email notifications,** in the assignee's [notification settings](https://github.com/settings/notifications):
-  * **"Participating, @mentions and custom"**: tick **Email**. Being assigned counts as participating, so this covers the refresh emails.
-  * **"Actions"**: tick **Email** for failed workflows. GitHub sends scheduled run failures to whoever last changed the workflow's schedule.
-  * **"Custom routing"**: if the account has several email addresses, route the Economic organization to the one the maintainer reads.
-* **The "protect main" ruleset,** in the repository settings: pull requests required, the `check` status check required, merge commits only, no bypass list.
+| Setting | Value |
+|---|---|
+| Repository secrets | `BLS_API_KEY`, `BEA_API_KEY`, and `BLS_DOWNLOAD_EMAIL`. See [Setup](#setup). |
+| Refresh PR assignee | `benzipperer`, set in `.github/scripts/update-refresh-pr.py`. Change this for a new maintainer. |
+| `protect main` ruleset | Require PRs and the `check` status. Allow merge commits only. Keep the bypass list empty. |
+
+In the assignee's [notification settings](https://github.com/settings/notifications):
+
+- Enable **Email** under **Participating, @mentions and custom** to receive assigned PR notices.
+- Enable failed-workflow emails under **Actions**. Scheduled failure notices go to whoever last changed the schedule.
+- Use **Custom routing** if Economic emails must use a specific address.
+
+Notification settings are outside the repository.
 
 ### Start the release calendar
 
-To initialize the saved calendar, run **Actions → Calendar refresh → Run workflow** on `main` with `dry_run` checked. Inspect the five release types and their dates in the run summary. Then run it without `dry_run` to create the `calendar` branch. Keep that branch: the daily job reads its saved schedule even if a later calendar download fails. The calendar download uses the existing `BLS_DOWNLOAD_EMAIL` secret.
+1. Run **Actions → Calendar refresh → Run workflow** on `main` with `dry_run` checked.
+2. Check the five release types and dates in the run summary.
+3. Run it again with `dry_run` unchecked. This creates the `calendar` branch.
 
-Both calendar workflows have a dry-run option. A calendar dry run downloads and validates without saving. A scheduled data dry run follows the saved dates and, if due, builds and reports without changing the refresh PR. Real calendar and scheduled updates run only from `main`. Branch dry runs use the branch's code. The `refresh` dry run can build on any date without changing the PR.
+Keep that branch for daily checks. Failed downloads leave it intact. Downloads use `BLS_DOWNLOAD_EMAIL`.
+
+Calendar dry runs check dates without saving. Scheduled data dry runs build only when due and leave PRs unchanged. Both workflows require `main` for real runs. Branch dry runs use that branch's code. A `refresh` dry run builds on any date without changing the PR.
 
 ## Reproduce the data
 
 ### Setup
 
-Package versions are locked with [renv](https://rstudio.github.io/renv/). To install them, run this from the project directory:
+Install the versions in `renv.lock` with [renv](https://rstudio.github.io/renv/). Run this from the project directory:
 
 ```r
 renv::restore()
 ```
 
-`.Rprofile` activates renv and sets the repositories to economic.r-universe.dev and Posit Package Manager.
+`.Rprofile` starts renv and sets the repositories to economic.r-universe.dev and Posit Package Manager.
 
-Along with CRAN packages, this installs three EPI packages:
+Key packages:
 
-* [`epidatatools`](https://github.com/Economic/epidatatools): BLS and BEA API wrappers
-* `epitargets`: helpers for the `targets` pipeline
-* [`realtalk`](https://economic.github.io/realtalk/): price indices
+- [`epidatatools`](https://github.com/Economic/epidatatools): BLS and BEA API tools
+- `epitargets`: pipeline helpers
+- [`realtalk`](https://economic.github.io/realtalk/): price indices
 
-Set these environment variables, for example in `~/.Renviron`:
+For live downloads, set these environment variables, for example in `~/.Renviron`:
 
-* `BLS_API_KEY` ([register](https://data.bls.gov/registrationEngine/))
-* `BEA_API_KEY` ([register](https://apps.bea.gov/API/signup/))
-* `BLS_DOWNLOAD_EMAIL`: your email address, sent in the `User-Agent` header. BLS refuses downloads of the hours spreadsheet unless the request includes a contact email.
+- `BLS_API_KEY`: [register for a key](https://data.bls.gov/registrationEngine/)
+- `BEA_API_KEY`: [register for a key](https://apps.bea.gov/API/signup/)
+- `BLS_DOWNLOAD_EMAIL`: contact email, required in the hours download's `User-Agent` header
 
 ### Generate the data
 
-Run `targets::tar_make()`. It fetches the BLS and BEA data from their APIs, downloads the BLS hours spreadsheet, and writes the fetched files to `data_raw/`, intermediate files to `data_outputs/`, and the final files to `data_final/`.
+Run `targets::tar_make()` to download API data and the hours spreadsheet. It writes downloads to `data_raw/`, intermediate files to `data_outputs/`, and final files to `data_final/`.
 
-Fetched data is cached for one day. If you run `tar_make()` again within a day, it reuses the cached data; after that, it fetches the data again. If the hours download fails, the pipeline keeps the committed spreadsheet, and `data_raw/fetch_log.csv` records why.
+Downloads stay cached for one day. Failed hours downloads keep the saved spreadsheet and record the error in `data_raw/fetch_log.csv`.
 
-The `output_checks` and `package_check` sanity checks run in both modes. A package mismatch is an error offline and a warning in live mode.
+Both modes run `output_checks` and `package_check`. Package mismatches stop offline runs but only warn in live runs.
 
-To use newer package versions, such as the latest price indices in `realtalk`, run `renv::update()` and then `renv::snapshot()` before `tar_make()`.
+To update packages, including `realtalk` price data, run these before `tar_make()`:
+
+```r
+renv::update()
+renv::snapshot()
+```
 
 ### The change report
 
-Each run ends by writing `reports/change_report.md`. It describes what changed compared with `origin/main`, and why: each input source, packages and code, and the final files. It splits every revision exactly into contributions from each input. If the inputs do not explain a revision, it says the calculation itself changed. Run `git fetch` first so `origin/main` is current, or set `PPG_BASELINE` to compare with another ref, such as a release tag from v2026.3.11 on.
+Each run writes `reports/change_report.md`, comparing local files with `origin/main`. Run `git fetch` first. Set `PPG_BASELINE` for another Git ref. The report cannot read the BLS format in releases before v2026.3.11.
 
-Baselines must be v2026.3.11 or later. Older releases store the BLS API results in a format the report does not read.
+Refreshes and PR checks show two comparisons:
 
-A refresh compares the latest build with the existing proposal to decide whether to update the branch or post a notification. The report's comparisons serve different purposes: proposed data versus `main` describes merging, and proposed data versus the last published GitHub release describes publishing. Release differences do not trigger repeated notifications. Data refreshes and PR checks retain both report comparisons. The overview shows both summaries and the headline stats for the release, `main`, and the proposed data. Expand each comparison for its inputs, outputs, and revision explanations. The `main` comparison shows what merging changes. The release comparison includes changes already merged into `main`. Both baselines are recorded by commit. PR checks use the proposed merge result and the PR's base commit as `main`.
+| Comparison | Purpose |
+|---|---|
+| Proposed data against `main` | Show what merging changes. |
+| Proposed data against the last release | Show what publishing changes, including changes already merged. |
 
-To generate both views locally, set `PPG_RELEASE_BASELINE` to the published release tag as well as setting `PPG_BASELINE` for `main`. No release lookup happens inside the R pipeline. Post-merge checks keep their comparison with the commit before the push. Release notes keep their single comparison with the previous release.
+The overview shows summaries and headline numbers for the release, `main`, and proposed data. Wages retain each version's last quarter. Missing wage files show “Not available”. Expand comparisons for inputs, outputs, and revisions.
 
-Each comparison describes output changes explicitly: files added or removed, revisions to existing values, periods or series added or removed, and changed headline statistics. Simultaneous changes appear together. Adding a counterfactual wage file can leave existing productivity, pay, and headline values unchanged. The overview and detailed comparisons use the same description. These descriptions compare snapshots; they do not indicate that fresh data was fetched or a release was published.
+Both comparison commits are recorded. PR checks compare the proposed merge result with the base commit. Checks after merging compare with the commit before the push. Release notes use the previous release only.
 
-The report's Why section uses paired productivity and pay tables. It shows input contributions to the latest common quarter's index revision and average signed contributions across revised quarters, in index points. Three headline-growth tables use percentage points and include rounding and added or removed quarters when applicable. Zero effects stay visible; a dash marks an input outside an index's formula. The productivity-to-pay growth multiple is shown as previous → revised without a decomposition.
+For both local views, also set `PPG_RELEASE_BASELINE` to the published tag. R never looks up GitHub releases.
+
+Comparisons list added or removed files, periods, and series, revised values, and changed headline numbers. Added files can leave existing values unchanged. Both sections show the same differences. Differences do not prove a download or release occurred.
+
+The Why section splits revisions by input. Unexplained revisions are flagged as calculation changes.
+
+- Productivity and pay tables use index points: effects on the latest common quarter and average signed effects across revised quarters.
+- Three headline-growth tables show effects in percentage points. They include rounding and added or removed quarters when needed.
+- Zero effects stay visible. A dash means the input is outside the formula.
+- The productivity-to-pay growth multiple shows previous → revised values without splitting the change by input.
 
 ### Offline mode
 
-To rebuild everything from the committed files without fetching anything:
+Rebuild from saved data without downloads or API keys:
 
 ```r
 Sys.setenv(TAR_PROJECT = "offline")
 targets::tar_make()
 ```
 
-This is what the `check` workflow runs. If the committed outputs are reproducible, `git diff -- data_final data_outputs` is then empty.
-
-Offline mode uses its own targets store, `_targets_offline/`, so it does not disturb the live cache in `_targets/`. It needs no network access or API credentials.
+CI uses this mode. A matching rebuild leaves `git diff -- data_final data_outputs` empty. The `_targets_offline/` cache leaves `_targets/` unchanged. No network access is needed.
 
 ### Making changes
 
-Make each change on a branch and open a pull request. Commit each self-contained change separately. The maintainer merges with merge commits only (`gh pr merge N --merge`). If a change to the code changes the outputs, rebuild in offline mode and commit the new outputs in the same pull request, or the `check` workflow fails.
+Create a branch and PR. Commit each complete change separately. The maintainer uses `gh pr merge N --merge`.
 
-When intentionally changing how the indexes are calculated in `R/combine.R`, update `index_terms` in `R/report_why.R` in the same PR. Otherwise later reports will flag a calculation change. Changes to `R/bls.R`, `R/bea.R`, `R/prices.R`, `R/web.R`, and the series code files are not measured by the report; it names them in a warning.
+If code changes outputs, rebuild offline and commit them in the same PR. Otherwise, `check` fails.
 
-If BLS refuses the hours download, download the [total economy hours file](https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx) by hand, save it as `data_raw/total-economy-hours-employment.xlsx`, and set its `date_accessed` in `data_raw/fetch_log.csv` to the day you downloaded it.
+If you change the index formula in `R/combine.R`, update `index_terms` in `R/report_why.R` in the same PR. Otherwise, later reports flag a calculation change.
+
+The report warns about changes to `R/bls.R`, `R/bea.R`, `R/prices.R`, `R/web.R`, and series code files. It cannot measure their effects.
+
+#### Hours download failures
+
+If BLS blocks the download:
+
+1. Download the [total economy hours file](https://www.bls.gov/productivity/tables/total-economy-hours-employment.xlsx) manually.
+2. Save it as `data_raw/total-economy-hours-employment.xlsx`.
+3. Set its `date_accessed` in `data_raw/fetch_log.csv` to the download date.
 
 ## Repository files
 
-The five final files are documented in [README.md](README.md#final-files-data_final). Fetched files, intermediate files, and final files are committed to git. The targets stores (`_targets/` and `_targets_offline/`) and generated reports (`reports/`) are ignored.
+See [README.md](README.md#final-files-data_final) for the five final files.
+
+Commit downloaded, intermediate, and final files to Git. Ignore the caches (`_targets/` and `_targets_offline/`) and generated reports (`reports/`).
 
 ### Fetched files (`data_raw/`)
 
-* `bea_api_output.csv`: BEA API results
-* `bls_api_output.csv`: BLS API results
-* `total-economy-hours-employment.xlsx`: BLS total economy hours spreadsheet
-* `fetch_log.csv`: when each source was last fetched, and the status of the last attempt. A failed fetch keeps the date of the last successful one.
+| File | Contents |
+|---|---|
+| `bea_api_output.csv` | BEA API results |
+| `bls_api_output.csv` | BLS API results |
+| `total-economy-hours-employment.xlsx` | BLS hours spreadsheet |
+| `fetch_log.csv` | Last successful download date and last attempt's status for each source. Failures keep the successful date. |
 
 ### Intermediate files (`data_outputs/`)
 
-* `bls_hours.csv`: BLS total economy hours
-* `bls_pay.csv`: early and current BLS wage series, combined
-* `prices.csv`: price index
+| File | Contents |
+|---|---|
+| `bls_hours.csv` | BLS total economy hours |
+| `bls_pay.csv` | Early and current BLS wages, combined |
+| `prices.csv` | Price index |
 
 ### Hand-maintained inputs (`data_inputs/`)
 
-* `bls_EEU00500006.csv`: historical production worker wages before 1964. This is static and needs no updates.
-* `bls_series_codes.csv` and `bea_series_codes.csv`: API series configurations.
+| File | Contents |
+|---|---|
+| `bls_EEU00500006.csv` | Wages before 1964. This file needs no updates. |
+| `bls_series_codes.csv`, `bea_series_codes.csv` | API series settings |
 
 ## Workflow implementation
 
-The [check workflow](.github/workflows/check.yml) runs on every PR and every push to `main`. It rebuilds offline and fails if `data_final/` or `data_outputs/` differs from the committed files. It posts the change report as a PR comment except on refresh PRs, which keep their authoritative report in the description. Post-merge reports compare with the commit before the push.
+The [check workflow](.github/workflows/check.yml) rebuilds offline on every PR and push to `main`. The check fails if rebuilt files in `data_final/` or `data_outputs/` differ from the committed files.
 
-The refresh entry point is [update-refresh-pr.sh](.github/scripts/update-refresh-pr.sh), which calls [update-refresh-pr.py](.github/scripts/update-refresh-pr.py). The build job runs R and package code with read-only repository access. The publish job can write but runs no R or package code. It copies only allowlisted files from the build artifact using [copy-refresh-files.sh](.github/scripts/copy-refresh-files.sh). Keep that split. The calendar branch contains data only; never execute code from it.
+Reports go in PR comments, except refresh PRs use the description. Reports after merging compare with the commit before the push. Approve the held check on workflow-created PRs.
 
-The release workflow uses [release-plan.sh](.github/scripts/release-plan.sh) to choose the tag and apply release guards and [publish-release.sh](.github/scripts/publish-release.sh) to attach the final files from the checked commit and publish the release.
+[update-refresh-pr.sh](.github/scripts/update-refresh-pr.sh) calls [update-refresh-pr.py](.github/scripts/update-refresh-pr.py) to manage the refresh PR. Keep these security rules:
+
+- Run R and package code only in the build job, with read-only repository access.
+- Give write access to the publish job. Run no R or package code there.
+- Copy only files on the allowlist with [copy-refresh-files.sh](.github/scripts/copy-refresh-files.sh).
+- Keep only data on the calendar branch. Never run code from it.
+
+[release-plan.sh](.github/scripts/release-plan.sh) selects the tag and checks release rules. [publish-release.sh](.github/scripts/publish-release.sh) publishes the checked commit's final files.
