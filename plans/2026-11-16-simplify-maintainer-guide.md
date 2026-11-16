@@ -28,4 +28,8 @@ Put routine maintenance in a short checklist, with troubleshooting immediately b
 
 ## Validation and results
 
-- Pending.
+- Added the four-step checklist and troubleshooting table, about 300 words combined. Moved scheduling, proposal updates, forecasts, and release safeguards into linked reference sections. Compressed report explanations and added a direct link to the manual hours replacement procedure.
+- All 37 local Markdown links and all 15 pre-existing guide anchors passed validation. Whitespace checks passed. Inspected the diff against the prior guide to confirm release guards, report semantics, provenance, local reproduction, and workflow security guidance remain available.
+- Only MAINTAINING.md and this plan changed. No R rebuild, live fetch, workflow change, data change, merge, or release ran. The original checkout and its uncommitted renv changes remain untouched.
+- Automatic plan review 726 and implementation review 728 passed. Branch checkpoint 738 passed all four reviewers, including code, design, and security, with no findings. No additional accepted risks were needed.
+- Delivery and GitHub check results will be recorded on the PR. The maintainer merges after the check passes.
