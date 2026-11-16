@@ -46,4 +46,4 @@ The maintainer asked for simpler technical English in all text from “Refresh d
 
 - Rewrote every section from Refresh details onward with short sentences and direct instructions. Used tables for schedules, PR update rules, settings, comparisons, and file lists. Kept the opening text unchanged.
 - Kept operating rules, release checks, report units, download provenance, and the read-only build / R-free publish split. No code, workflow, package, or data changes.
-- Local Markdown link checks and whitespace checks passed. Branch review and updated PR check are pending.
+- All 37 local Markdown links and all existing anchors passed. The opening text is unchanged. Whitespace checks passed. Checkpoint 747 passed with no findings. Final follow-up reviews and CI results are recorded on PR #37.

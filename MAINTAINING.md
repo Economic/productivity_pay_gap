@@ -35,7 +35,7 @@ All times use Eastern time, with daylight saving changes.
 | `Calendar refresh` | Monday, 5:17 a.m. | Save BLS and BEA release dates in `schedule.json` on the `calendar` branch. |
 | `Scheduled data update` | Daily, 2:27 p.m. | Run `refresh` if a release or its next-day check is due. |
 
-The five releases are Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays. Keep yesterday's dates for next-day checks. Failed downloads keep the old schedule.
+The five releases are Employment Situation, Productivity and Costs, Consumer Price Index, GDP, and Personal Income and Outlays. The calendar keeps yesterday's dates for next-day checks. Failed downloads keep the old schedule.
 
 Builds include weekends and holidays. Overlapping dates cause one build. If none is due, the daily check passes without a refresh.
 
@@ -238,7 +238,7 @@ Commit downloaded, intermediate, and final files to Git. Ignore the caches (`_ta
 
 ## Workflow implementation
 
-The [check workflow](.github/workflows/check.yml) rebuilds offline on every PR and push to `main`. Changed `data_final/` or `data_outputs/` files fail the check.
+The [check workflow](.github/workflows/check.yml) rebuilds offline on every PR and push to `main`. The check fails if rebuilt files in `data_final/` or `data_outputs/` differ from the committed files.
 
 Reports go in PR comments, except refresh PRs use the description. Reports after merging compare with the commit before the push. Approve the held check on workflow-created PRs.
 
