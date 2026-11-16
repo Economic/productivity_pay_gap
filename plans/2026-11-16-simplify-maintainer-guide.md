@@ -22,6 +22,14 @@ Put routine maintenance in a short checklist, with troubleshooting immediately b
 2. Validate local Markdown links and anchors, whitespace, and the documentation-only diff. Run the required branch checkpoint review and resolve real findings. No local R rebuild is needed for this prose-only change.
 3. Record results, push the branch, and open a PR. Wait for the GitHub check and ask the maintainer to merge.
 
+## Reference rewrite phase
+
+The maintainer asked for simpler technical English in all text from “Refresh details” onward. Update the existing PR #37.
+
+1. Keep the opening checklist, troubleshooting table, and reference links unchanged.
+2. Rewrite the remaining sections with short sentences, direct instructions, and common words. Use tables for parallel rules. Remove repeated explanations. Keep technical names, commands, links, and operating rules accurate.
+3. Check all links and existing anchors. Compare the rewrite with the previous text for lost requirements. Run the branch checkpoint review, push to PR #37, and wait for CI.
+
 ## Risks
 
 - A shorter opening can hide uncommon procedures. Keep the full reference in the same file and link to it from the checklist and troubleshooting table.
@@ -32,4 +40,10 @@ Put routine maintenance in a short checklist, with troubleshooting immediately b
 - All 37 local Markdown links and all 15 pre-existing guide anchors passed validation. Whitespace checks passed. Inspected the diff against the prior guide to confirm release guards, report semantics, provenance, local reproduction, and workflow security guidance remain available.
 - Only MAINTAINING.md and this plan changed. No R rebuild, live fetch, workflow change, data change, merge, or release ran. The original checkout and its uncommitted renv changes remain untouched.
 - Automatic plan review 726 and implementation review 728 passed. Branch checkpoint 738 passed all four reviewers, including code, design, and security, with no findings. No additional accepted risks were needed.
-- Delivery and GitHub check results will be recorded on the PR. The maintainer merges after the check passes.
+- The initial version passed GitHub check 43909147233 on [PR #37](https://github.com/Economic/productivity_pay_gap/pull/37). The maintainer requested a further reference rewrite before merging.
+
+## Reference rewrite validation
+
+- Rewrote every section from Refresh details onward with short sentences and direct instructions. Used tables for schedules, PR update rules, settings, comparisons, and file lists. Kept the opening text unchanged.
+- Kept operating rules, release checks, report units, download provenance, and the read-only build / R-free publish split. No code, workflow, package, or data changes.
+- Local Markdown link checks and whitespace checks passed. Branch review and updated PR check are pending.
