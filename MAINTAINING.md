@@ -1,13 +1,16 @@
 # Maintaining the Productivity-Pay Gap data
 
-Use the checklist below for routine updates. [Reference](#reference) covers setup, local development, and automation details. See [README.md](README.md) for downloads, final files, methodology, and sources.
-
 ## How updates work
 
-1. **Wait for an update PR, or request one.** Refreshes run automatically on agency release days and the following day. To fetch data manually, run **Actions → refresh → Run workflow** on `main`, using the defaults. It opens or updates the `data-refresh` PR when web files differ from `main`.
-2. **Review the PR description.** Check the latest output quarter, headline numbers, and explanations of revisions. The comparison with `main` shows what merging changes. The comparison with the last release shows what publishing changes. The opening status also shows the next scheduled update and expected coverage.
-3. **Merge the update.** If prompted, click **Approve and run workflows**. Wait for `check` to pass, then merge using a merge commit. This updates `main`. Publishing is a separate step.
-4. **Publish when ready.** Run **Actions → release → Run workflow** on `main`, leaving the defaults unchanged. It publishes the checked commit's five final files and a change report as a dated GitHub release. Select `dry_run` for a preview. A same-day correction requires `correction` and a reason. See [release details](#release-details) for the safeguards.
+1. Open the automatic `data-refresh` PR. If needed, create one with **Actions → refresh**.
+2. Click **Approve and run workflows** if GitHub asks. Wait for `check` to pass.
+3. Read the change report. Check data coverage, headline numbers, and unexpected revisions.
+4. If the changes are correct, merge the PR with a merge commit.
+5. To publish, run **Actions → release**. It publishes the final files and change report. Wait for it to finish.
+
+For manual workflows, select `main`, then **Run workflow**. Keep the default settings. Select `dry_run` for a preview. Merging alone publishes nothing.
+
+See [README.md](README.md) for downloads and [Reference](#reference) for setup and technical details.
 
 ## Troubleshooting
 
